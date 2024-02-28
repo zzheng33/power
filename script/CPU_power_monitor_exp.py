@@ -8,9 +8,9 @@ def main():
     run_benchmark_script_path = "./run_benchmark.py"
 
     # Define your benchmarks here
-    benchmarks = ['LULESH', 'Nekbone', 'AMG2013', 'miniFE']
+    benchmarks = ['FT','CG','LULESH', 'Nekbone', 'AMG2013', 'miniFE']
     # For testing, you can uncomment the next line to just run 'LULESH'
-    # benchmarks = ['LULESH']
+    # benchmarks = ['FT']
 
     for benchmark in benchmarks:
         output = f'../data/{benchmark}_power.csv'  # Append '_power.csv' to make it clear it's power data
