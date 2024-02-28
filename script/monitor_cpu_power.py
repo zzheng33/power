@@ -75,3 +75,4 @@ def monitor_power(interval=0.1):
 
 if __name__ == "__main__":
     monitor_power()
+    # pass

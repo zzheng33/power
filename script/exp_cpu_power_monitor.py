@@ -10,7 +10,7 @@ def main():
     # Define your benchmarks here
     benchmarks = ['FT','CG','LULESH', 'Nekbone', 'AMG2013', 'miniFE']
     # For testing, you can uncomment the next line to just run 'LULESH'
-    # benchmarks = ['FT']
+    benchmarks = ['FT']
 
     for benchmark in benchmarks:
         output = f'../data/{benchmark}_power.csv'  # Append '_power.csv' to make it clear it's power data

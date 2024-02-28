@@ -10,8 +10,8 @@ args = parser.parse_args()
 
 # Function to run the specified benchmark
 def run_benchmark(benchmark):
-    home_directory = os.path.expanduser('~')  # Get user's home directory
-    
+    # home_directory = os.path.expanduser('~')  # Get user's home directory
+    home_directory = "../benchmark"
     # Define commands for your benchmarks
     benchmarks = {
         'LULESH': f"cd {os.path.join(home_directory, 'LULESH', './')} && ./lulesh2.0 -s 40",
