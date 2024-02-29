@@ -13,7 +13,7 @@ def main():
     benchmarks = ['FT']
 
     for benchmark in benchmarks:
-        output = f'../data/{benchmark}_power.csv'  # Append '_power.csv' to make it clear it's power data
+        output = f'../data/power_res/{benchmark}_power.csv'  # Append '_power.csv' to make it clear it's power data
 
         # Execute the benchmark and get its PID
         run_benchmark_command = f'{python_executable} {run_benchmark_script_path} --benchmark {benchmark}'
