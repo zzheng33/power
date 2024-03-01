@@ -85,7 +85,7 @@ CUD_C = nvcc
 #	EXECUTABLES (LINK OBJECTS TOGETHER INTO BINARY)
 # ========================================================================================================================================================================================================200
 
-b+tree.out:	./main.o \
+b+tree:	./main.o \
 		./kernel/kernel_gpu_cuda_wrapper.o \
 		./kernel/kernel_gpu_cuda_wrapper_2.o \
 		./util/timer/timer.o \
