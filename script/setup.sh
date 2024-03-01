@@ -38,3 +38,6 @@ func setup_rodinia {}
 
 func setup_altis {}
 
+
+install_dependence
+setup_pcm

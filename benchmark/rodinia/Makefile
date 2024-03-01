@@ -4,13 +4,13 @@ RODINIA_BASE_DIR := $(shell pwd)
 
 CUDA_BIN_DIR := $(RODINIA_BASE_DIR)/bin/linux/cuda
 OMP_BIN_DIR := $(RODINIA_BASE_DIR)/bin/linux/omp
-OPENCL_BIN_DIR := $(RODINIA_BASE_DIR)/bin/linux/opencl
+# OPENCL_BIN_DIR := $(RODINIA_BASE_DIR)/bin/linux/opencl
 
 CUDA_DIRS := backprop bfs cfd gaussian heartwall hotspot kmeans lavaMD leukocyte lud nn	nw srad streamcluster particlefilter pathfinder mummergpu
 OMP_DIRS  := backprop bfs cfd		   heartwall hotspot kmeans lavaMD leukocyte lud nn nw srad streamcluster particlefilter pathfinder mummergpu
-OCL_DIRS  := backprop bfs cfd gaussian heartwall hotspot kmeans lavaMD leukocyte lud nn	nw srad streamcluster particlefilter pathfinder
+# OCL_DIRS  := backprop bfs cfd gaussian heartwall hotspot kmeans lavaMD leukocyte lud nn	nw srad streamcluster particlefilter pathfinder
 
-all: CUDA OMP OPENCL
+all: CUDA OMP 
 
 CUDA: 
 	cd cuda/backprop;		make;	cp backprop $(CUDA_BIN_DIR)
@@ -54,29 +54,29 @@ OMP:
 	cd openmp/pathfinder;				make;	cp pathfinder $(OMP_BIN_DIR)
 	cd openmp/mummergpu;				make;	cp bin/mummergpu $(OMP_BIN_DIR)
 
-OPENCL:
-	cd opencl/backprop;			make;	cp backprop     $(OPENCL_BIN_DIR)
-	cd opencl/bfs;				make;	cp bfs		$(OPENCL_BIN_DIR)
-	cd opencl/b+tree;			make;	cp b+tree	$(OPENCL_BIN_DIR)
-	cd opencl/cfd;				make;	cp euler3d	$(OPENCL_BIN_DIR)
-	cd opencl/hotspot;			make;	cp hotspot	$(OPENCL_BIN_DIR)
-	cd opencl/kmeans;			make;	cp kmeans	$(OPENCL_BIN_DIR)
-	cd opencl/lavaMD;			make;	cp lavaMD	$(OPENCL_BIN_DIR)
-	cd opencl/leukocyte;			make;	cp OpenCL/leukocyte	$(OPENCL_BIN_DIR)
-	cd opencl/lud/ocl;			make;	cp lud		$(OPENCL_BIN_DIR)
-	cd opencl/myocyte;			make;	cp myocyte	$(OPENCL_BIN_DIR)
-	cd opencl/nw;				make;	cp nw		$(OPENCL_BIN_DIR)
-	cd opencl/srad;				make;	cp srad		$(OPENCL_BIN_DIR)
-	cd opencl/streamcluster;		make;	cp streamcluster	$(OPENCL_BIN_DIR)
-	cd opencl/pathfinder;			make;	cp pathfinder	$(OPENCL_BIN_DIR)
-	cd opencl/particlefilter;		make;	cp OCL_particlefilter_naive OCL_particlefilter_single OCL_particlefilter_double $(OPENCL_BIN_DIR)
-	cd opencl/gaussian;			make;	cp gaussian	$(OPENCL_BIN_DIR)
-	cd opencl/nn;				make;	cp nn	$(OPENCL_BIN_DIR)
-	cd opencl/heartwall;		        make;	cp heartwall	$(OPENCL_BIN_DIR)
-	cd opencl/hybridsort;              	make;   cp hybridsort $(CUDA_BIN_DIR)
-	cd opencl/dwt2d;                   	make;   cp dwt2d  $(CUDA_BIN_DIR)
+# OPENCL:
+# 	cd opencl/backprop;			make;	cp backprop     $(OPENCL_BIN_DIR)
+# 	cd opencl/bfs;				make;	cp bfs		$(OPENCL_BIN_DIR)
+# 	cd opencl/b+tree;			make;	cp b+tree	$(OPENCL_BIN_DIR)
+# 	cd opencl/cfd;				make;	cp euler3d	$(OPENCL_BIN_DIR)
+# 	cd opencl/hotspot;			make;	cp hotspot	$(OPENCL_BIN_DIR)
+# 	cd opencl/kmeans;			make;	cp kmeans	$(OPENCL_BIN_DIR)
+# 	cd opencl/lavaMD;			make;	cp lavaMD	$(OPENCL_BIN_DIR)
+# 	cd opencl/leukocyte;			make;	cp OpenCL/leukocyte	$(OPENCL_BIN_DIR)
+# 	cd opencl/lud/ocl;			make;	cp lud		$(OPENCL_BIN_DIR)
+# 	cd opencl/myocyte;			make;	cp myocyte	$(OPENCL_BIN_DIR)
+# 	cd opencl/nw;				make;	cp nw		$(OPENCL_BIN_DIR)
+# 	cd opencl/srad;				make;	cp srad		$(OPENCL_BIN_DIR)
+# 	cd opencl/streamcluster;		make;	cp streamcluster	$(OPENCL_BIN_DIR)
+# 	cd opencl/pathfinder;			make;	cp pathfinder	$(OPENCL_BIN_DIR)
+# 	cd opencl/particlefilter;		make;	cp OCL_particlefilter_naive OCL_particlefilter_single OCL_particlefilter_double $(OPENCL_BIN_DIR)
+# 	cd opencl/gaussian;			make;	cp gaussian	$(OPENCL_BIN_DIR)
+# 	cd opencl/nn;				make;	cp nn	$(OPENCL_BIN_DIR)
+# 	cd opencl/heartwall;		        make;	cp heartwall	$(OPENCL_BIN_DIR)
+# 	cd opencl/hybridsort;              	make;   cp hybridsort $(CUDA_BIN_DIR)
+# 	cd opencl/dwt2d;                   	make;   cp dwt2d  $(CUDA_BIN_DIR)
 	
-clean: CUDA_clean OMP_clean OCL_clean
+clean: CUDA_clean OMP_clean 
 
 CUDA_clean:
 	cd $(CUDA_BIN_DIR); rm -f *
@@ -86,6 +86,6 @@ OMP_clean:
 	cd $(OMP_BIN_DIR); rm -f *
 	for dir in $(OMP_DIRS) ; do cd openmp/$$dir ; make clean ; cd ../.. ; done
 
-OCL_clean:
-	cd $(OPENCL_BIN_DIR); rm -f *
-	for dir in $(OCL_DIRS) ; do cd opencl/$$dir ; make clean ; cd ../.. ; done
+# OCL_clean:
+# 	cd $(OPENCL_BIN_DIR); rm -f *
+# 	for dir in $(OCL_DIRS) ; do cd opencl/$$dir ; make clean ; cd ../.. ; done
