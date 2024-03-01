@@ -20,8 +20,8 @@ func setup_rapl {
 
 
 func setup_pcm {
-    git clone https://github.com/zzheng33/pcm.git
-    mv -r ./pcm ../tools/ 
+    # git clone https://github.com/zzheng33/pcm.git
+    # mv -r ./pcm ../tools/ 
 
     cd "${home_dir}/power/tools/pcm"
     mkdir build
@@ -30,14 +30,14 @@ func setup_pcm {
     cmake --build . --parallel
 }
 
-func setup_cpu_benchmark {}
+# func setup_cpu_benchmark {}
 
 
-func setup_rodinia {}
+# func setup_rodinia {}
 
 
-func setup_altis {}
+# func setup_altis {}
 
 
-install_dependence
+# install_dependence
 setup_pcm

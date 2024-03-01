@@ -20,7 +20,6 @@ CUDA:
 	
 	cd cuda/backprop;		make;	
 	cd cuda/bfs;			make;	
-	cd cuda/cfd;			make;	
 	cd cuda/gaussian;		make;	
 	cd cuda/heartwall;		make;	
 	cd cuda/hotspot;		make;	
