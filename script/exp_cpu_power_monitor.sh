@@ -24,6 +24,7 @@ for BENCHMARK in "${BENCHMARKS[@]}"; do
 
     # Start power monitoring, passing the PID of the benchmark process
     MONITOR_COMMAND="echo 9900 | sudo -S $PYTHON_EXECUTABLE $MONITOR_SCRIPT_PATH --home_dir $HOME_DIR --output_csv $OUTPUT --pid $BENCHMARK_PID"
+    
     # On cloudlab, you might use the following instead:
     # MONITOR_COMMAND="sudo $PYTHON_EXECUTABLE $MONITOR_SCRIPT_PATH --home_dir $HOME_DIR --output_csv $OUTPUT --pid $BENCHMARK_PID"
 
