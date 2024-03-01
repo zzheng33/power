@@ -2,8 +2,8 @@ include common/make.config
 
 RODINIA_BASE_DIR := $(shell pwd)
 
-CUDA_BIN_DIR := $(RODINIA_BASE_DIR)/bin/linux/cuda
-OMP_BIN_DIR := $(RODINIA_BASE_DIR)/bin/linux/omp
+CUDA_BIN_DIR := $(RODINIA_BASE_DIR)/bin/linux/cuda/
+OMP_BIN_DIR := $(RODINIA_BASE_DIR)/bin/linux/omp/
 # OPENCL_BIN_DIR := $(RODINIA_BASE_DIR)/bin/linux/opencl
 
 CUDA_DIRS := backprop bfs cfd gaussian heartwall hotspot kmeans lavaMD leukocyte lud nn	nw srad streamcluster particlefilter pathfinder mummergpu
