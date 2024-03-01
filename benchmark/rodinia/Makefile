@@ -31,8 +31,7 @@ CUDA:
 	cd cuda/srad/srad_v2;		
 	cd cuda/streamcluster;		
 	cd cuda/particlefilter;		make;	       
-	cd cuda/pathfinder;		make;		
-	cd cuda/hybridsort;              make;   
+	cd cuda/pathfinder;		make;		 
 	cd cuda/dwt2d;                   make;  
 	
 	
