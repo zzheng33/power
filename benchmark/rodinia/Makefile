@@ -11,6 +11,8 @@ OMP_DIRS  := backprop bfs cfd		   heartwall hotspot kmeans lavaMD leukocyte lud 
 # OCL_DIRS  := backprop bfs cfd gaussian heartwall hotspot kmeans lavaMD leukocyte lud nn	nw srad streamcluster particlefilter pathfinder
 
 all: CUDA OMP 
+mkdir $(RODINIA_BASE_DIR)/bin/linux/cuda
+mkdir $(RODINIA_BASE_DIR)/bin/linux/omp
 
 CUDA: 
 	cd cuda/backprop;		make;	cp backprop $(CUDA_BIN_DIR)
