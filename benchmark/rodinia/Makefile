@@ -27,9 +27,9 @@ CUDA:
 	cd cuda/lud;			make;	
 	cd cuda/nn;				make;	
 	cd cuda/nw;			make;	
-	cd cuda/srad/srad_v1;		
-	cd cuda/srad/srad_v2;		
-	cd cuda/streamcluster;		
+	cd cuda/srad/srad_v1;		make
+	cd cuda/srad/srad_v2;		make
+	cd cuda/streamcluster;	    make	
 	cd cuda/particlefilter;		make;	       
 	cd cuda/pathfinder;		make;		 
 	cd cuda/dwt2d;                   make;  
