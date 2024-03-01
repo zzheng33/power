@@ -24,9 +24,7 @@ CUDA:
 	cd cuda/gaussian;		make;	
 	cd cuda/heartwall;		make;	
 	cd cuda/hotspot;		make;	
-	cd cuda/kmeans;			make;	
 	cd cuda/lavaMD;			make;	
-	cd cuda/leukocyte;		make;	
 	cd cuda/lud;			make;	
 	cd cuda/nn;				make;	
 	cd cuda/nw;			make;	
@@ -34,8 +32,7 @@ CUDA:
 	cd cuda/srad/srad_v2;		
 	cd cuda/streamcluster;		
 	cd cuda/particlefilter;		make;	       
-	cd cuda/pathfinder;		make;	
-	cd cuda/mummergpu;		make;	
+	cd cuda/pathfinder;		make;		
 	cd cuda/hybridsort;              make;   
 	cd cuda/dwt2d;                   make;  
 	
