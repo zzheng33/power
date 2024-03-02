@@ -15,7 +15,7 @@ sudo modprobe msr
 sudo sysctl -n kernel.perf_event_paranoid=-1
 
 for BENCHMARK in "${BENCHMARKS[@]}"; do
-    OUTPUT="../data/power_res/${BENCHMARK}_power.csv"  # Append '_power.csv' to make it clear it's power data
+    OUTPUT="../data/power_res/${BENCHMARK}_power.csv"  
 
     # Execute the benchmark and get its PID
     RUN_BENCHMARK_COMMAND="$PYTHON_EXECUTABLE $RUN_BENCHMARK_SCRIPT_PATH --benchmark $BENCHMARK"
