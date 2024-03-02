@@ -1,6 +1,6 @@
 #!/bin/bash
 
-home_dir="/home/cc"
+home_dir=$(eval echo ~$USER)
 
 func install_dependence {
 
@@ -20,9 +20,10 @@ func setup_rapl {
 
 
 func setup_pcm {
+    cd "${home_dir}/power/tools"
     # git clone https://github.com/zzheng33/pcm.git
     # mv -r ./pcm ../tools/ 
-
+    git clone https://github.com/zzheng33/pcm.git
     cd "${home_dir}/power/tools/pcm"
     mkdir build
     cd build
@@ -30,14 +31,30 @@ func setup_pcm {
     cmake --build . --parallel
 }
 
-# func setup_cpu_benchmark {}
+func load_benchmark {
+    cd "${home_dir}"
+    git clone https://github.com/zzheng33/benchmark.git
+}
 
 
-# func setup_rodinia {}
+func setup_rodinia {
+    cd "${home_dir}/benchmark/rodinia"
+    make
+}
 
 
-# func setup_altis {}
+func setup_altis {
+    cd "${home_dir}/benchmark/altis"
+    ./setup.sh
+}
 
+# NPB, AMG2013...
+# func setup_other_benchmark {
 
-# install_dependence
-setup_pcm
+# }
+
+install_dependence
+setup_altis
+setup_rodinia
+
+# setup_pcm
