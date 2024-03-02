@@ -6,12 +6,13 @@ import time
 # Parse command-line arguments for a specific benchmark
 parser = argparse.ArgumentParser(description='Run specific benchmark.')
 parser.add_argument('--benchmark', type=str, help='Name of the benchmark to run', required=True)
+parser.add_argument('--benchmark_dir', type=str, help='dir of the benchmark', required=True)
 args = parser.parse_args()
 
 # Function to run the specified benchmark
 def run_benchmark(benchmark):
     # home_directory = os.path.expanduser('~')  # Get user's home directory
-    home_directory = "../benchmark"
+    home_directory = "./benchmark"
     # Define commands for your benchmarks
     benchmarks = {
         'LULESH': f"cd {os.path.join(home_directory, 'LULESH', './')} && ./lulesh2.0 -s 40",
