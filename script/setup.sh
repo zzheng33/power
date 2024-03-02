@@ -33,12 +33,12 @@ load_benchmark() {
 
 setup_rodinia() {
     cd "${home_dir}/benchmark/rodinia"
-    make
+    sudo make
 }
 
 setup_altis() {
     cd "${home_dir}/benchmark/altis"
-    ./setup.sh
+    sudo ./setup.sh
 }
 
 # setup_other_benchmark() {
