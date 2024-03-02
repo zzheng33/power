@@ -1,4 +1,0 @@
-      include 'DXYZ'
-      include 'INPUT'
-      include 'PARALLEL'
-      include 'WZ'
