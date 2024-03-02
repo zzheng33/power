@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.8)
 
 add_subdirectory(busspeeddownload)
 add_subdirectory(busspeedreadback)
-add_subdirectory(devicememory)
+#add_subdirectory(devicememory)
 add_subdirectory(maxflops)
 
 add_executable(busspeeddownload ${exe_files})
@@ -23,14 +23,14 @@ set_target_properties(busspeedreadback
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/level0"
 )
 
-add_executable(devicememory ${exe_files})
-target_link_libraries(devicememory AltisCommon devicememoryLib)
-set_target_properties(devicememory
-    PROPERTIES
-    ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
-    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
-    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/level0"
-)
+# add_executable(devicememory ${exe_files})
+# target_link_libraries(devicememory AltisCommon devicememoryLib)
+# set_target_properties(devicememory
+#     PROPERTIES
+#     ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
+#     LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
+#     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/level0"
+# )
 
 
 add_executable(maxflops
