@@ -16,30 +16,30 @@ setup_rapl() {
     make
 }
 
-setup_pcm() {
-    cd "${home_dir}/power/tools"
-    git clone https://github.com/zzheng33/pcm.git
-    cd "${home_dir}/power/tools/pcm"
-    mkdir build
-    cd build
-    cmake ..
-    cmake --build . --parallel
-}
+# setup_pcm() {
+#     cd "${home_dir}/power/tools"
+#     git clone https://github.com/zzheng33/pcm.git
+#     cd "${home_dir}/power/tools/pcm"
+#     mkdir build
+#     cd build
+#     cmake ..
+#     cmake --build . --parallel
+# }
 
-load_benchmark() {
-    cd "${home_dir}"
-    git clone https://github.com/zzheng33/benchmark.git
-}
+# load_benchmark() {
+#     cd "${home_dir}"
+#     git clone https://github.com/zzheng33/benchmark.git
+# }
 
-setup_rodinia() {
-    cd "${home_dir}/benchmark/rodinia"
-    sudo make
-}
+# setup_rodinia() {
+#     cd "${home_dir}/benchmark/rodinia"
+#     sudo make
+# }
 
-setup_altis() {
-    cd "${home_dir}/benchmark/altis"
-    sudo ./setup.sh
-}
+# setup_altis() {
+#     cd "${home_dir}/benchmark/altis"
+#     sudo ./setup.sh
+# }
 
 # setup_other_benchmark() {
 #     # Define other benchmark setup steps here
