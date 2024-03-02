@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Define paths and executables
-HOME_DIR=$(eval echo ~$USER)
+HOME_DIR=$(echo ~$USER)
 PYTHON_EXECUTABLE=$(which python3)  # Adjust based on your Python version
 MONITOR_SCRIPT_PATH="./monitor_cpu_power.py"
 RUN_BENCHMARK_SCRIPT_PATH="./run_benchmark.py"
