@@ -1,9 +1,8 @@
 #!/bin/bash
 
-home_dir=$(eval echo ~$USER)
+home_dir=$(echo ~$USER)
 
-func install_dependence {
-
+install_dependence() {
     sudo apt-get update
     sudo apt-get --assume-yes install gfortran
     sudo apt-get --assume-yes install libopenmpi-dev
@@ -11,18 +10,14 @@ func install_dependence {
     sudo apt --assume-yes install cmake
 }
 
-
-func setup_rapl {
+setup_rapl() {
     cd "${home_dir}/power/tools/RAPL"
     make clean
     make
 }
 
-
-func setup_pcm {
+setup_pcm() {
     cd "${home_dir}/power/tools"
-    # git clone https://github.com/zzheng33/pcm.git
-    # mv -r ./pcm ../tools/ 
     git clone https://github.com/zzheng33/pcm.git
     cd "${home_dir}/power/tools/pcm"
     mkdir build
@@ -31,30 +26,27 @@ func setup_pcm {
     cmake --build . --parallel
 }
 
-func load_benchmark {
+load_benchmark() {
     cd "${home_dir}"
     git clone https://github.com/zzheng33/benchmark.git
 }
 
-
-func setup_rodinia {
+setup_rodinia() {
     cd "${home_dir}/benchmark/rodinia"
     make
 }
 
-
-func setup_altis {
+setup_altis() {
     cd "${home_dir}/benchmark/altis"
     ./setup.sh
 }
 
-# NPB, AMG2013...
-# func setup_other_benchmark {
-
+# setup_other_benchmark() {
+#     # Define other benchmark setup steps here
 # }
 
 install_dependence
 setup_altis
 setup_rodinia
-
 # setup_pcm
+
