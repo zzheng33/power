@@ -1,6 +1,6 @@
 #!/bin/bash
 
-home_dir=$(echo ~$USER)
+home_dir="/home/cc"
 
 install_dependence() {
     sudo apt-get update
