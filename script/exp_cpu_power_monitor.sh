@@ -9,7 +9,7 @@ RUN_BENCHMARK_SCRIPT_PATH="./run_benchmark.py"
 # Define your benchmarks
 BENCHMARKS=('FT' 'CG' 'LULESH' 'Nekbone' 'AMG2013' 'miniFE')
 # For testing, you can replace the above line with the following to just run 'LULESH'
-# BENCHMARKS=('FT')
+BENCHMARKS=('FT')
 
 sudo modprobe msr
 sudo sysctl -n kernel.perf_event_paranoid=-1
@@ -18,7 +18,7 @@ for BENCHMARK in "${BENCHMARKS[@]}"; do
     OUTPUT="../data/power_res/${BENCHMARK}_power.csv"  
 
     # Execute the benchmark and get its PID
-    RUN_BENCHMARK_COMMAND="$PYTHON_EXECUTABLE $RUN_BENCHMARK_SCRIPT_PATH --benchmark $BENCHMARK --benchmark_dir $HOME_DIR"
+    RUN_BENCHMARK_COMMAND="$PYTHON_EXECUTABLE $RUN_BENCHMARK_SCRIPT_PATH --benchmark $BENCHMARK --home_dir ${HOME_DIR}/benchmark"
     $RUN_BENCHMARK_COMMAND &
     BENCHMARK_PID=$!
 
