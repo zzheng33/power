@@ -47,7 +47,7 @@ setup_altis() {
 
 install_dependence
 load_benchmark
-setup_altis
+# setup_altis
 setup_rodinia
 # setup_pcm
 
