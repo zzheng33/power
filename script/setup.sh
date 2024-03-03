@@ -16,6 +16,13 @@ setup_rapl() {
     make
 }
 
+download_rodinia_data(){
+    cd "${home_dir}"
+    wget https://dl.dropbox.com/s/cc6cozpboht3mtu/rodinia-3.1-data.tar.gz    tar -xzf rodinia-3.1-data.tar.gz
+
+}
+
+
 # setup_pcm() {
 #     cd "${home_dir}/power/tools"
 #     git clone https://github.com/zzheng33/pcm.git
@@ -45,9 +52,11 @@ setup_rapl() {
 #     # Define other benchmark setup steps here
 # }
 
-install_dependence
-load_benchmark
+
+#install_dependence
+#load_benchmark
 # setup_altis
-setup_rodinia
+# setup_rodinia
 # setup_pcm
 
+download_rodinia_data
