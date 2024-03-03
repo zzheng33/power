@@ -18,7 +18,8 @@ setup_rapl() {
 
 download_rodinia_data(){
     cd "${home_dir}"
-    wget https://dl.dropbox.com/s/cc6cozpboht3mtu/rodinia-3.1-data.tar.gz    tar -xzf rodinia-3.1-data.tar.gz
+    wget https://dl.dropbox.com/s/cc6cozpboht3mtu/rodinia-3.1-data.tar.gz
+    tar -xzf rodinia-3.1-data.tar.gz
 
 }
 
