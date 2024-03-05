@@ -66,5 +66,5 @@ generate_altis_data() {
 # setup_altis
 # setup_rodinia
 # setup_pcm
-
+install_dependence
 generate_altis_data
