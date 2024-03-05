@@ -58,13 +58,13 @@ setup_altis() {
 generate_altis_data() {
     cd "${home_dir}/benchmark/altis/data/kmeans"
     python3 datagen.py -n 8388608 -f
+
+    cd "${home_dir}/benchmark/altis/data/kmeans"
 }
 
 
 # install_dependence
 # load_benchmark
 # setup_altis
-# setup_rodinia
 # setup_pcm
-install_dependence
-generate_altis_data
+# generate_altis_data
