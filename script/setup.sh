@@ -55,11 +55,16 @@ setup_altis() {
 #     # Define other benchmark setup steps here
 # }
 
+generate_altis_data() {
+    cd "${home_dir}/benchmark/altis/data/kmeans"
+    python3 datagen.py -n 8388608 -f
+}
 
-install_dependence
-load_benchmark
-setup_altis
+
+# install_dependence
+# load_benchmark
+# setup_altis
 # setup_rodinia
-setup_pcm
+# setup_pcm
 
-#download_rodinia_data
+generate_altis_data
