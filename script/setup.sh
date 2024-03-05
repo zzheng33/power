@@ -16,25 +16,25 @@ setup_rapl() {
     make
 }
 
-download_rodinia_data(){
-    cd "${home_dir}"
-    wget https://dl.dropbox.com/s/cc6cozpboht3mtu/rodinia-3.1-data.tar.gz
-    tar -xzf rodinia-3.1-data.tar.gz
-    cd rodinia-data
-    mv * "${home_dir}/benchmark/rodinia/data"
+# download_rodinia_data(){
+#     cd "${home_dir}"
+#     wget https://dl.dropbox.com/s/cc6cozpboht3mtu/rodinia-3.1-data.tar.gz
+#     tar -xzf rodinia-3.1-data.tar.gz
+#     cd rodinia-data
+#     mv * "${home_dir}/benchmark/rodinia/data"
 
-}
-
-
-# setup_pcm() {
-#     cd "${home_dir}/power/tools"
-#     git clone https://github.com/zzheng33/pcm.git
-#     cd "${home_dir}/power/tools/pcm"
-#     mkdir build
-#     cd build
-#     cmake ..
-#     cmake --build . --parallel
 # }
+
+
+setup_pcm() {
+    cd "${home_dir}/power/tools"
+    git clone https://github.com/zzheng33/pcm.git
+    cd "${home_dir}/power/tools/pcm"
+    mkdir build
+    cd build
+    cmake ..
+    cmake --build . --parallel
+}
 
 load_benchmark() {
     cd "${home_dir}"
@@ -60,6 +60,6 @@ install_dependence
 load_benchmark
 setup_altis
 # setup_rodinia
-# setup_pcm
+setup_pcm
 
 #download_rodinia_data
