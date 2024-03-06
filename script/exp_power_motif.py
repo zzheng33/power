@@ -10,12 +10,12 @@ home_dir = os.path.expanduser('~')
 python_executable = subprocess.getoutput('which python3')  # Adjust based on your Python version
 
 # scripts for CPU, GPU power monitoring
-monitor_CPU_power = "./monitor_cpu_power.py"
-monitor_GPU_power = "./monitor_gpu_power.py"
+read_CPU_power = "./power_monitor_util/read_cpu_power.py"
+read_GPU_power = "./power_monitor_util/read_gpu_power.py"
 
 # scritps for running various benchmarks
-run_altis = "./run_altis.py"
-run_ecp = "./run_ecp.py"
+run_altis = "./run_benchmark/run_altis.py"
+run_ecp = "./run_benchmark/run_ecp.py"
 
 # Define your benchmarks, for testing replace the list with just ['FT'] for example
 # ecp_benchmarks = ['FT', 'CG', 'LULESH', 'Nekbone', 'AMG2013', 'miniFE']
@@ -25,7 +25,7 @@ altis_benchmarks_2 = ['cfd','cfd_double','dwt2d','fdtd2d','kmeans','lavamd','man
                       'nw','particlefilter_float','particlefilter_naive','raytracing',
                       'srad','where']
 
-altis_benchmarks_2 = ['kmeans']
+altis_benchmarks_2 = ['nw']
 
 # Setup environment
 modprobe_command = "sudo modprobe msr"
@@ -36,16 +36,17 @@ subprocess.run(sysctl_command, shell=True)
 
 
 def run_benchmark(benchmark_dir,benchmark):
-    output = f"../data/altis_power_res/{benchmark}_power.csv"
+    output = f"../data/altis_power_res/{benchmark}_power_cpu.csv"
     # Execute the benchmark and get its PID
 
-    run_benchmark_command = f"{python_executable} {run_altis} --benchmark {benchmark} --home_dir {os.path.join(home_dir, benchmark_dir)}"
+    run_benchmark_command = f"{python_executable} {run_altis} --benchmark {benchmark} --benchmark_dir {os.path.join(home_dir, benchmark_dir)}"
+
     benchmark_process = subprocess.Popen(run_benchmark_command, shell=True)
 
     benchmark_pid = benchmark_process.pid
 
     # Start CPU power monitoring, passing the PID of the benchmark process
-    monitor_command = f"echo 9900 | sudo -S {python_executable} {monitor_CPU_power} --home_dir {home_dir} --output_csv {output} --pid {benchmark_pid}"
+    monitor_command = f"echo 9900 | sudo -S {python_executable} {read_CPU_power} --home_dir {home_dir} --output_csv {output} --pid {benchmark_pid}"
     
 
     monitor_process = subprocess.Popen(monitor_command, shell=True, stdin=subprocess.PIPE, text=True)
@@ -61,6 +62,17 @@ def run_benchmark(benchmark_dir,benchmark):
 
 
 ## run ALTIS benchmark
+
+# for benchmark in altis_benchmarks_0:
+#     path = "power/script/altis_script/level0"
+#     run_benchmark(path, benchmark)
+
+
+# for benchmark in altis_benchmarks_1:
+#     path = "power/script/altis_script/level1"
+#     run_benchmark(path, benchmark)
+
+
 for benchmark in altis_benchmarks_2:
-    path = "benchmark/altis/build/bin/level2/"
+    path = "power/script/altis_script/level2"
     run_benchmark(path, benchmark)
