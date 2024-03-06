@@ -2,7 +2,7 @@ import os
 import subprocess
 import time
 import signal
-
+import argparse
 
 
 # Define paths and executables
@@ -21,11 +21,11 @@ run_ecp = "./run_benchmark/run_ecp.py"
 # ecp_benchmarks = ['FT', 'CG', 'LULESH', 'Nekbone', 'AMG2013', 'miniFE']
 altis_benchmarks_0 = ['busspeeddownload','busspeedreadback','maxflops']
 altis_benchmarks_1 = ['bfs','gemm','gups','pathfinder','sort']
-altis_benchmarks_2 = ['cfd','cfd_double','dwt2d','fdtd2d','kmeans','lavamd','mandelbrot',
+altis_benchmarks_2 = ['cfd','cfd_double','fdtd2d','kmeans','lavamd',
                       'nw','particlefilter_float','particlefilter_naive','raytracing',
                       'srad','where']
 
-altis_benchmarks_2 = ['nw']
+
 
 # Setup environment
 modprobe_command = "sudo modprobe msr"
@@ -62,21 +62,52 @@ def run_benchmark(benchmark_dir,benchmark):
 
 
 
-## run ALTIS benchmark
+def main(args):
+    benchmark = args.benchmark
+    # Map of benchmarks to their paths
+    benchmark_paths = {
+        "level0": altis_benchmarks_0,
+        "level1": altis_benchmarks_1,
+        "level2": altis_benchmarks_2
+    }
 
-# for benchmark in altis_benchmarks_0:
-#     path = "power/script/altis_script/level0"
-#     run_benchmark(path, benchmark)
+    if benchmark:
+        # Find which level the input benchmark belongs to
+        found = False
+        for level, benchmarks in benchmark_paths.items():
+            if benchmark in benchmarks:
+                path = f"power/script/altis_script/{level}"
+                run_benchmark(path, benchmark)
+                found = True
+                break
+    else:
+        # # No benchmark specified, run all
+        # for level, benchmarks in benchmark_paths.items():
+        #     path = f"power/script/altis_script/{level}"
+        #     for bm in benchmarks:
+        #         run_benchmark(path, bm)
+
+        for benchmark in altis_benchmarks_0:
+            path = "power/script/altis_script/level0"
+            run_benchmark(path, benchmark)
+        
+        
+        for benchmark in altis_benchmarks_1:
+            path = "power/script/altis_script/level1"
+            run_benchmark(path, benchmark)
+        
+        
+        for benchmark in altis_benchmarks_2:
+            path = "power/script/altis_script/level2"
+            run_benchmark(path, benchmark)
 
 
-# for benchmark in altis_benchmarks_1:
-#     path = "power/script/altis_script/level1"
-#     run_benchmark(path, benchmark)
-
-
-for benchmark in altis_benchmarks_2:
-    path = "power/script/altis_script/level2"
-    run_benchmark(path, benchmark)
+if __name__ == "__main__":
+   # Set up command line argument parsing
+    parser = argparse.ArgumentParser(description='Run benchmarks and monitor power consumption.')
+    parser.add_argument('--benchmark', type=str, help='Optional name of the benchmark to run', default=None)
+    args = parser.parse_args()
+    main(args)
 
 
 

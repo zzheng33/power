@@ -21,11 +21,11 @@ run_ecp = "./run_benchmark/run_ecp.py"
 # ecp_benchmarks = ['FT', 'CG', 'LULESH', 'Nekbone', 'AMG2013', 'miniFE']
 altis_benchmarks_0 = ['busspeeddownload','busspeedreadback','maxflops']
 altis_benchmarks_1 = ['bfs','gemm','gups','pathfinder','sort']
-altis_benchmarks_2 = ['cfd','cfd_double','dwt2d','fdtd2d','kmeans','lavamd','mandelbrot',
+altis_benchmarks_2 = ['cfd','cfd_double','fdtd2d','kmeans','lavamd',
                       'nw','particlefilter_float','particlefilter_naive','raytracing',
                       'srad','where']
 
-altis_benchmarks_2 = ['nw']
+
 
 # Setup environment
 modprobe_command = "sudo modprobe msr"
@@ -49,7 +49,7 @@ def run_benchmark(benchmark_dir,benchmark):
     monitor_process = subprocess.Popen(monitor_command_cpu, shell=True, stdin=subprocess.PIPE, text=True)
 
     # Start GPU power monitoring, passing the PID of the benchmark process
-    monitor_command_gpu = f"echo 9900 | sudo -S {python_executable} {read_gpu_power}  --output_csv {output} --pid {benchmark_pid}"
+    monitor_command_gpu = f"echo 9900 | sudo -S {python_executable} {read_gpu_power}  --output_csv {output_gpu} --pid {benchmark_pid}"
     monitor_process = subprocess.Popen(monitor_command_gpu, shell=True, stdin=subprocess.PIPE, text=True)
 
     # Wait for the benchmark process to complete
@@ -62,21 +62,49 @@ def run_benchmark(benchmark_dir,benchmark):
 
 
 
-## run ALTIS benchmark
+def main(benchmark=None):
+    # Map of benchmarks to their paths
+    benchmark_paths = {
+        "level0": altis_benchmarks_0,
+        "level1": altis_benchmarks_1,
+        "level2": altis_benchmarks_2
+    }
 
-# for benchmark in altis_benchmarks_0:
-#     path = "power/script/altis_script/level0"
-#     run_benchmark(path, benchmark)
+    if benchmark:
+        # Find which level the input benchmark belongs to
+        found = False
+        for level, benchmarks in benchmark_paths.items():
+            if benchmark in benchmarks:
+                path = f"power/script/altis_script/{level}"
+                run_benchmark(path, benchmark)
+                found = True
+                break
+    else:
+        # # No benchmark specified, run all
+        # for level, benchmarks in benchmark_paths.items():
+        #     path = f"power/script/altis_script/{level}"
+        #     for bm in benchmarks:
+        #         run_benchmark(path, bm)
+
+        for benchmark in altis_benchmarks_0:
+            path = "power/script/altis_script/level0"
+            run_benchmark(path, benchmark)
+        
+        
+        for benchmark in altis_benchmarks_1:
+            path = "power/script/altis_script/level1"
+            run_benchmark(path, benchmark)
+        
+        
+        for benchmark in altis_benchmarks_2:
+            path = "power/script/altis_script/level2"
+            run_benchmark(path, benchmark)
 
 
-# for benchmark in altis_benchmarks_1:
-#     path = "power/script/altis_script/level1"
-#     run_benchmark(path, benchmark)
-
-
-for benchmark in altis_benchmarks_2:
-    path = "power/script/altis_script/level2"
-    run_benchmark(path, benchmark)
+if __name__ == "__main__":
+    # Check if a benchmark name was provided as a command-line argument
+    input_benchmark = sys.argv[1] if len(sys.argv) > 1 else None
+    main(input_benchmark)
 
 
 
