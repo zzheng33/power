@@ -10,20 +10,21 @@ home_dir = os.path.expanduser('~')
 python_executable = subprocess.getoutput('which python3')  # Adjust based on your Python version
 
 # scripts for CPU, GPU power monitoring
-read_cpu_power = "./power_monitor_util/read_cpu_power.py"
-read_gpu_power = "./power_monitor_util/read_gpu_power.py"
+read_cpu_power = "./power_util/read_cpu_power.py"
+read_gpu_power = "./power_util/read_gpu_power.py"
 
 # scritps for running various benchmarks
 run_altis = "./run_benchmark/run_altis.py"
 run_ecp = "./run_benchmark/run_ecp.py"
 
 # Define your benchmarks, for testing replace the list with just ['FT'] for example
-# ecp_benchmarks = ['FT', 'CG', 'LULESH', 'Nekbone', 'AMG2013', 'miniFE']
+ecp_benchmarks = ['FT', 'CG', 'LULESH', 'Nekbone', 'AMG2013', 'miniFE']
 altis_benchmarks_0 = ['busspeeddownload','busspeedreadback','maxflops']
 altis_benchmarks_1 = ['bfs','gemm','gups','pathfinder','sort']
 altis_benchmarks_2 = ['cfd','cfd_double','fdtd2d','kmeans','lavamd',
                       'nw','particlefilter_float','particlefilter_naive','raytracing',
                       'srad','where']
+
 
 
 
@@ -66,7 +67,16 @@ def run_benchmark(benchmark_dir,benchmark,test):
 
 
 
-def main(args):
+
+
+
+if __name__ == "__main__":
+   # Set up command line argument parsing
+    parser = argparse.ArgumentParser(description='Run benchmarks and monitor power consumption.')
+    parser.add_argument('--benchmark', type=str, help='Optional name of the benchmark to run', default=None)
+    parser.add_argument('--test', type=int, help='whether it is a test run', default=None)
+
+    args = parser.parse_args()
     benchmark = args.benchmark
     test = args.test
     # Map of benchmarks to their paths
@@ -94,26 +104,17 @@ def main(args):
 
         for benchmark in altis_benchmarks_0:
             path = "power/script/altis_script/level0"
-            run_benchmark(path, benchmark)
+            run_benchmark(path, benchmark,test)
         
         
         for benchmark in altis_benchmarks_1:
             path = "power/script/altis_script/level1"
-            run_benchmark(path, benchmark)
+            run_benchmark(path, benchmark,test)
         
         
         for benchmark in altis_benchmarks_2:
             path = "power/script/altis_script/level2"
-            run_benchmark(path, benchmark)
-
-
-if __name__ == "__main__":
-   # Set up command line argument parsing
-    parser = argparse.ArgumentParser(description='Run benchmarks and monitor power consumption.')
-    parser.add_argument('--benchmark', type=str, help='Optional name of the benchmark to run', default=None)
-    parser.add_argument('--test', type=int, help='whether it is a test run', default=None)
-    args = parser.parse_args()
-    main(args)
+            run_benchmark(path, benchmark,test)
 
 
 
