@@ -9,6 +9,9 @@ install_dependence() {
     sudo apt-get --assume-yes install mpich
     sudo apt --assume-yes install cmake
     sudo pip install psutil
+    # sudo pip install torch
+    sudo pip install pandas
+    sudo pip install matplotlib
 }
 
 setup_rapl() {
