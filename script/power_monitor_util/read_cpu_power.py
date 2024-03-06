@@ -97,6 +97,7 @@ def discover_rapl_sockets():
 # Initialize ENERGY_FILES with available sockets
 ENERGY_FILES = discover_rapl_sockets()
 
+
 def read_energy(file_path):
     try:
         with open(file_path, 'r') as f:

@@ -35,9 +35,13 @@ subprocess.run(modprobe_command, shell=True)
 subprocess.run(sysctl_command, shell=True)
 
 
-def run_benchmark(benchmark_dir,benchmark):
-    output_cpu = f"../data/altis_power_res/{benchmark}_power_cpu.csv"
-    output_gpu = f"../data/altis_power_res/{benchmark}_power_gpu.csv"
+def run_benchmark(benchmark_dir,benchmark,test):
+    if not test:
+        output_cpu = f"../data/altis_power_res/{benchmark}_power_cpu.csv"
+        output_gpu = f"../data/altis_power_res/{benchmark}_power_gpu.csv"
+    else:
+        output_cpu = f"../data/altis_test/{benchmark}_power_cpu.csv"
+        output_gpu = f"../data/altis_test/{benchmark}_power_gpu.csv"
     
     # Execute the benchmark and get its PID
     run_benchmark_command = f"{python_executable} {run_altis} --benchmark {benchmark} --benchmark_dir {os.path.join(home_dir, benchmark_dir)}"
@@ -64,6 +68,7 @@ def run_benchmark(benchmark_dir,benchmark):
 
 def main(args):
     benchmark = args.benchmark
+    test = args.test
     # Map of benchmarks to their paths
     benchmark_paths = {
         "level0": altis_benchmarks_0,
@@ -77,7 +82,7 @@ def main(args):
         for level, benchmarks in benchmark_paths.items():
             if benchmark in benchmarks:
                 path = f"power/script/altis_script/{level}"
-                run_benchmark(path, benchmark)
+                run_benchmark(path, benchmark,test)
                 found = True
                 break
     else:
@@ -106,6 +111,7 @@ if __name__ == "__main__":
    # Set up command line argument parsing
     parser = argparse.ArgumentParser(description='Run benchmarks and monitor power consumption.')
     parser.add_argument('--benchmark', type=str, help='Optional name of the benchmark to run', default=None)
+    parser.add_argument('--test', type=int, help='whether it is a test run', default=None)
     args = parser.parse_args()
     main(args)
 
