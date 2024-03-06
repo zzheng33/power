@@ -34,7 +34,7 @@ def get_energy_units():
 
 # Function to read the current energy status
 def read_rapl_energy(energy_units):
-    cpu_count = len([name for name in os.listdir('/dev/cpu/') if 'cpu' in name])  # Counting actual CPU entries
+    cpu_count = len([name for name in os.listdir('/dev/cpu/') if name.isdigit()])
     total_cpu_energy = 0
     total_dram_energy = 0
     for cpu in range(cpu_count):
@@ -47,6 +47,8 @@ def monitor_power(benchmark_pid, output_csv, interval=0.1):
     energy_units = get_energy_units()
     start_time = time.time()
     initial_cpu_energy, initial_dram_energy = read_rapl_energy(energy_units)
+
+   
 
     power_data = []
 
@@ -69,7 +71,7 @@ def monitor_power(benchmark_pid, output_csv, interval=0.1):
     os.makedirs(os.path.dirname(output_csv), exist_ok=True)
     with open(output_csv, 'w', newline='') as file:
         writer = csv.writer(file)
-        writer.writerow(['Time (s)', 'CPU Power (W)', 'DRAM Power (W)'])
+        writer.writerow(['Time (s)', 'Package Power (W)', 'DRAM Power (W)'])
         writer.writerows(power_data)
 
 if __name__ == "__main__":

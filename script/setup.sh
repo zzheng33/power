@@ -8,6 +8,7 @@ install_dependence() {
     sudo apt-get --assume-yes install libopenmpi-dev
     sudo apt-get --assume-yes install mpich
     sudo apt --assume-yes install cmake
+    sudo pip install psutil
 }
 
 setup_rapl() {
