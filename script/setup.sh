@@ -59,7 +59,7 @@ generate_altis_data() {
     cd "${home_dir}/benchmark/altis/data/kmeans"
     python3 datagen.py -n 8388608 -f
 
-    cd "${home_dir}/benchmark/altis/data/kmeans"
+    
 }
 
 
