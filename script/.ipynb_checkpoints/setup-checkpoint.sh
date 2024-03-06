@@ -12,11 +12,6 @@ install_dependence() {
     # sudo pip install torch
     sudo pip install pandas
     sudo pip install matplotlib
-
-    # set up git credential
-    git config --global credential.helper store
-
-
 }
 
 setup_rapl() {
