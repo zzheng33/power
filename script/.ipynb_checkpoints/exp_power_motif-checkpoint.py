@@ -49,7 +49,7 @@ def run_benchmark(benchmark_dir,benchmark):
     monitor_process = subprocess.Popen(monitor_command_cpu, shell=True, stdin=subprocess.PIPE, text=True)
 
     # Start GPU power monitoring, passing the PID of the benchmark process
-    monitor_command_gpu = f"echo 9900 | sudo -S {python_executable} {read_gpu_power}  --output_csv {output_gpu} --pid {benchmark_pid}"
+    monitor_command_gpu = f"echo 9900 | sudo -S {python_executable} {read_gpu_power}  --output_csv {output} --pid {benchmark_pid}"
     monitor_process = subprocess.Popen(monitor_command_gpu, shell=True, stdin=subprocess.PIPE, text=True)
 
     # Wait for the benchmark process to complete
