@@ -46,7 +46,7 @@ def run_benchmark(benchmark_dir,benchmark):
     benchmark_pid = benchmark_process.pid
 
     # Start CPU power monitoring, passing the PID of the benchmark process
-    monitor_command = f"echo 9900 | sudo -S {python_executable} {read_CPU_power} --home_dir {home_dir} --output_csv {output} --pid {benchmark_pid}"
+    monitor_command = f"echo 9900 | sudo -S {python_executable} {read_CPU_power}  --output_csv {output} --pid {benchmark_pid}"
     
 
     monitor_process = subprocess.Popen(monitor_command, shell=True, stdin=subprocess.PIPE, text=True)
