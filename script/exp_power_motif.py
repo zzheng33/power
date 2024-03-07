@@ -66,8 +66,20 @@ def run_benchmark(benchmark_dir,benchmark,test):
         print(f"Completed benchmark: {benchmark}")
 
 
+def run_benchmark_ecp(benchmark, home_dir):
+    output_cpu = f"../data/ecp_power_res/{benchmark}_power_cpu.csv"
+    
+    # Execute the benchmark and get its PID
+    run_benchmark_command = f"{python_executable} {run_ecp} --benchmark {benchmark} --home_dir {home_dir}"
+    benchmark_process = subprocess.Popen(run_benchmark_command, shell=True)
+    benchmark_pid = benchmark_process.pid
 
+    # Start CPU power monitoring, passing the PID of the benchmark process
+    monitor_command_cpu = f"echo 9900 | sudo -S {python_executable} {read_cpu_power}  --output_csv {output_cpu} --pid {benchmark_pid}"
+    monitor_process = subprocess.Popen(monitor_command_cpu, shell=True, stdin=subprocess.PIPE, text=True)
 
+    # Wait for the benchmark process to complete
+    benchmark_exit_code = benchmark_process.wait()
 
 
 if __name__ == "__main__":
@@ -79,6 +91,13 @@ if __name__ == "__main__":
     args = parser.parse_args()
     benchmark = args.benchmark
     test = args.test
+
+
+    
+    # # run ecp benchmarks
+    # for app in ecp_benchmarks:
+    #     run_benchmark_ecp(app, home_dir)
+    
     # Map of benchmarks to their paths
     benchmark_paths = {
         "level0": altis_benchmarks_0,
