@@ -1,10 +1,10 @@
 #!/bin/bash
 
 # run all benchamrks
-#python3 exp_power_motif.py
+python3 exp_power_motif.py --suite 1
 
 # test
-./power_util/cpu_cap.sh 250
-./power_util/gpu_cap.sh 260
-python3 exp_power_motif.py  --test 1 --suite 1
+#./power_util/cpu_cap.sh 250
+#./power_util/gpu_cap.sh 260
+#python3 exp_power_motif.py  --test 1 --suite 1
 
