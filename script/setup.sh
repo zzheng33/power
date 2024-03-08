@@ -72,8 +72,8 @@ generate_altis_data() {
 }
 
 
-# install_dependence
-# load_benchmark
-# setup_altis
+install_dependence
+load_benchmark
+setup_altis
 # setup_pcm
-# generate_altis_data
+generate_altis_data
