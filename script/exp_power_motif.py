@@ -46,6 +46,7 @@ def run_benchmark(benchmark_dir,benchmark,test):
     
     # Execute the benchmark and get its PID
     run_benchmark_command = f"{python_executable} {run_altis} --benchmark {benchmark} --benchmark_dir {os.path.join(home_dir, benchmark_dir)}"
+    start = time.time()
     benchmark_process = subprocess.Popen(run_benchmark_command, shell=True)
     benchmark_pid = benchmark_process.pid
 
@@ -60,6 +61,9 @@ def run_benchmark(benchmark_dir,benchmark,test):
     # Wait for the benchmark process to complete
     benchmark_exit_code = benchmark_process.wait()
 
+    end = time.time()
+    runtime = end - start
+    print("Runtime: ",runtime)
     if benchmark_exit_code != 0:
         print(f"Benchmark {benchmark} failed")
     else:
