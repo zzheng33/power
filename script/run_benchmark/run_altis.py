@@ -6,14 +6,14 @@ import sys
 # Parse command-line arguments for a specific benchmark
 parser = argparse.ArgumentParser(description='Run specific benchmark.')
 parser.add_argument('--benchmark', type=str, help='Name of the benchmark to run', required=True)
-parser.add_argument('--benchmark_dir', type=str, help='Home directory of the benchmark', required=True)
+parser.add_argument('--benchmark_script_dir', type=str, help='script directory of the benchmark', required=True)
 args = parser.parse_args()
 
 # Function to run the specified benchmark
-def run_benchmark(benchmark, benchmark_dir):
+def run(benchmark, benchmark_script_dir):
     # Construct the path to the script based on provided arguments
     print(benchmark)
-    script_path = os.path.join(benchmark_dir, f"{benchmark}.sh")
+    script_path = os.path.join(benchmark_script_dir, f"{benchmark}.sh")
 
     # Check if the script exists
     if not os.path.exists(script_path):
@@ -31,4 +31,4 @@ def run_benchmark(benchmark, benchmark_dir):
         sys.exit(1)
 
 if __name__ == "__main__":
-    run_benchmark(args.benchmark, args.benchmark_dir)
+    run(args.benchmark, args.benchmark_script_dir)

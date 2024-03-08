@@ -24,8 +24,9 @@ altis_benchmarks_1 = ['bfs','gemm','gups','pathfinder','sort']
 altis_benchmarks_2 = ['cfd','cfd_double','fdtd2d','kmeans','lavamd',
                       'nw','particlefilter_float','particlefilter_naive','raytracing',
                       'srad','where']
-altis_benchmarks_1 = ['gemm','gups','pathfinder','sort']
 
+altis_benchmarks_2 = ['particlefilter_naive','raytracing',
+                      'srad','where']
 
 cpu_caps = [65,70,75,80,85,90,95,100,105,110,115,120,125]
 
@@ -107,9 +108,9 @@ if __name__ == "__main__":
         #     run_benchmark_altis(path, benchmark,test)
         
         
-        for benchmark in altis_benchmarks_1:
-            path = "power/script/altis_script/level1"
-            run_benchmark_altis(path, benchmark,test)
+        # for benchmark in altis_benchmarks_1:
+        #     path = "power/script/altis_script/level1"
+        #     run_benchmark_altis(path, benchmark,test)
         
         
         for benchmark in altis_benchmarks_2:
