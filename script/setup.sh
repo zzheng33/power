@@ -76,7 +76,7 @@ generate_miniGAN_data() {
     cd "${home_dir}/benchmark/ECP/miniGAN/data"
     python generate_bird_images.py
     sudo pip install torch==1.4.0
-    sudo pip install torchvision=0.5.0
+    sudo pip install torchvision==0.5.0
     sudo pip install horovod==0.18.2
 }
 
