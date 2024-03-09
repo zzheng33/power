@@ -9,9 +9,11 @@ install_dependence() {
     sudo apt-get --assume-yes install mpich
     sudo apt --assume-yes install cmake
     sudo pip install psutil
-    # sudo pip install torch
+    sudo pip install torch
+    sudo pip install torchvision
     sudo pip install pandas
     sudo pip install matplotlib
+    sudo pip install h5py
 
 
     # set up git credential
@@ -73,12 +75,24 @@ generate_altis_data() {
 }
 
 generate_miniGAN_data() {
+    cd "${home_dir}/benchmark/ECP/miniGAN/pytorch"
+    # Create a Python virtual environment named 'venv' in the current directory
+    python -m venv minigan
+    
+    # Activate the virtual environment
+    source minigan/bin/activate
+    
+    # Now, install packages inside the virtual environment
+    pip install torch==1.4.0
+    pip install torchvision==0.5.0
+    pip install horovod==0.18.2
+    
+    deactivate
+
     cd "${home_dir}/benchmark/ECP/miniGAN/data"
     python generate_bird_images.py
-    sudo pip install torch==1.4.0
-    sudo pip install torchvision==0.5.0
-    sudo pip install horovod==0.18.2
 }
+
 
 
 install_dependence
