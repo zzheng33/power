@@ -100,3 +100,8 @@ load_benchmark
 setup_altis
 # setup_pcm
 generate_altis_data
+
+
+# export PATH=/usr/local/lib:$PATH
+# export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
+# export LD_LIBRARY_PATH=/usr/local/lib/python3.8/dist-packages/nvidia/cudnn/lib:$LD_LIBRARY_PATH
