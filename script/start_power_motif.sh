@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # run all benchamrks
-python3 exp_power_motif.py --suite 1
+python3 exp_power_motif.py --suite 0
 
 # test
 #./power_util/cpu_cap.sh 250

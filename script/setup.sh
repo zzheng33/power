@@ -13,6 +13,7 @@ install_dependence() {
     sudo pip install pandas
     sudo pip install matplotlib
 
+
     # set up git credential
     git config --global credential.helper store
 
@@ -69,6 +70,14 @@ generate_altis_data() {
     python3 datagen.py -n 8388608 -f
 
     
+}
+
+generate_miniGAN_data() {
+    cd "${home_dir}/benchmark/ECP/miniGAN/data"
+    python generate_bird_images.py
+    sudo pip install torch==1.4.0
+    sudo pip install torchvision=0.5.0
+    sudo pip install horovod==0.18.2
 }
 
 
