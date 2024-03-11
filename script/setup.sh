@@ -65,9 +65,26 @@ generate_altis_data() {
     
 }
 
+setup_miniGAN_env() {
+    cd "${home_dir}/benchmark/ECP/miniGAN/data"
+    python generate_bird_images.py
 
-# install_dependence
-# load_benchmark
-# setup_altis
-# setup_pcm
-# generate_altis_data
+    cd "${home_dir}/benchmark/ECP/miniGAN/pytorch"
+
+    python -m venv minigan_env
+    source minigan_env/bin/activate
+    pip install pytorch==1.4.0
+    pip install horovod==0.18.2
+
+    deactivate
+
+
+}
+
+
+install_dependence
+load_benchmark
+setup_altis
+setup_pcm
+generate_altis_data
+setup_miniGAN_env
