@@ -11,7 +11,6 @@ install_dependence() {
     sudo pip install psutil
     sudo apt-get --assume-yes install liblapack-dev
     sudo pip install jupyterlab
-    sudo apt-get install libgflags-dev libgoogle-glog-dev
 }
 
 setup_rapl() {
@@ -74,7 +73,10 @@ setup_miniGAN_env() {
 
     python -m venv minigan_env
     source minigan_env/bin/activate
-    pip install pytorch==1.4.0
+    pip install torch==1.4.0
+    pip install torchvision==0.5.0
+    pip install wheel
+    pip install numpy
     pip install horovod==0.18.2
 
     deactivate
