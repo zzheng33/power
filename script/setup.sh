@@ -9,17 +9,8 @@ install_dependence() {
     sudo apt-get --assume-yes install mpich
     sudo apt --assume-yes install cmake
     sudo pip install psutil
-    sudo pip install torch
-    sudo pip install torchvision
-    sudo pip install pandas
-    sudo pip install matplotlib
-    sudo pip install h5py
-
-
-    # set up git credential
-    git config --global credential.helper store
-
-
+    sudo apt-get --assume-yes install liblapack-dev
+    sudo pip install jupyterlab
 }
 
 setup_rapl() {
@@ -74,34 +65,9 @@ generate_altis_data() {
     
 }
 
-generate_miniGAN_data() {
-    cd "${home_dir}/benchmark/ECP/miniGAN/pytorch"
-    # Create a Python virtual environment named 'venv' in the current directory
-    python -m venv minigan
-    
-    # Activate the virtual environment
-    source minigan/bin/activate
-    
-    # Now, install packages inside the virtual environment
-    pip install torch==1.4.0
-    pip install torchvision==0.5.0
-    pip install horovod==0.18.2
-    
-    deactivate
 
-    cd "${home_dir}/benchmark/ECP/miniGAN/data"
-    python generate_bird_images.py
-}
-
-
-
-install_dependence
-load_benchmark
-setup_altis
+# install_dependence
+# load_benchmark
+# setup_altis
 # setup_pcm
-generate_altis_data
-
-
-# export PATH=/usr/local/lib:$PATH
-# export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
-# export LD_LIBRARY_PATH=/usr/local/lib/python3.8/dist-packages/nvidia/cudnn/lib:$LD_LIBRARY_PATH
+# generate_altis_data
