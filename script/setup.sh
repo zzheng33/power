@@ -11,6 +11,7 @@ install_dependence() {
     sudo pip install psutil
     sudo apt-get --assume-yes install liblapack-dev
     sudo pip install jupyterlab
+    sudo apt-get install libgflags-dev libgoogle-glog-dev
 }
 
 setup_rapl() {
