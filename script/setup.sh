@@ -72,21 +72,25 @@ setup_miniGAN_env() {
 
     cd "${home_dir}/benchmark/ECP/miniGAN/pytorch"
 
-    python -m venv minigan_env
-    source minigan_env/bin/activate
-    pip install torch==1.4.0
-    pip install torchvision==0.5.0
-    pip install wheel
-    pip install numpy
-    pip install horovod==0.18.2
+    bash ./setup_python_env.sh
+}
 
+setup_CRADL() {
+    cd "${home_dir}/benchmark/ECP/CRADL/"
+    python -m venv CRADL_env
+    source CRADL_env/bin/activate
+    bash INSTALL
     deactivate
 }
 
 
-install_dependence
-load_benchmark
-setup_altis
-setup_pcm
-generate_altis_data
-setup_miniGAN_env
+# install_dependence
+# load_benchmark
+# setup_altis
+# setup_pcm
+# generate_altis_data
+# setup_miniGAN_env
+setup_CRADL
+
+
+
