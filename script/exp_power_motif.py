@@ -27,6 +27,7 @@ altis_benchmarks_2 = ['cfd','cfd_double','fdtd2d','kmeans','lavamd',
 
 ecp_benchmarks = ['XSBench','miniGAN','CRADL','sw4lite']
 ecp_benchmarks = ['sw4lite']
+ecp_benchmarks = ['miniGAN']
 
 # Setup environment
 modprobe_command = "sudo modprobe msr"

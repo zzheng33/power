@@ -11,6 +11,7 @@ install_dependence() {
     sudo pip install psutil
     sudo apt-get --assume-yes install liblapack-dev
     sudo pip install jupyterlab
+    sudo pip install numpy matplotlib pandas
 }
 
 setup_rapl() {
