@@ -83,6 +83,10 @@ setup_CRADL() {
     deactivate
 }
 
+setup_XSBench() {
+     cd "${home_dir}/benchmark/ECP/XSBench/cuda"
+     make
+}
 
 install_dependence
 load_benchmark

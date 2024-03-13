@@ -26,8 +26,8 @@ altis_benchmarks_2 = ['cfd','cfd_double','fdtd2d','kmeans','lavamd',
                       'srad','where']
 
 ecp_benchmarks = ['XSBench','miniGAN','CRADL','sw4lite']
-ecp_benchmarks = ['sw4lite']
-ecp_benchmarks = ['CRADL']
+# ecp_benchmarks = ['sw4lite']
+# ecp_benchmarks = ['CRADL']
 
 # Setup environment
 modprobe_command = "sudo modprobe msr"
@@ -93,12 +93,12 @@ if __name__ == "__main__":
 
 
     if suite == 0 or suite ==2:
+        benchmark_script_dir = f"power/script/run_benchmark/ecp_script"
         # single test
         if benchmark:
             run_benchmark(benchmark_script_dir, benchmark,"ecp",test)
         # run all ecp benchmarks
         else:
-            benchmark_script_dir = f"power/script/run_benchmark/ecp_script"
             for benchmark in ecp_benchmarks:
                 run_benchmark(benchmark_script_dir, benchmark,"ecp",test)
     
