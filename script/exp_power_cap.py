@@ -25,13 +25,13 @@ altis_benchmarks_2 = ['cfd','cfd_double','fdtd2d','kmeans','lavamd',
                       'nw','particlefilter_float','particlefilter_naive','raytracing',
                       'srad','where']
 
-altis_benchmarks_2 = ['particlefilter_naive','raytracing',
-                      'srad','where']
+altis_benchmarks_2 = ['maxflops']
 
 cpu_caps = [65,70,75,80,85,90,95,100,105,110,115,120,125]
 
 gpu_caps = [100,120,140,160,180,200,220,240,260]
 
+gpu_caps=[260]
 
 
 # Setup environment
