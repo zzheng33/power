@@ -5,6 +5,7 @@ import signal
 import argparse
 import csv
 
+
 # Define paths and executables
 home_dir = os.path.expanduser('~')
 python_executable = subprocess.getoutput('which python3')  # Adjust based on your Python version
@@ -25,11 +26,20 @@ altis_benchmarks_2 = ['cfd','cfd_double','fdtd2d','kmeans','lavamd',
                       'nw','particlefilter_float','particlefilter_naive','raytracing',
                       'srad','where']
 
-altis_benchmarks_0 = ['maxflops']
+
+altis_benchmarks_0 = ['busspeeddownload','maxflops']
+altis_benchmarks_1 = []
+altis_benchmarks_2 = ['cfd_double','kmeans','lavamd',
+                      'particlefilter_naive','raytracing']
+
 
 cpu_caps = [65,70,75,80,85,90,95,100,105,110,115,120,125]
 
 gpu_caps = [100,120,140,160,180,200,220,240,260]
+
+cpu_caps = [65,70]
+
+gpu_caps = [100,120]
 
 
 
@@ -45,7 +55,7 @@ subprocess.run(sysctl_command, shell=True)
 
 def run_benchmark(benchmark_script_dir,benchmark, suite, test):
 
-    def cap_exp(cpu_cap, gpu_cap,output_file)
+    def cap_exp(cpu_cap, gpu_cap, output_file):
         subprocess.run([f"./power_util/cpu_cap.sh {cpu_cap}"], shell=True)
         subprocess.run([f"./power_util/gpu_cap.sh {gpu_cap}"], shell=True)
         time.sleep(2)
@@ -61,16 +71,39 @@ def run_benchmark(benchmark_script_dir,benchmark, suite, test):
         end = time.time()
         
         # Calculate and log the runtime
-        runtime = end - start
-        with open(output_file, 'a', newline='') as file:
+        runtime = round(end - start,2)
+        
+        data = {}
+
+        # Check if the file exists and read it
+        file_exists = os.path.isfile(output_file)
+        if file_exists:
+            with open(output_file, 'r', newline='') as file:
+                reader = csv.reader(file)
+                headers = next(reader)  # Grab headers from the first row
+                for row in reader:
+                    key = (row[0], row[1])  # Use CPU and GPU cap as key
+                    data[key] = row[2:]  # Store all runtime values
+        
+        # Update the data with new runtime
+        key = (str(cpu_cap), str(gpu_cap))
+        if key in data:
+            data[key].append(str(runtime))
+        else:
+            data[key] = [str(runtime)]
+        
+        # Write the updated data back to the file
+        with open(output_file, 'w', newline='') as file:
             writer = csv.writer(file)
-            if not file_exists:
-                writer.writerow(['CPU Cap (W)', 'GPU Cap (W)', 'Runtime (s)'])
-                file_exists = True
-            writer.writerow([cpu_cap, gpu_cap, runtime])
+            writer.writerow(['CPU Cap (W)', 'GPU Cap (W)', 'Runtime (s)']) 
+            for key, runtimes in data.items():
+                row = [key[0], key[1]] + runtimes
+                writer.writerow(row)
 
     
 
+
+    
     
     if not test:
         output_file_cpu = f"../data/{suite}_power_cap_res/{benchmark}_cap_cpu.csv"
@@ -80,7 +113,7 @@ def run_benchmark(benchmark_script_dir,benchmark, suite, test):
         output_file = f"../data/{suite}_test/{benchmark}_cap.csv"
 
     
-    file_exists = os.path.isfile(output_file)
+   
     
     # CPU cap only 
     for cpu_cap in cpu_caps:
