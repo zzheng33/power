@@ -25,7 +25,7 @@ altis_benchmarks_2 = ['cfd','cfd_double','fdtd2d','kmeans','lavamd',
                       'nw','particlefilter_float','particlefilter_naive','raytracing',
                       'srad','where']
 
-ecp_benchmarks = ['XSBench','miniGAN','CRADL','sw4lite']
+ecp_benchmarks = ['XSBench','miniGAN','CRADL','sw4lite','Laghos']
 # ecp_benchmarks = ['sw4lite']
 # ecp_benchmarks = ['CRADL']
 

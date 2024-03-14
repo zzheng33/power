@@ -68,7 +68,7 @@ generate_altis_data() {
 
 setup_miniGAN_env() {
     cd "${home_dir}/benchmark/ECP/miniGAN/data"
-    python generate_bird_images.py --dim-mode 3 --num-images 512 --image-dim 64 --num-channels 3
+    python generate_bird_images.py --dim-mode 3 --num-images 128 --image-dim 64 --num-channels 3
 
     cd "${home_dir}/benchmark/ECP/miniGAN/pytorch"
 
@@ -81,11 +81,35 @@ setup_CRADL() {
     source CRADL_env/bin/activate
     bash INSTALL
     deactivate
+    cd ./data
+    bash ./filter.sh
 }
 
 setup_XSBench() {
      cd "${home_dir}/benchmark/ECP/XSBench/cuda"
      make
+}
+
+setup_Laghos() {
+    cd "${home_dir}/benchmark/ECP/hypre-2.11.2/src/"
+    ./configure --with-cuda --with-gpu-arch="75" --disable-fortran
+    make -j
+    cd ../..
+    ln -s hypre-2.11.2 hypre
+
+    cd metis-4.0.3/
+    make
+    cd ..
+    ln -s metis-4.0.3 metis-4.0
+
+    cd mfem/
+    make pcuda CUDA_ARCH=sm_75 -j
+    cd ..
+
+    cd Laghos/
+    make -j 
+    
+
 }
 
 install_dependence
@@ -95,6 +119,7 @@ setup_pcm
 generate_altis_data
 setup_miniGAN_env
 setup_CRADL
+setup_Laghos
 
 
 

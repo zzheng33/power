@@ -19,7 +19,9 @@ run_altis = "./run_benchmark/run_altis.py"
 run_ecp = "./run_benchmark/run_ecp.py"
 
 # Define your benchmarks, for testing replace the list with just ['FT'] for example
-ecp_benchmarks = ['FT', 'CG', 'LULESH', 'Nekbone', 'AMG2013', 'miniFE']
+# ecp_benchmarks = ['FT', 'CG', 'LULESH', 'Nekbone', 'AMG2013', 'miniFE']
+ecp_benchmarks = ['XSBench','miniGAN','CRADL','sw4lite','Laghos']
+
 altis_benchmarks_0 = ['busspeeddownload','busspeedreadback','maxflops']
 altis_benchmarks_1 = ['bfs','gemm','gups','pathfinder','sort']
 altis_benchmarks_2 = ['cfd','cfd_double','fdtd2d','kmeans','lavamd',
@@ -27,15 +29,12 @@ altis_benchmarks_2 = ['cfd','cfd_double','fdtd2d','kmeans','lavamd',
                       'srad','where']
 
 
-altis_benchmarks_0 = []
-altis_benchmarks_1 = []
-altis_benchmarks_2 = ['kmeans']
 
 
 cpu_caps = [65,70,75,80,85,90,95,100,105,110,115,120,125]
 
 gpu_caps = [100,120,140,160,180,200,220,240,260]
-
+cpu_caps = [60,80,100,120,140,160,180,200,220,240]
 
 
 
