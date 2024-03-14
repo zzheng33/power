@@ -27,10 +27,9 @@ altis_benchmarks_2 = ['cfd','cfd_double','fdtd2d','kmeans','lavamd',
                       'srad','where']
 
 
-altis_benchmarks_0 = ['busspeeddownload','maxflops']
+altis_benchmarks_0 = []
 altis_benchmarks_1 = []
-altis_benchmarks_2 = ['cfd_double','kmeans','lavamd',
-                      'particlefilter_naive','raytracing']
+altis_benchmarks_2 = ['kmeans']
 
 
 cpu_caps = [65,70,75,80,85,90,95,100,105,110,115,120,125]
@@ -53,54 +52,41 @@ subprocess.run(sysctl_command, shell=True)
 def run_benchmark(benchmark_script_dir,benchmark, suite, test):
 
     def cap_exp(cpu_cap, gpu_cap, output_file):
+        # Set CPU and GPU power caps and wait for them to take effect
         subprocess.run([f"./power_util/cpu_cap.sh {cpu_cap}"], shell=True)
         subprocess.run([f"./power_util/gpu_cap.sh {gpu_cap}"], shell=True)
-        time.sleep(2)
+        time.sleep(2)  # Wait for the power caps to take effect
+    
+        # Run the benchmark
         start = time.time()
         if suite == "altis":
             run_benchmark_command = f"{python_executable} {run_altis} --benchmark {benchmark} --benchmark_script_dir {os.path.join(home_dir, benchmark_script_dir)}"
-
         elif suite == "ecp":
             run_benchmark_command = f"{python_executable} {run_ecp} --benchmark {benchmark} --benchmark_script_dir {os.path.join(home_dir, benchmark_script_dir)}"
-
+        
         benchmark_process = subprocess.Popen(run_benchmark_command, shell=True)
-        benchmark_exit_code = benchmark_process.wait()
+        benchmark_process.wait()  # Wait for the benchmark to complete
         end = time.time()
         
-        # Calculate and log the runtime
-        runtime = round(end - start,2)
-        
-        data = {}
-
-        # Check if the file exists and read it
+        # Calculate runtime
+        runtime = round(end - start, 2)
+    
+        # Check if the output file exists to decide whether to write headers
         file_exists = os.path.isfile(output_file)
-        if file_exists:
-            with open(output_file, 'r', newline='') as file:
-                reader = csv.reader(file)
-                headers = next(reader)  # Grab headers from the first row
-                for row in reader:
-                    key = (row[0], row[1])  # Use CPU and GPU cap as key
-                    data[key] = row[2:]  # Store all runtime values
-        
-        # Update the data with new runtime
-        key = (str(cpu_cap), str(gpu_cap))
-        if key in data:
-            data[key].append(str(runtime))
-        else:
-            data[key] = [str(runtime)]
-        
-        # Write the updated data back to the file
-        with open(output_file, 'w', newline='') as file:
+    
+        # Write data to the output file
+        with open(output_file, 'a', newline='') as file:  # Open file in append mode
             writer = csv.writer(file)
-            writer.writerow(['CPU Cap (W)', 'GPU Cap (W)', 'Runtime (s)']) 
-            for key, runtimes in data.items():
-                row = [key[0], key[1]] + runtimes
-                writer.writerow(row)
-
-    
+            if not file_exists:  # If file doesn't exist, write the header
+                writer.writerow(['CPU Cap (W)', 'GPU Cap (W)', 'Runtime (s)'])
+            # Write the new data row
+            writer.writerow([cpu_cap, gpu_cap, runtime])
 
 
-    
+        
+        
+
+
     
     if not test:
         output_file_cpu = f"../data/{suite}_power_cap_res/{benchmark}_cap_cpu.csv"
