@@ -4,6 +4,7 @@ import csv
 import argparse
 import psutil
 import subprocess  # Import subprocess to run nvidia-smi
+import pandas as pd
 
 # Function to get current GPU power usage
 # def get_gpu_power():
@@ -48,7 +49,7 @@ def get_gpu_power():
         return []
 
 # Function to monitor power consumption of all GPUs
-def monitor_gpu_power(benchmark_pid, output_csv, interval=0.1):
+def monitor_gpu_power(benchmark_pid, output_csv, avg, interval=0.1):
     start_time = time.time()
     power_data = []
 
@@ -62,17 +63,34 @@ def monitor_gpu_power(benchmark_pid, output_csv, interval=0.1):
         power_data.append(row)
 
     os.makedirs(os.path.dirname(output_csv), exist_ok=True)
-    with open(output_csv, 'w', newline='') as file:
-        writer = csv.writer(file)
-        # Adjust the header based on the number of GPUs
-        headers = ['Time (s)'] + [f'GPU {i} Power (W)' for i in range(len(gpu_powers))]
-        writer.writerow(headers)
-        writer.writerows(power_data)
+
+    if avg:
+        file_exists = os.path.isfile(output_csv)
+        total_time = power_data[-1][0]  # Total elapsed time is the time value in the last row
+        # Calculate average power for all GPUs and then total energy
+        avg_power_all_gpus = sum([sum(p[i] for p in power_data) / len(power_data) for i in range(1, len(gpu_powers) + 1)])
+        total_energy = avg_power_all_gpus * total_time  # Total energy for all GPUs
+    
+        with open(output_csv, 'a', newline='') as file:  # Open file in append mode
+            writer = csv.writer(file)
+            if not file_exists:  # If the file doesn't exist, add the header
+                writer.writerow(['GPU_E (J)'])
+            writer.writerow([total_energy])  # Append the total energy
+
+            
+    else:   
+        with open(output_csv, 'w', newline='') as file:
+            writer = csv.writer(file)
+            # Adjust the header based on the number of GPUs
+            headers = ['Time (s)'] + [f'GPU {i} Power (W)' for i in range(len(gpu_powers))]
+            writer.writerow(headers)
+            writer.writerows(power_data)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Monitor GPU power usage using nvidia-smi.')
     parser.add_argument('--pid', type=int, help='PID of the benchmark process', required=True)
     parser.add_argument('--output_csv', type=str, help='Output CSV file path', required=True)
+    parser.add_argument('--avg', type=str, help='avg_power', default=0)
     args = parser.parse_args()
 
-    monitor_gpu_power(args.pid, args.output_csv)
+    monitor_gpu_power(args.pid, args.output_csv, args.avg)

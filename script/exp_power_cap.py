@@ -4,6 +4,7 @@ import time
 import signal
 import argparse
 import csv
+import pandas as pd
 
 
 # Define paths and executables
@@ -11,8 +12,8 @@ home_dir = os.path.expanduser('~')
 python_executable = subprocess.getoutput('which python3')  # Adjust based on your Python version
 
 # scripts for CPU, GPU power monitoring
-read_cpu_power = "./power_monitor_util/read_cpu_power.py"
-read_gpu_power = "./power_monitor_util/read_gpu_power.py"
+read_cpu_power = "./power_util/read_cpu_power.py"
+read_gpu_power = "./power_util/read_gpu_power.py"
 
 # scritps for running various benchmarks
 run_altis = "./run_benchmark/run_altis.py"
@@ -29,12 +30,20 @@ altis_benchmarks_2 = ['cfd','cfd_double','fdtd2d','kmeans','lavamd',
                       'srad','where']
 
 
+altis_benchmarks_0 = ['busspeeddownload']
+altis_benchmarks_1 = []
+altis_benchmarks_2 = ['cfd_double','kmeans','lavamd',
+                     'particlefilter_naive','raytracing']
+
 
 
 cpu_caps = [65,70,75,80,85,90,95,100,105,110,115,120,125]
 
-gpu_caps = [100,120,140,160,180,200,220,240,260]
-cpu_caps = [60,80,100,120,140,160,180,200,220,240]
+gpu_caps = [260, 240, 220, 200, 180, 160, 140, 120, 100]
+cpu_caps = [105, 100, 95, 90, 85, 80, 75, 70, 65]
+
+gpu_caps = [260]
+cpu_caps = [105]
 
 
 
@@ -50,7 +59,13 @@ subprocess.run(sysctl_command, shell=True)
 
 def run_benchmark(benchmark_script_dir,benchmark, suite, test):
 
+    # store avg power data 
+    tmp_cpu = f"../data/{suite}_power_cap_res/tmp_cpu.csv"
+    tmp_gpu = f"../data/{suite}_power_cap_res/tmp_gpu.csv"
+
     def cap_exp(cpu_cap, gpu_cap, output_file):
+        
+        
         # Set CPU and GPU power caps and wait for them to take effect
         subprocess.run([f"./power_util/cpu_cap.sh {cpu_cap}"], shell=True)
         subprocess.run([f"./power_util/gpu_cap.sh {gpu_cap}"], shell=True)
@@ -64,7 +79,19 @@ def run_benchmark(benchmark_script_dir,benchmark, suite, test):
             run_benchmark_command = f"{python_executable} {run_ecp} --benchmark {benchmark} --benchmark_script_dir {os.path.join(home_dir, benchmark_script_dir)}"
         
         benchmark_process = subprocess.Popen(run_benchmark_command, shell=True)
+        benchmark_pid = benchmark_process.pid
+
+        # Start CPU power monitoring, passing the PID of the benchmark process
+        monitor_command_cpu = f"echo 9900 | sudo -S {python_executable} {read_cpu_power}  --output_csv {tmp_cpu} --pid {benchmark_pid} --avg 1"
+        monitor_process = subprocess.Popen(monitor_command_cpu, shell=True, stdin=subprocess.PIPE, text=True)
+    
+        # Start GPU power monitoring, passing the PID of the benchmark process
+        monitor_command_gpu = f"echo 9900 | sudo -S {python_executable} {read_gpu_power}  --output_csv {tmp_gpu} --pid {benchmark_pid} --avg 1"
+        monitor_process = subprocess.Popen(monitor_command_gpu, shell=True, stdin=subprocess.PIPE, text=True)
+    
+            
         benchmark_process.wait()  # Wait for the benchmark to complete
+        
         end = time.time()
         
         # Calculate runtime
@@ -83,32 +110,48 @@ def run_benchmark(benchmark_script_dir,benchmark, suite, test):
 
 
         
-        
-
-
+################## end helper function ####################
     
     if not test:
         output_file_cpu = f"../data/{suite}_power_cap_res/{benchmark}_cap_cpu.csv"
         output_file_gpu = f"../data/{suite}_power_cap_res/{benchmark}_cap_gpu.csv"
-        output_file_both = f"../data/{suite}_power_cap_res/{benchmark}_cap_both.csv"
+        output_file_dual = f"../data/{suite}_power_cap_res/{benchmark}_cap_dual.csv"
     else:
         output_file = f"../data/{suite}_test/{benchmark}_cap.csv"
 
     
    
     
-    # CPU cap only 
-    for cpu_cap in cpu_caps:
-        gpu_cap = gpu_caps[-1]
-        cap_exp(cpu_cap, gpu_cap, output_file_cpu)
+    # # CPU cap only 
+    # for cpu_cap in cpu_caps:
+    #     gpu_cap = gpu_caps[-1]
+    #     cap_exp(cpu_cap, gpu_cap, output_file_cpu)
        
 
-    # GPU cap only
-    for gpu_cap in gpu_caps:
-        cpu_cap = cpu_caps[-1]
-        cap_exp(cpu_cap, gpu_cap, output_file_gpu)
+    # # GPU cap only
+    # for gpu_cap in gpu_caps:
+    #     cpu_cap = cpu_caps[-1]
+    #     cap_exp(cpu_cap, gpu_cap, output_file_gpu)
         
 
+
+    
+    #dual cap
+    for cpu_cap in cpu_caps:
+        for gpu_cap in gpu_caps:
+            cap_exp(cpu_cap, gpu_cap, output_file_dual)
+
+
+
+    # combine energy and runtime csv files
+    output_file_dual_df = pd.read_csv(output_file_dual)
+    tmp_cpu_df = pd.read_csv(tmp_cpu)
+    tmp_gpu_df = pd.read_csv(tmp_gpu)
+    output_file_dual_df['CPU_E (J)'] = tmp_cpu_df.iloc[:, 1] 
+    output_file_dual_df['GPU_E (J)'] = tmp_gpu_df.iloc[:, 1] 
+    output_file_dual_df.to_csv(output_file_dual_path, index=False)
+    os.remove(tmp_cpu)
+    os.remove(tmp_gpu)
 
 
 
