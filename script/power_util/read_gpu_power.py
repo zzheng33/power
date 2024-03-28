@@ -69,7 +69,7 @@ def monitor_gpu_power(benchmark_pid, output_csv, avg, interval=0.1):
         total_time = power_data[-1][0]  # Total elapsed time is the time value in the last row
         # Calculate average power for all GPUs and then total energy
         avg_power_all_gpus = sum([sum(p[i] for p in power_data) / len(power_data) for i in range(1, len(gpu_powers) + 1)])
-        total_energy = avg_power_all_gpus * total_time  # Total energy for all GPUs
+        total_energy = round(avg_power_all_gpus * total_time,2)  # Total energy for all GPUs
     
         with open(output_csv, 'a', newline='') as file:  # Open file in append mode
             writer = csv.writer(file)

@@ -42,8 +42,6 @@ cpu_caps = [65,70,75,80,85,90,95,100,105,110,115,120,125]
 gpu_caps = [260, 240, 220, 200, 180, 160, 140, 120, 100]
 cpu_caps = [105, 100, 95, 90, 85, 80, 75, 70, 65]
 
-gpu_caps = [260]
-cpu_caps = [105]
 
 
 
@@ -91,23 +89,29 @@ def run_benchmark(benchmark_script_dir,benchmark, suite, test):
     
             
         benchmark_process.wait()  # Wait for the benchmark to complete
-        
         end = time.time()
-        
-        # Calculate runtime
         runtime = round(end - start, 2)
     
         # Check if the output file exists to decide whether to write headers
         file_exists = os.path.isfile(output_file)
-    
+
+        time.sleep(2)
+        # read CPU and GPU energy 
+        tmp_cpu_df = pd.read_csv(tmp_cpu)
+        tmp_gpu_df = pd.read_csv(tmp_gpu)
+        cpu_e = tmp_cpu_df.iloc[0, 0] 
+        gpu_e = tmp_gpu_df.iloc[0, 0]
+        os.remove(tmp_cpu)
+        os.remove(tmp_gpu)
+
         # Write data to the output file
         with open(output_file, 'a', newline='') as file:  # Open file in append mode
             writer = csv.writer(file)
             if not file_exists:  # If file doesn't exist, write the header
-                writer.writerow(['CPU Cap (W)', 'GPU Cap (W)', 'Runtime (s)'])
+                writer.writerow(['CPU Cap (W)', 'GPU Cap (W)','CPU_E (J)','GPU_E (J)','Runtime (s)'])
             # Write the new data row
-            writer.writerow([cpu_cap, gpu_cap, runtime])
-
+            writer.writerow([cpu_cap, gpu_cap, cpu_e, gpu_e, runtime])
+            
 
         
 ################## end helper function ####################
@@ -141,17 +145,6 @@ def run_benchmark(benchmark_script_dir,benchmark, suite, test):
         for gpu_cap in gpu_caps:
             cap_exp(cpu_cap, gpu_cap, output_file_dual)
 
-
-
-    # combine energy and runtime csv files
-    output_file_dual_df = pd.read_csv(output_file_dual)
-    tmp_cpu_df = pd.read_csv(tmp_cpu)
-    tmp_gpu_df = pd.read_csv(tmp_gpu)
-    output_file_dual_df['CPU_E (J)'] = tmp_cpu_df.iloc[:, 1] 
-    output_file_dual_df['GPU_E (J)'] = tmp_gpu_df.iloc[:, 1] 
-    output_file_dual_df.to_csv(output_file_dual_path, index=False)
-    os.remove(tmp_cpu)
-    os.remove(tmp_gpu)
 
 
 

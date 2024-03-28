@@ -120,6 +120,6 @@ generate_altis_data
 setup_miniGAN_env
 setup_CRADL
 setup_Laghos
-
+setup_XSBench
 
 

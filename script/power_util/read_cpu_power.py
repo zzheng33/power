@@ -148,7 +148,7 @@ def monitor_power(benchmark_pid, output_csv, avg, interval=0.1):
             writer = csv.writer(file)
             if not file_exists:  # If the file doesn't exist, add the header
                 writer.writerow(['CPU_E (J)'])
-            writer.writerow([tot])  # Append the total energy
+            writer.writerow([round(tot,2)])  # Append the total energy
     else:
         with open(output_csv, 'w', newline='') as file:
             writer = csv.writer(file)
