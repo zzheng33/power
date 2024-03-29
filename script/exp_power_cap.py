@@ -31,8 +31,8 @@ altis_benchmarks_2 = ['cfd','cfd_double','fdtd2d','kmeans','lavamd',
 
 
 altis_benchmarks_0 = ['busspeeddownload']
-altis_benchmarks_1 = []
-altis_benchmarks_2 = ['cfd_double','kmeans','lavamd',
+altis_benchmarks_1 = ['pathfinder','sort','gemm']
+altis_benchmarks_2 = ['cfd_double','kmeans','lavamd','fdtd2d',
                      'particlefilter_naive','raytracing']
 
 

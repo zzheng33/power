@@ -142,8 +142,6 @@ def monitor_power(benchmark_pid, output_csv, avg, interval=0.1):
 
     if avg:
         file_exists = os.path.isfile(output_csv)
-       
-    
         with open(output_csv, 'a', newline='') as file:  # Open file in append mode
             writer = csv.writer(file)
             if not file_exists:  # If the file doesn't exist, add the header
