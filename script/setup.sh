@@ -70,9 +70,9 @@ generate_altis_data() {
 
 setup_miniGAN_env() {
     cd "${home_dir}/benchmark/ECP/miniGAN/data"
-    python generate_bird_images.py --dim-mode 3 --num-images 128 --image-dim 64 --num-channels 3
+    # python generate_bird_images.py --dim-mode 3 --num-images 128 --image-dim 64 --num-channels 3
 
-    cd "${home_dir}/benchmark/ECP/miniGAN/pytorch"
+    cd "${home_dir}/benchmark/ECP/miniGAN/"
 
     bash ./setup_python_env.sh
 }
