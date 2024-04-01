@@ -22,6 +22,7 @@ run_ecp = "./run_benchmark/run_ecp.py"
 # Define your benchmarks, for testing replace the list with just ['FT'] for example
 # ecp_benchmarks = ['FT', 'CG', 'LULESH', 'Nekbone', 'AMG2013', 'miniFE']
 ecp_benchmarks = ['XSBench','miniGAN','CRADL','sw4lite','Laghos']
+ecp_benchmarks = ['miniGAN','CRADL','sw4lite','Laghos']
 
 altis_benchmarks_0 = ['busspeeddownload','busspeedreadback','maxflops']
 altis_benchmarks_1 = ['bfs','gemm','gups','pathfinder','sort']
