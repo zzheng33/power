@@ -1,1 +1,1 @@
-#define PCM_VERSION "(2024-02-26 17:27:19 +0100 ID=59c8308c)"
+#define PCM_VERSION "($Format:%ci ID=%h$)"

@@ -34,7 +34,7 @@ setup_rapl() {
 
 setup_pcm() {
     cd "${home_dir}/power/tools"
-    git clone https://github.com/zzheng33/pcm.git
+    git clone --recursive https://github.com/zzheng33/pcm.git
     cd "${home_dir}/power/tools/pcm"
     mkdir build
     cd build

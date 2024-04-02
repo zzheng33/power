@@ -13,4 +13,4 @@
 
 # python3 exp_power_motif.py --suite 0 --benchmark CRADL --test 1
 
-python3 exp_power_motif.py --suite 1 --benchmark pathfinder --test 1
+python3 exp_power_motif.py --suite 1 --benchmark raytracing --test 1
