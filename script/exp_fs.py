@@ -114,7 +114,7 @@ def run_benchmark(benchmark_script_dir,benchmark, suite, test):
             # Write the new data row
             writer.writerow([cpu_cap, gpu_fs, cpu_e, gpu_e, runtime])
             
-
+        
         
 ################## end helper function ####################
     
@@ -148,8 +148,7 @@ def run_benchmark(benchmark_script_dir,benchmark, suite, test):
             cap_exp(cpu_cap, gpu_fs, output_file_dual)
 
 
-
-
+    subprocess.run([f"./power_util/gpu_fs.sh 2100"], shell=True)
 
 
 if __name__ == "__main__":
