@@ -71,7 +71,7 @@ generate_altis_data() {
 
 setup_miniGAN_env() {
     cd "${home_dir}/benchmark/ECP/miniGAN/data"
-    # python generate_bird_images.py --dim-mode 3 --num-images 128 --image-dim 64 --num-channels 3
+    # python3 generate_bird_images.py --dim-mode 3 --num-images 128 --image-dim 64 --num-channels 3
 
     cd "${home_dir}/benchmark/ECP/miniGAN/"
 
@@ -80,7 +80,7 @@ setup_miniGAN_env() {
 
 setup_CRADL() {
     cd "${home_dir}/benchmark/ECP/CRADL/"
-    python -m venv CRADL_env
+    python3 -m venv CRADL_env
     source CRADL_env/bin/activate
     bash INSTALL
     deactivate
