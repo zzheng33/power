@@ -8,7 +8,7 @@ install_dependence() {
     sudo apt-get --assume-yes install libopenmpi-dev
     sudo apt-get --assume-yes install mpich
     sudo apt --assume-yes install cmake
-    sudo apt install python3-pip
+    sudo apt --assume-yes install python3-pip
     sudo pip install psutil
     sudo apt-get --assume-yes install liblapack-dev
     sudo pip install jupyterlab
