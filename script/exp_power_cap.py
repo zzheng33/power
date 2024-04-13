@@ -36,7 +36,9 @@ altis_benchmarks_1 = ['pathfinder','sort','gemm']
 altis_benchmarks_2 = ['cfd_double','kmeans','lavamd','fdtd2d',
                      'particlefilter_naive','raytracing']
 
-
+altis_benchmarks_0 = []
+altis_benchmarks_1 = ['gemm']
+altis_benchmarks_2 = []
 
 cpu_caps = [65,70,75,80,85,90,95,100,105,110,115,120,125]
 
@@ -44,7 +46,8 @@ gpu_caps = [260, 240, 220, 200, 180, 160, 140, 120, 100]
 cpu_caps = [105, 100, 95, 90, 85, 80, 75, 70, 65]
 # cpu_caps = [250, 230, 210, 190, 170, 150, 130, 110, 90,70]
 
-
+gpu_caps = [260,240,220,200, 180, 160, 140, 120, 100]
+cpu_caps = [105, 100, 95, 90, 85, 80, 75, 70, 65]
 
 
 
@@ -69,7 +72,7 @@ def run_benchmark(benchmark_script_dir,benchmark, suite, test):
         # Set CPU and GPU power caps and wait for them to take effect
         subprocess.run([f"./power_util/cpu_cap.sh {cpu_cap}"], shell=True)
         subprocess.run([f"./power_util/gpu_cap.sh {gpu_cap}"], shell=True)
-        time.sleep(2)  # Wait for the power caps to take effect
+        time.sleep(1)  # Wait for the power caps to take effect
     
         # Run the benchmark
         start = time.time()
@@ -83,11 +86,11 @@ def run_benchmark(benchmark_script_dir,benchmark, suite, test):
 
         # Start CPU power monitoring, passing the PID of the benchmark process
         monitor_command_cpu = f"echo 9900 | sudo -S {python_executable} {read_cpu_power}  --output_csv {tmp_cpu} --pid {benchmark_pid} --avg 1"
-        monitor_process = subprocess.Popen(monitor_command_cpu, shell=True, stdin=subprocess.PIPE, text=True)
+        monitor_process1 = subprocess.Popen(monitor_command_cpu, shell=True, stdin=subprocess.PIPE, text=True)
     
         # Start GPU power monitoring, passing the PID of the benchmark process
         monitor_command_gpu = f"echo 9900 | sudo -S {python_executable} {read_gpu_power}  --output_csv {tmp_gpu} --pid {benchmark_pid} --avg 1"
-        monitor_process = subprocess.Popen(monitor_command_gpu, shell=True, stdin=subprocess.PIPE, text=True)
+        monitor_process2 = subprocess.Popen(monitor_command_gpu, shell=True, stdin=subprocess.PIPE, text=True)
     
             
         benchmark_process.wait()  # Wait for the benchmark to complete
@@ -96,8 +99,9 @@ def run_benchmark(benchmark_script_dir,benchmark, suite, test):
     
         # Check if the output file exists to decide whether to write headers
         file_exists = os.path.isfile(output_file)
-
-        time.sleep(2)
+        monitor_process1.wait()
+        monitor_process2.wait()
+        
         # read CPU and GPU energy 
         tmp_cpu_df = pd.read_csv(tmp_cpu)
         tmp_gpu_df = pd.read_csv(tmp_gpu)
