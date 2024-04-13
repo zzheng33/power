@@ -65,6 +65,7 @@ setup_altis() {
 generate_altis_data() {
     cd "${home_dir}/benchmark/altis/data/kmeans"
     python3 datagen.py -n 8388608 -f
+    python3 datagen.py -n 131072 -f
 
     
 }
