@@ -31,9 +31,9 @@ altis_benchmarks_2 = ['cfd','cfd_double','fdtd2d','kmeans','lavamd',
                       'srad','where']
 
 
-altis_benchmarks_0 = []
-altis_benchmarks_1 = []
-altis_benchmarks_2 = ['fdtd2d']
+# altis_benchmarks_0 = []
+# altis_benchmarks_1 = []
+# altis_benchmarks_2 = ['fdtd2d']
 
 
 cpu_caps = [65,70,75,80,85,90,95,100,105,110,115,120,125]
