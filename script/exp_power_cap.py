@@ -31,9 +31,9 @@ altis_benchmarks_2 = ['cfd','cfd_double','fdtd2d','kmeans','lavamd',
                       'srad','where']
 
 
-# altis_benchmarks_0 = []
+altis_benchmarks_0 = []
 # altis_benchmarks_1 = []
-# altis_benchmarks_2 = ['fdtd2d']
+# altis_benchmarks_2 = ['raytracing']
 
 
 cpu_caps = [65,70,75,80,85,90,95,100,105,110,115,120,125]
@@ -58,7 +58,7 @@ def run_benchmark(benchmark_script_dir,benchmark, suite, test):
 
     # store avg power data 
     tmp_cpu = f"../data/{suite}_power_cap_res/tmp_cpu.csv"
-    tmp_gpu = f"../data/{suite}_power_cap_res/tmp_gpu.csv
+    tmp_gpu = f"../data/{suite}_power_cap_res/tmp_gpu.csv"
     # tmp_cpu = f"../data/{suite}_power_cap_res/small/tmp_cpu.csv"
     # tmp_gpu = f"../data/{suite}_power_cap_res/small/tmp_gpu.csv"
 
@@ -199,8 +199,8 @@ if __name__ == "__main__":
         else:
     
             for benchmark in altis_benchmarks_0:
-                benchmark_script_dir = "power/script/run_benchmark/altis_script/level0"
-                # benchmark_script_dir = "power/script/run_benchmark/altis_script/small/level0"
+                #benchmark_script_dir = "power/script/run_benchmark/altis_script/level0"
+                benchmark_script_dir = "power/script/run_benchmark/altis_script/small/level0"
                 run_benchmark(benchmark_script_dir, benchmark,"altis",test)
             
             
@@ -211,8 +211,8 @@ if __name__ == "__main__":
             
             
             for benchmark in altis_benchmarks_2:
-                benchmark_script_dir = "power/script/run_benchmark/altis_script/level2"
-                # benchmark_script_dir = "power/script/run_benchmark/altis_script/small/level2"
+                #benchmark_script_dir = "power/script/run_benchmark/altis_script/level2"
+                benchmark_script_dir = "power/script/run_benchmark/altis_script/small/level2"
                 run_benchmark(benchmark_script_dir, benchmark,"altis",test)
 
 
