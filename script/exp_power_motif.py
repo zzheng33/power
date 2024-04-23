@@ -34,9 +34,11 @@ ecp_benchmarks = ['XSBench','miniGAN','CRADL','sw4lite','Laghos']
 # Setup environment
 modprobe_command = "sudo modprobe msr"
 sysctl_command = "sudo sysctl -n kernel.perf_event_paranoid=-1"
+pm_command = "sudo nvidia-smi -i 0 -pm ENABLED"
 
 subprocess.run(modprobe_command, shell=True)
 subprocess.run(sysctl_command, shell=True)
+subprocess.run(pm_command, shell=True)
 
 
 def run_benchmark(benchmark_script_dir,benchmark, suite, test):

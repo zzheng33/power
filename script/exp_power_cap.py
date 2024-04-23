@@ -48,10 +48,11 @@ cpu_caps = [250, 110, 95, 90, 85, 80, 75, 70, 65]
 # Setup environment
 modprobe_command = "sudo modprobe msr"
 sysctl_command = "sudo sysctl -n kernel.perf_event_paranoid=-1"
+pm_command = "sudo nvidia-smi -i 0 -pm ENABLED"
 
 subprocess.run(modprobe_command, shell=True)
 subprocess.run(sysctl_command, shell=True)
-
+subprocess.run(pm_command,shell=True)
 
 
 def run_benchmark(benchmark_script_dir,benchmark, suite, test):
