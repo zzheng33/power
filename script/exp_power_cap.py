@@ -18,11 +18,14 @@ read_gpu_power = "./power_util/read_gpu_power.py"
 # scritps for running various benchmarks
 run_altis = "./run_benchmark/run_altis.py"
 run_ecp = "./run_benchmark/run_ecp.py"
+run_npb = "./run_benchmark/run_npb.py"
 
 # Define your benchmarks, for testing replace the list with just ['FT'] for example
 # ecp_benchmarks = ['FT', 'CG', 'LULESH', 'Nekbone', 'AMG2013', 'miniFE']
 ecp_benchmarks = ['XSBench','miniGAN','CRADL','sw4lite','Laghos']
 # ecp_benchmarks = ['miniGAN','CRADL','sw4lite','Laghos']
+
+npb_benchmarks = ['bt','cg','dc','ep','ft','is','lu','mg','sp','ua','miniFE']
 
 altis_benchmarks_0 = ['busspeeddownload','busspeedreadback','maxflops']
 altis_benchmarks_1 = ['bfs','gemm','gups','pathfinder','sort']
@@ -55,13 +58,15 @@ subprocess.run(sysctl_command, shell=True)
 subprocess.run(pm_command,shell=True)
 
 
-def run_benchmark(benchmark_script_dir,benchmark, suite, test):
+def run_benchmark(benchmark_script_dir,benchmark, suite, test,size):
 
     # store avg power data 
-    tmp_cpu = f"../data/{suite}_power_cap_res/tmp_cpu.csv"
-    tmp_gpu = f"../data/{suite}_power_cap_res/tmp_gpu.csv"
-    # tmp_cpu = f"../data/{suite}_power_cap_res/small/tmp_cpu.csv"
-    # tmp_gpu = f"../data/{suite}_power_cap_res/small/tmp_gpu.csv"
+    if size==0:
+        tmp_cpu = f"../data/{suite}_power_cap_res/tmp_cpu.csv"
+        tmp_gpu = f"../data/{suite}_power_cap_res/tmp_gpu.csv"
+    else:
+        tmp_cpu = f"../data/{suite}_power_cap_res/small/tmp_cpu.csv"
+        tmp_gpu = f"../data/{suite}_power_cap_res/small/tmp_gpu.csv"
 
     def cap_exp(cpu_cap, gpu_cap, output_file):
         
@@ -77,6 +82,9 @@ def run_benchmark(benchmark_script_dir,benchmark, suite, test):
             run_benchmark_command = f"{python_executable} {run_altis} --benchmark {benchmark} --benchmark_script_dir {os.path.join(home_dir, benchmark_script_dir)}"
         elif suite == "ecp":
             run_benchmark_command = f"{python_executable} {run_ecp} --benchmark {benchmark} --benchmark_script_dir {os.path.join(home_dir, benchmark_script_dir)}"
+
+        elif suite == "npb":
+        run_benchmark_command = f"{python_executable} {run_npb} --benchmark {benchmark} --benchmark_script_dir {os.path.join(home_dir, benchmark_script_dir)}"
         
         benchmark_process = subprocess.Popen(run_benchmark_command, shell=True)
         benchmark_pid = benchmark_process.pid
@@ -123,7 +131,8 @@ def run_benchmark(benchmark_script_dir,benchmark, suite, test):
         output_file_cpu = f"../data/{suite}_power_cap_res/single_cap/{benchmark}_cap_cpu.csv"
         output_file_gpu = f"../data/{suite}_power_cap_res/single_cap/{benchmark}_cap_gpu.csv"
         output_file_dual = f"../data/{suite}_power_cap_res/{benchmark}_cap_dual.csv"
-        # output_file_dual = f"../data/{suite}_power_cap_res/small/{benchmark}_cap_dual.csv"
+        if size == 1:
+            output_file_dual = f"../data/{suite}_power_cap_res/small/{benchmark}_cap_dual.csv"
       
     else:
         output_file = f"../data/{suite}_test/{benchmark}_cap.csv"
@@ -161,15 +170,17 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Run benchmarks and monitor power consumption.')
     parser.add_argument('--benchmark', type=str, help='Optional name of the benchmark to run', default=None)
     parser.add_argument('--test', type=int, help='whether it is a test run', default=None)
-    parser.add_argument('--suite', type=int, help='0 for ECP, 1 for ALTIS, 2 for all', default=1)
+    parser.add_argument('--suite', type=int, help='0 for ECP, 1 for ALTIS, 2 for npb+ecp', default=1)
+    parser.add_argument('--altis_size', type=int, help='0 for big, 1 for small', default=0)
 
     args = parser.parse_args()
     benchmark = args.benchmark
     test = args.test
     suite = args.suite
+    altis_size = args.altis_size
 
 
-    if suite == 0 or suite ==2:
+    if suite == 0 or suite ==3:
         benchmark_script_dir = f"power/script/run_benchmark/ecp_script"
         # single test
         if benchmark:
@@ -180,7 +191,7 @@ if __name__ == "__main__":
                 run_benchmark(benchmark_script_dir, benchmark,"ecp",test)
     
 
-    if suite == 1 or suite ==2:
+    if suite == 1 or suite ==3:
         # Map of benchmarks to their paths
         benchmark_paths = {
             "level0": altis_benchmarks_0,
@@ -194,28 +205,43 @@ if __name__ == "__main__":
             for level, benchmarks in benchmark_paths.items():
                 if benchmark in benchmarks:
                     benchmark_script_dir = f"power/script/run_benchmark/altis_script/{level}"
-                    run_benchmark(benchmark_script_dir, benchmark,"altis",test)
+                    run_benchmark(benchmark_script_dir, benchmark,"altis",test,altis_size)
                     found = True
                     break
         else:
     
             for benchmark in altis_benchmarks_0:
-                #benchmark_script_dir = "power/script/run_benchmark/altis_script/level0"
-                benchmark_script_dir = "power/script/run_benchmark/altis_script/small/level0"
-                run_benchmark(benchmark_script_dir, benchmark,"altis",test)
+                if altis_size==0:
+                    benchmark_script_dir = "power/script/run_benchmark/altis_script/level0"
+                else:
+                    benchmark_script_dir = "power/script/run_benchmark/altis_script/small/level0"
+                run_benchmark(benchmark_script_dir, benchmark,"altis",test,altis_size)
             
             
             for benchmark in altis_benchmarks_1:
-                # benchmark_script_dir = "power/script/run_benchmark/altis_script/level1"
-                benchmark_script_dir = "power/script/run_benchmark/altis_script/small/level1"
-                run_benchmark(benchmark_script_dir, benchmark,"altis",test)
+                if altis_size==0:
+                    benchmark_script_dir = "power/script/run_benchmark/altis_script/level1"
+                else:
+                    benchmark_script_dir = "power/script/run_benchmark/altis_script/small/level1"
+                run_benchmark(benchmark_script_dir, benchmark,"altis",test,altis_size)
             
             
             for benchmark in altis_benchmarks_2:
-                benchmark_script_dir = "power/script/run_benchmark/altis_script/level2"
-                # benchmark_script_dir = "power/script/run_benchmark/altis_script/small/level2"
-                run_benchmark(benchmark_script_dir, benchmark,"altis",test)
+                if altis_size==0:
+                    benchmark_script_dir = "power/script/run_benchmark/altis_script/level2"
+                else:
+                    benchmark_script_dir = "power/script/run_benchmark/altis_script/small/level2"
+                run_benchmark(benchmark_script_dir, benchmark,"altis",test,altis_size)
 
+    if suite == 2 or suite == 3:
+        benchmark_script_dir = f"power/script/run_benchmark/npb_script"
+        # single test
+        if benchmark:
+            run_benchmark(benchmark_script_dir, benchmark,"npb",test)
+        # run all ecp benchmarks
+        else:
+            for benchmark in npb_benchmarks:
+                run_benchmark(benchmark_script_dir, benchmark,"npb",test)
 
 
 
