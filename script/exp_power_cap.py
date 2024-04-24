@@ -25,7 +25,7 @@ run_npb = "./run_benchmark/run_npb.py"
 ecp_benchmarks = ['XSBench','miniGAN','CRADL','sw4lite','Laghos']
 # ecp_benchmarks = ['miniGAN','CRADL','sw4lite','Laghos']
 
-npb_benchmarks = ['bt','cg','dc','ep','ft','is','lu','mg','sp','ua','miniFE']
+npb_benchmarks = ['bt','cg','ep','ft','is','lu','mg','sp','ua','miniFE']
 
 altis_benchmarks_0 = ['busspeeddownload','busspeedreadback','maxflops']
 altis_benchmarks_1 = ['bfs','gemm','gups','pathfinder','sort']
@@ -39,11 +39,12 @@ altis_benchmarks_2 = ['cfd','cfd_double','fdtd2d','kmeans','lavamd',
 # altis_benchmarks_2 = ['raytracing']
 
 
-cpu_caps = [65,70,75,80,85,90,95,100,105,110,115,120,125]
+
 
 gpu_caps = [260, 240, 220, 200, 180, 160, 140, 120, 100]
 cpu_caps = [250, 110, 95, 90, 85, 80, 75, 70, 65]
-# cpu_caps = [250, 230, 210, 190, 170, 150, 130, 110, 90,70]
+
+cpu_caps = [250, 230, 210, 190, 170, 150, 130, 110, 90,70]
 
 
 
@@ -58,13 +59,13 @@ subprocess.run(sysctl_command, shell=True)
 subprocess.run(pm_command,shell=True)
 
 
-def run_benchmark(benchmark_script_dir,benchmark, suite, test,size):
+def run_benchmark(benchmark_script_dir,benchmark, suite, test, size,cap_type):
 
     # store avg power data 
-    if size==0:
-        tmp_cpu = f"../data/{suite}_power_cap_res/tmp_cpu.csv"
-        tmp_gpu = f"../data/{suite}_power_cap_res/tmp_gpu.csv"
-    else:
+    
+    tmp_cpu = f"../data/{suite}_power_cap_res/tmp_cpu.csv"
+    tmp_gpu = f"../data/{suite}_power_cap_res/tmp_gpu.csv"
+    if suite == "altis" and size == 1:
         tmp_cpu = f"../data/{suite}_power_cap_res/small/tmp_cpu.csv"
         tmp_gpu = f"../data/{suite}_power_cap_res/small/tmp_gpu.csv"
 
@@ -84,7 +85,7 @@ def run_benchmark(benchmark_script_dir,benchmark, suite, test,size):
             run_benchmark_command = f"{python_executable} {run_ecp} --benchmark {benchmark} --benchmark_script_dir {os.path.join(home_dir, benchmark_script_dir)}"
 
         elif suite == "npb":
-        run_benchmark_command = f"{python_executable} {run_npb} --benchmark {benchmark} --benchmark_script_dir {os.path.join(home_dir, benchmark_script_dir)}"
+            run_benchmark_command = f"{python_executable} {run_npb} --benchmark {benchmark} --benchmark_script_dir {os.path.join(home_dir, benchmark_script_dir)}"
         
         benchmark_process = subprocess.Popen(run_benchmark_command, shell=True)
         benchmark_pid = benchmark_process.pid
@@ -92,11 +93,12 @@ def run_benchmark(benchmark_script_dir,benchmark, suite, test,size):
         # Start CPU power monitoring, passing the PID of the benchmark process
         monitor_command_cpu = f"echo 9900 | sudo -S {python_executable} {read_cpu_power}  --output_csv {tmp_cpu} --pid {benchmark_pid} --avg 1"
         monitor_process1 = subprocess.Popen(monitor_command_cpu, shell=True, stdin=subprocess.PIPE, text=True)
-    
-        # Start GPU power monitoring, passing the PID of the benchmark process
-        monitor_command_gpu = f"echo 9900 | sudo -S {python_executable} {read_gpu_power}  --output_csv {tmp_gpu} --pid {benchmark_pid} --avg 1"
-        monitor_process2 = subprocess.Popen(monitor_command_gpu, shell=True, stdin=subprocess.PIPE, text=True)
-    
+
+        if suite != "npb":
+            # Start GPU power monitoring, passing the PID of the benchmark process
+            monitor_command_gpu = f"echo 9900 | sudo -S {python_executable} {read_gpu_power}  --output_csv {tmp_gpu} --pid {benchmark_pid} --avg 1"
+            monitor_process2 = subprocess.Popen(monitor_command_gpu, shell=True, stdin=subprocess.PIPE, text=True)
+        
             
         benchmark_process.wait()  # Wait for the benchmark to complete
         end = time.time()
@@ -105,16 +107,21 @@ def run_benchmark(benchmark_script_dir,benchmark, suite, test,size):
         # Check if the output file exists to decide whether to write headers
         file_exists = os.path.isfile(output_file)
         monitor_process1.wait()
-        monitor_process2.wait()
+        if suite!="npb":
+            monitor_process2.wait()
         
         # read CPU and GPU energy 
         tmp_cpu_df = pd.read_csv(tmp_cpu)
-        tmp_gpu_df = pd.read_csv(tmp_gpu)
-        cpu_e = tmp_cpu_df.iloc[0, 0] 
-        gpu_e = tmp_gpu_df.iloc[0, 0]
+        cpu_e = tmp_cpu_df.iloc[0, 0]
         os.remove(tmp_cpu)
-        os.remove(tmp_gpu)
+        if suite!="npb":
+            tmp_gpu_df = pd.read_csv(tmp_gpu)
+            gpu_e = tmp_gpu_df.iloc[0, 0]
+            os.remove(tmp_gpu)
 
+        if suite=="npb":
+            gpu_cap = 0
+            gpu_e = 0
         # Write data to the output file
         with open(output_file, 'a', newline='') as file:  # Open file in append mode
             writer = csv.writer(file)
@@ -131,7 +138,7 @@ def run_benchmark(benchmark_script_dir,benchmark, suite, test,size):
         output_file_cpu = f"../data/{suite}_power_cap_res/single_cap/{benchmark}_cap_cpu.csv"
         output_file_gpu = f"../data/{suite}_power_cap_res/single_cap/{benchmark}_cap_gpu.csv"
         output_file_dual = f"../data/{suite}_power_cap_res/{benchmark}_cap_dual.csv"
-        if size == 1:
+        if size == 1 and suite=="altis":
             output_file_dual = f"../data/{suite}_power_cap_res/small/{benchmark}_cap_dual.csv"
       
     else:
@@ -140,24 +147,24 @@ def run_benchmark(benchmark_script_dir,benchmark, suite, test,size):
     
    
     
-    # # CPU cap only 
-    # for cpu_cap in cpu_caps:
-    #     gpu_cap = gpu_caps[-1]
-    #     cap_exp(cpu_cap, gpu_cap, output_file_cpu)
+    # CPU cap only 
+    for cpu_cap in cpu_caps:
+        gpu_cap = max(gpu_caps)
+        cap_exp(cpu_cap, gpu_cap, output_file_cpu)
        
 
     # # GPU cap only
     # for gpu_cap in gpu_caps:
-    #     cpu_cap = cpu_caps[-1]
+    #     cpu_cap = max(cpu_caps)
     #     cap_exp(cpu_cap, gpu_cap, output_file_gpu)
         
 
 
     
-    #dual cap
-    for cpu_cap in cpu_caps:
-        for gpu_cap in gpu_caps:
-            cap_exp(cpu_cap, gpu_cap, output_file_dual)
+    # #dual cap
+    # for cpu_cap in cpu_caps:
+    #     for gpu_cap in gpu_caps:
+    #         cap_exp(cpu_cap, gpu_cap, output_file_dual)
 
 
 
@@ -172,12 +179,14 @@ if __name__ == "__main__":
     parser.add_argument('--test', type=int, help='whether it is a test run', default=None)
     parser.add_argument('--suite', type=int, help='0 for ECP, 1 for ALTIS, 2 for npb+ecp', default=1)
     parser.add_argument('--altis_size', type=int, help='0 for big, 1 for small', default=0)
+    parser.add_argument('--cap_type', type=int, help='0 for cpu, 1 for gpu, 2 for dual', default=2)
 
     args = parser.parse_args()
     benchmark = args.benchmark
     test = args.test
     suite = args.suite
     altis_size = args.altis_size
+    cap_type = args.cap_type
 
 
     if suite == 0 or suite ==3:
@@ -205,7 +214,7 @@ if __name__ == "__main__":
             for level, benchmarks in benchmark_paths.items():
                 if benchmark in benchmarks:
                     benchmark_script_dir = f"power/script/run_benchmark/altis_script/{level}"
-                    run_benchmark(benchmark_script_dir, benchmark,"altis",test,altis_size)
+                    run_benchmark(benchmark_script_dir, benchmark,"altis",test,altis_size,cap_type)
                     found = True
                     break
         else:
@@ -215,7 +224,7 @@ if __name__ == "__main__":
                     benchmark_script_dir = "power/script/run_benchmark/altis_script/level0"
                 else:
                     benchmark_script_dir = "power/script/run_benchmark/altis_script/small/level0"
-                run_benchmark(benchmark_script_dir, benchmark,"altis",test,altis_size)
+                run_benchmark(benchmark_script_dir, benchmark,"altis",test,altis_size,cap_type)
             
             
             for benchmark in altis_benchmarks_1:
@@ -223,7 +232,7 @@ if __name__ == "__main__":
                     benchmark_script_dir = "power/script/run_benchmark/altis_script/level1"
                 else:
                     benchmark_script_dir = "power/script/run_benchmark/altis_script/small/level1"
-                run_benchmark(benchmark_script_dir, benchmark,"altis",test,altis_size)
+                run_benchmark(benchmark_script_dir, benchmark,"altis",test,altis_size,cap_type)
             
             
             for benchmark in altis_benchmarks_2:
@@ -231,17 +240,17 @@ if __name__ == "__main__":
                     benchmark_script_dir = "power/script/run_benchmark/altis_script/level2"
                 else:
                     benchmark_script_dir = "power/script/run_benchmark/altis_script/small/level2"
-                run_benchmark(benchmark_script_dir, benchmark,"altis",test,altis_size)
+                run_benchmark(benchmark_script_dir, benchmark,"altis",test,altis_size,cap_type)
 
     if suite == 2 or suite == 3:
         benchmark_script_dir = f"power/script/run_benchmark/npb_script"
         # single test
         if benchmark:
-            run_benchmark(benchmark_script_dir, benchmark,"npb",test)
+            run_benchmark(benchmark_script_dir, benchmark,"npb",test,altis_size,cap_type)
         # run all ecp benchmarks
         else:
             for benchmark in npb_benchmarks:
-                run_benchmark(benchmark_script_dir, benchmark,"npb",test)
+                run_benchmark(benchmark_script_dir, benchmark,"npb",test,altis_size,cap_type)
 
 
 
