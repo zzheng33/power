@@ -21,7 +21,7 @@ run_npb = "./run_benchmark/run_npb.py"
 # Define your benchmarks, for testing replace the list with just ['FT'] for example
 ecp_benchmarks = ['FT', 'CG', 'LULESH', 'Nekbone', 'AMG2013', 'miniFE']
 
-npb_benchmarks = ['bt','cg','dc','ep','ft','is','lu','mg','sp','ua']
+npb_benchmarks = ['bt','cg','dc','ep','ft','is','lu','mg','sp','ua','miniFE']
 
 altis_benchmarks_0 = ['busspeeddownload','busspeedreadback','maxflops']
 altis_benchmarks_1 = ['bfs','gemm','gups','pathfinder','sort']
