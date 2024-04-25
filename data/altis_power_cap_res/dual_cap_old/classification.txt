@@ -1,0 +1,30 @@
+for CPU cap only 
+
+CPU-sensitive:
+busspeeddownload
+pathfinder
+sort
+cfd
+particlefilter_navie
+srad
+where
+bfs
+
+
+gpu-sensitive:
+fdtd2d
+raytracing
+gups
+cfd_double
+
+
+neither sensitive:
+maxflops
+
+
+both:
+gemm
+kmeans
+lavamd
+nw
+
