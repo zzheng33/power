@@ -222,7 +222,7 @@ if __name__ == "__main__":
         else:
     
             for benchmark in altis_benchmarks_0:
-                if altis_size==0:
+                if benchmark_size==0:
                     benchmark_script_dir = "power/script/run_benchmark/altis_script/level0"
                 else:
                     benchmark_script_dir = "power/script/run_benchmark/altis_script/small/level0"
@@ -230,7 +230,7 @@ if __name__ == "__main__":
             
             
             for benchmark in altis_benchmarks_1:
-                if altis_size==0:
+                if benchmark_size==0:
                     benchmark_script_dir = "power/script/run_benchmark/altis_script/level1"
                 else:
                     benchmark_script_dir = "power/script/run_benchmark/altis_script/small/level1"
@@ -238,7 +238,7 @@ if __name__ == "__main__":
             
             
             for benchmark in altis_benchmarks_2:
-                if altis_size==0:
+                if benchmark_size==0:
                     benchmark_script_dir = "power/script/run_benchmark/altis_script/level2"
                 else:
                     benchmark_script_dir = "power/script/run_benchmark/altis_script/small/level2"
