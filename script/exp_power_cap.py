@@ -34,9 +34,9 @@ altis_benchmarks_2 = ['cfd','cfd_double','fdtd2d','kmeans','lavamd',
                       'srad','where']
 
 
-# altis_benchmarks_0 = []
-# altis_benchmarks_1 = []
-# altis_benchmarks_2 = ['raytracing']
+altis_benchmarks_0 = []
+altis_benchmarks_1 = ['bfs','gemm','gups','pathfinder','sort']
+altis_benchmarks_2 = []
 
 
 
@@ -44,7 +44,7 @@ altis_benchmarks_2 = ['cfd','cfd_double','fdtd2d','kmeans','lavamd',
 gpu_caps = [260, 240, 220, 200, 180, 160, 140, 120, 100]
 cpu_caps = [250, 110, 95, 90, 85, 80, 75, 70, 65]
 
-cpu_caps = [250, 230, 210, 190, 170, 150, 130, 110, 90,70]
+# cpu_caps = [250, 230, 210, 190, 170, 150, 130, 110, 90,70]
 
 
 
