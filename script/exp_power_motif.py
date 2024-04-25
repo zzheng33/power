@@ -21,7 +21,7 @@ run_npb = "./run_benchmark/run_npb.py"
 # Define your benchmarks, for testing replace the list with just ['FT'] for example
 ecp_benchmarks = ['FT', 'CG', 'LULESH', 'Nekbone', 'AMG2013', 'miniFE']
 
-npb_benchmarks = ['bt','cg','dc','ep','ft','is','lu','mg','sp','ua','miniFE']
+npb_benchmarks = ['bt','cg','ep','ft','is','lu','mg','sp','ua','miniFE']
 
 altis_benchmarks_0 = ['busspeeddownload','busspeedreadback','maxflops']
 altis_benchmarks_1 = ['bfs','gemm','gups','pathfinder','sort']
@@ -93,11 +93,13 @@ if __name__ == "__main__":
     parser.add_argument('--benchmark', type=str, help='Optional name of the benchmark to run', default=None)
     parser.add_argument('--test', type=int, help='whether it is a test run', default=None)
     parser.add_argument('--suite', type=int, help='0 for ECP, 1 for ALTIS, 2 for NPB, 3 for all', default=1)
+    parser.add_argument('--benchmark_size', type=int, help='0 for big, 1 for small', default=0)
 
     args = parser.parse_args()
     benchmark = args.benchmark
     test = args.test
     suite = args.suite
+    benchmark_size = args.benchmark_size
 
 
     if suite == 0 or suite ==3:
