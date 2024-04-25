@@ -116,6 +116,19 @@ setup_Laghos() {
 
 }
 
+setup_ecp_cpu() {
+    benchmark_dir="${home_dir}/benchmark/CPU-only/miniFE/openmp/src/"
+    cd benchmark_dir
+    make
+
+    benchmark_dir="${home_dir}/benchmark/CPU-only/AMG2013/"
+    cd benchmark_dir
+    make
+    
+    
+
+}
+
 install_dependence
 load_benchmark
 setup_altis
@@ -125,5 +138,5 @@ setup_miniGAN_env
 setup_CRADL
 setup_Laghos
 setup_XSBench
-
+setup_ecp_cpu
 
