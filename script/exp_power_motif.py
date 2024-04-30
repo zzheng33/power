@@ -148,7 +148,10 @@ if __name__ == "__main__":
 
 
     if suite == 2 or suite == 3:
-        benchmark_script_dir = f"power/script/run_benchmark/npb_script"
+        benchmark_script_dir = f"power/script/run_benchmark/npb_script/big/"
+        if benchmark_size ==1:
+            benchmark_script_dir = f"power/script/run_benchmark/npb_script/small/"
+        
         # single test
         if benchmark:
             run_benchmark(benchmark_script_dir, benchmark,"npb",test)
