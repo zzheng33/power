@@ -23,7 +23,8 @@ ecp_benchmarks = ['LULESH', 'Nekbone', 'AMG2013', 'miniFE']
 
 npb_benchmarks = ['bt','cg','ep','ft','is','lu','mg','sp','ua','miniFE']
 npb_benchmarks = ['bt','mg']
-cpu_power
+
+cpu_caps = [80, 100, 120, 140, 160, 180, 200, 220, 240, 260]
 
 # Setup environment
 modprobe_command = "sudo modprobe msr"
@@ -36,34 +37,46 @@ subprocess.run(pm_command, shell=True)
 
 
 def run_benchmark(benchmark_script_dir, benchmark, suite, test):
-    # Assuming other variables like python_executable, home_dir are defined elsewhere in your script
-    if suite == "ecp":
-        run_benchmark_command = f"{python_executable} {run_ecp} --benchmark {benchmark} --benchmark_script_dir {os.path.join(home_dir, benchmark_script_dir)}"
-    elif suite == "npb":
-        run_benchmark_command = f"{python_executable} {run_npb} --benchmark {benchmark} --benchmark_script_dir {os.path.join(home_dir, benchmark_script_dir)}"
 
-    start = time.time()
+    def cap_exp(cpu_cap):  
+        subprocess.run([f"./power_util/cpu_cap.sh {cpu_cap}"], shell=True)
+        
+        time.sleep(1)  # Wait for the power caps to take effect
+        
+        # Assuming other variables like python_executable, home_dir are defined elsewhere in your script
+        if suite == "ecp":
+            run_benchmark_command = f"{python_executable} {run_ecp} --benchmark {benchmark} --benchmark_script_dir {os.path.join(home_dir, benchmark_script_dir)}"
+        elif suite == "npb":
+            run_benchmark_command = f"{python_executable} {run_npb} --benchmark {benchmark} --benchmark_script_dir {os.path.join(home_dir, benchmark_script_dir)}"
     
-    # Generate CSV filename including the benchmark name
-    csv_filename = f"/home/cc/power/data/npb_performance/pcm_{benchmark}.csv"
+        start = time.time()
+        
+        # Generate CSV filename including the benchmark name
+        csv_filename = f"/home/cc/power/data/npb_performance/{benchmark}/pcm_{benchmark}_{cpu_cap}.csv"
+        
+        pcm_process = subprocess.Popen(['sudo', '../tools/pcm/build/bin/pcm', '0.1', f'-csv={csv_filename}'],
+                                       stdout=subprocess.PIPE, 
+                                       stderr=subprocess.PIPE, 
+                                       preexec_fn=os.setsid)  # Set the process group
     
-    pcm_process = subprocess.Popen(['sudo', '../tools/pcm/build/bin/pcm', '0.1', f'-csv={csv_filename}'],
-                                   stdout=subprocess.PIPE, 
-                                   stderr=subprocess.PIPE, 
-                                   preexec_fn=os.setsid)  # Set the process group
+        time.sleep(1.5)  # Allow some time for pcm to start and set up before starting the benchmark
+        benchmark_process = subprocess.Popen(run_benchmark_command, shell=True)
+    
+        benchmark_process.wait()
+    
+        # Send SIGTERM to the entire process group to ensure pcm process is terminated
+        os.killpg(os.getpgid(pcm_process.pid), signal.SIGTERM)
+    
+        end = time.time()
+        runtime = end - start - 1.5  # Adjust runtime calculation to exclude initial sleep
+        print("Runtime: ", runtime)
 
-    time.sleep(1.5)  # Allow some time for pcm to start and set up before starting the benchmark
-    benchmark_process = subprocess.Popen(run_benchmark_command, shell=True)
+ 
+    for cpu_cap in cpu_caps:
+        cap_exp(cpu_cap)
 
-    benchmark_process.wait()
-
-    # Send SIGTERM to the entire process group to ensure pcm process is terminated
-    os.killpg(os.getpgid(pcm_process.pid), signal.SIGTERM)
-
-    end = time.time()
-    runtime = end - start - 1.5  # Adjust runtime calculation to exclude initial sleep
-    print("Runtime: ", runtime)
-
+    subprocess.run([f"./power_util/cpu_cap.sh 250"], shell=True)
+    subprocess.run([f"./power_util/gpu_cap.sh 260"], shell=True)
 
 
 
