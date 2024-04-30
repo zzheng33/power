@@ -22,7 +22,8 @@ run_npb = "./run_benchmark/run_npb.py"
 ecp_benchmarks = ['LULESH', 'Nekbone', 'AMG2013', 'miniFE']
 
 npb_benchmarks = ['bt','cg','ep','ft','is','lu','mg','sp','ua','miniFE']
-npb_benchmarks = ['bt']
+npb_benchmarks = ['bt','mg']
+cpu_power
 
 # Setup environment
 modprobe_command = "sudo modprobe msr"
@@ -34,30 +35,36 @@ subprocess.run(sysctl_command, shell=True)
 subprocess.run(pm_command, shell=True)
 
 
-def run_benchmark(benchmark_script_dir,benchmark, suite, test):
+def run_benchmark(benchmark_script_dir, benchmark, suite, test):
+    # Assuming other variables like python_executable, home_dir are defined elsewhere in your script
     if suite == "ecp":
         run_benchmark_command = f"{python_executable} {run_ecp} --benchmark {benchmark} --benchmark_script_dir {os.path.join(home_dir, benchmark_script_dir)}"
-
     elif suite == "npb":
         run_benchmark_command = f"{python_executable} {run_npb} --benchmark {benchmark} --benchmark_script_dir {os.path.join(home_dir, benchmark_script_dir)}"
-        
-    start = time.time()
-    benchmark_process = subprocess.Popen(run_benchmark_command, shell=True)
-    benchmark_pid = benchmark_process.pid
 
-    # pcm_process = subprocess.Popen(['sudo', '../tools/pcm/build/bin/pcm', '-csv=/home/cc/power/data/npb_performance/pcm.csv'],
-    #                                stdout=subprocess.PIPE, 
-    #                                stderr=subprocess.PIPE)
+    start = time.time()
     
-    monitor_command = f"echo 9900 | sudo -S {python_executable} {read_performance}  --output_csv {output_gpu} --pid {benchmark_pid}"
-        monitor_process = subprocess.Popen(monitor_command_gpu, shell=True, stdin=subprocess.PIPE, text=True)
+    # Generate CSV filename including the benchmark name
+    csv_filename = f"/home/cc/power/data/npb_performance/pcm_{benchmark}.csv"
+    
+    pcm_process = subprocess.Popen(['sudo', '../tools/pcm/build/bin/pcm', '0.1', f'-csv={csv_filename}'],
+                                   stdout=subprocess.PIPE, 
+                                   stderr=subprocess.PIPE, 
+                                   preexec_fn=os.setsid)  # Set the process group
+
+    time.sleep(1.5)  # Allow some time for pcm to start and set up before starting the benchmark
+    benchmark_process = subprocess.Popen(run_benchmark_command, shell=True)
 
     benchmark_process.wait()
 
+    # Send SIGTERM to the entire process group to ensure pcm process is terminated
+    os.killpg(os.getpgid(pcm_process.pid), signal.SIGTERM)
 
     end = time.time()
-    runtime = end - start
-    print("Runtime: ",runtime)
+    runtime = end - start - 1.5  # Adjust runtime calculation to exclude initial sleep
+    print("Runtime: ", runtime)
+
+
 
 
 
@@ -77,7 +84,7 @@ if __name__ == "__main__":
 
 
     if suite == 0 or suite ==3:
-        benchmark_script_dir = f"power/script/run_benchmark/ecp_script"
+        benchmark_script_dir = f"/home/cc/power/script/run_benchmark/ecp_script"
         # single test
         if benchmark:
             run_benchmark(benchmark_script_dir, benchmark,"ecp",test)
@@ -87,48 +94,20 @@ if __name__ == "__main__":
                 run_benchmark(benchmark_script_dir, benchmark,"ecp",test)
     
 
-    if suite == 1 or suite ==3:
-        # Map of benchmarks to their paths
-        benchmark_paths = {
-            "level0": altis_benchmarks_0,
-            "level1": altis_benchmarks_1,
-            "level2": altis_benchmarks_2
-        }
-    
-        if benchmark:
-            # Find which level the input benchmark belongs to
-            found = False
-            for level, benchmarks in benchmark_paths.items():
-                if benchmark in benchmarks:
-                    benchmark_script_dir = f"power/script/run_benchmark/altis_script/{level}"
-                    run_benchmark(benchmark_script_dir, benchmark,"altis",test)
-                    found = True
-                    break
-        else:
-    
-            for benchmark in altis_benchmarks_0:
-                benchmark_script_dir = "power/script/run_benchmark/altis_script/level0"
-                run_benchmark(benchmark_script_dir, benchmark,"altis",test)
-            
-            
-            for benchmark in altis_benchmarks_1:
-                benchmark_script_dir = "power/script/run_benchmark/altis_script/level1"
-                run_benchmark(benchmark_script_dir, benchmark,"altis",test)
-            
-            
-            for benchmark in altis_benchmarks_2:
-                benchmark_script_dir = "power/script/run_benchmark/altis_script/level2"
-                run_benchmark(benchmark_script_dir, benchmark,"altis",test)
-
 
     if suite == 2 or suite == 3:
-        benchmark_script_dir = f"power/script/run_benchmark/npb_script/big/"
+        benchmark_script_dir = f"/home/cc/power/script/run_benchmark/npb_script/big/"
         if benchmark_size ==1:
-            benchmark_script_dir = f"power/script/run_benchmark/npb_script/small/"
+            benchmark_script_dir = f"/home/cc/power/script/run_benchmark/npb_script/small/"
         if benchmark:
             run_benchmark(benchmark_script_dir, benchmark,"npb",test)
         # run all ecp benchmarks
         else:
             for benchmark in npb_benchmarks:
                 run_benchmark(benchmark_script_dir, benchmark,"npb",test)
-    
+
+
+
+
+
+
