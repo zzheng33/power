@@ -1,0 +1,7 @@
+System,System,System,System,System,System,System,System,System,System
+Time,EXEC,CFREQ,READ,WRITE,INST,PhysIPC%,Proc Energy (Joules),DRAM Energy (Joules),UncFREQ (Ghz)
+02:29:25.082,0.0,1.16,0.0,0.0,2.55,12.52,3.31,0.06,0.28
+02:29:25.182,0.0,1.0,0.0,0.0,5.7,24.03,3.06,0.06,0.24
+02:29:25.282,0.0,1.0,0.0,0.0,5.52,25.63,2.65,0.02,0.11
+02:29:25.382,0.0,1.0,0.0,0.0,5.5,24.45,2.57,0.03,0.11
+02:29:25.482,0.0,1.0,0.0,0.0,5.65,24.5,2.7,0.03,0.13
