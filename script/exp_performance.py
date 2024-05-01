@@ -24,7 +24,7 @@ ecp_benchmarks = ['LULESH', 'Nekbone', 'AMG2013', 'miniFE']
 npb_benchmarks = ['bt','cg','ep','ft','is','lu','mg','sp','ua','miniFE']
 npb_benchmarks = ['bt','mg']
 
-cpu_caps = [80, 100, 120, 140, 160, 180, 200, 220, 240, 260]
+cpu_caps = [80, 100, 120, 140, 160, 180, 200, 220, 240, 250]
 
 # Setup environment
 modprobe_command = "sudo modprobe msr"
