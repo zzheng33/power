@@ -129,6 +129,7 @@ setup_ecp_cpu() {
 
 }
 
+
 install_dependence
 load_benchmark
 setup_altis
