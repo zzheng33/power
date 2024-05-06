@@ -41,14 +41,18 @@ altis_benchmarks_2 = ['cfd','cfd_double','fdtd2d','kmeans','lavamd',
                       'nw','particlefilter_float','particlefilter_naive','raytracing',
                       'srad','where']
 
-
+altis_benchmarks_0 = []
+altis_benchmarks_1 = []
+altis_benchmarks_2 = ['raytracing']
 
 
 gpu_caps = [260, 240, 220, 200, 180, 160, 140, 120, 100]
-cpu_caps = [250, 110, 95, 90, 85, 80, 75, 70, 65]
+cpu_caps = [120, 110, 95, 90, 85, 80, 75, 70, 65]
 
-cpu_caps = [70, 90, 110, 130, 150, 170, 190, 210, 230, 250]
+# cpu_caps = [70, 90, 110, 130, 150, 170, 190, 210, 230, 250]
 
+gpu_caps = [100, 120, 140, 160, 180, 200, 220, 240, 260]
+cpu_caps = [65, 70, 75, 80, 85, 90, 95, 110, 120]
 
 
 
@@ -152,10 +156,10 @@ def run_benchmark(benchmark_script_dir,benchmark, suite, test, size,cap_type):
     
    
     
-    # CPU cap only 
-    for cpu_cap in cpu_caps:
-        gpu_cap = max(gpu_caps)
-        cap_exp(cpu_cap, gpu_cap, output_file_cpu)
+    # # CPU cap only 
+    # for cpu_cap in cpu_caps:
+    #     gpu_cap = max(gpu_caps)
+    #     cap_exp(cpu_cap, gpu_cap, output_file_cpu)
        
 
     # # GPU cap only
@@ -166,10 +170,10 @@ def run_benchmark(benchmark_script_dir,benchmark, suite, test, size,cap_type):
 
 
     
-    #dual cap
-    # for cpu_cap in cpu_caps:
-    #     for gpu_cap in gpu_caps:
-    #         cap_exp(cpu_cap, gpu_cap, output_file_dual)
+    # dual cap
+    for cpu_cap in cpu_caps:
+        for gpu_cap in gpu_caps:
+            cap_exp(cpu_cap, gpu_cap, output_file_dual)
 
 
 
