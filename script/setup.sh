@@ -97,6 +97,14 @@ setup_XSBench() {
      make
 }
 
+setup_RSBench() {
+     cd "${home_dir}/benchmark/ECP/RSBench/cuda"
+     make
+     benchmark_dir="${home_dir}/benchmark/ECP/RSBench/openmp-threading"
+     cd "$benchmark_dir"
+     make
+}
+
 setup_Laghos() {
     cd "${home_dir}/benchmark/ECP/hypre-2.11.2/src/"
     ./configure --with-cuda --with-gpu-arch="75" --disable-fortran
@@ -120,15 +128,19 @@ setup_Laghos() {
 }
 
 setup_ecp_cpu() {
-    benchmark_dir="${home_dir}/benchmark/CPU-only/miniFE/openmp/src/"
+    benchmark_dir="${home_dir}/benchmark/ECP/miniFE/openmp/src/"
     cd benchmark_dir
     make
 
-    benchmark_dir="${home_dir}/benchmark/CPU-only/AMG2013/"
+    benchmark_dir="${home_dir}/benchmark/ECP/AMG2013/"
     cd benchmark_dir
     make
-    
-    
+}
+
+setup_npb() {
+    benchmark_dir="${home_dir}/benchmark/NPB/NPB3.4-OMP/"
+    cd benchmark_dir
+    make suite
 
 }
 
@@ -142,5 +154,7 @@ setup_miniGAN_env
 setup_CRADL
 setup_Laghos
 setup_XSBench
+setup_RSBench
 setup_ecp_cpu
+setup_npb
 
