@@ -92,6 +92,9 @@ setup_CRADL() {
 setup_XSBench() {
      cd "${home_dir}/benchmark/ECP/XSBench/cuda"
      make
+     benchmark_dir="${home_dir}/benchmark/ECP/XSBench/openmp-threading"
+     cd "$benchmark_dir"
+     make
 }
 
 setup_Laghos() {

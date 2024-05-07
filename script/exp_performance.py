@@ -18,11 +18,13 @@ read_performance= "./power_util/read_performance.py"
 run_ecp = "./run_benchmark/run_ecp.py"
 run_npb = "./run_benchmark/run_npb.py"
 
-# Define your benchmarks, for testing replace the list with just ['FT'] for example
-ecp_benchmarks = ['LULESH', 'Nekbone', 'AMG2013', 'miniFE']
 
-npb_benchmarks = ['bt','cg','ep','ft','is','lu','mg','sp','ua','miniFE']
-npb_benchmarks = ['miniFE']
+# ecp_benchmarks = ['LULESH', 'Nekbone', 'AMG2013', 'miniFE']
+
+npb_benchmarks = ['bt','cg','ep','ft','is','lu','mg','sp','ua']
+
+#'miniFE'
+ecp_benchmarks = ['LULESH', 'XSBench_omp']
 
 cpu_caps = [80, 100, 120, 140, 160, 180, 200, 220, 240, 250]
 
@@ -52,7 +54,7 @@ def run_benchmark(benchmark_script_dir, benchmark, suite, test):
         start = time.time()
         
         # Generate CSV filename including the benchmark name
-        csv_filename = f"/home/cc/power/data/npb_performance/{benchmark}/pcm_{benchmark}_{cpu_cap}.csv"
+        csv_filename = f"/home/cc/power/data/cpu_performance/{benchmark}/pcm_{benchmark}_{cpu_cap}.csv"
         
         pcm_process = subprocess.Popen(['sudo', '../tools/pcm/build/bin/pcm', '0.1', f'-csv={csv_filename}'],
                                        stdout=subprocess.PIPE, 
