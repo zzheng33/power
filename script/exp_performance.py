@@ -24,7 +24,7 @@ run_npb = "./run_benchmark/run_npb.py"
 npb_benchmarks = ['bt','cg','ep','ft','is','lu','mg','sp','ua']
 
 #'miniFE'
-ecp_benchmarks = ['LULESH', 'XSBench_omp']
+ecp_benchmarks = ['LULESH', 'XSBench_omp','RSBench_omp']
 
 cpu_caps = [80, 100, 120, 140, 160, 180, 200, 220, 240, 250]
 
