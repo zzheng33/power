@@ -92,16 +92,16 @@ setup_CRADL() {
 setup_XSBench() {
      cd "${home_dir}/benchmark/ECP/XSBench/cuda"
      make
-     benchmark_dir="${home_dir}/benchmark/ECP/XSBench/openmp-threading"
-     cd "$benchmark_dir"
+     cd "${home_dir}/benchmark/ECP/XSBench/openmp-threading"
+  
      make
 }
 
 setup_RSBench() {
      cd "${home_dir}/benchmark/ECP/RSBench/cuda"
      make
-     benchmark_dir="${home_dir}/benchmark/ECP/RSBench/openmp-threading"
-     cd "$benchmark_dir"
+     cd "${home_dir}/benchmark/ECP/RSBench/openmp-threading"
+    
      make
 }
 
@@ -128,31 +128,31 @@ setup_Laghos() {
 }
 
 setup_ecp_cpu() {
-    benchmark_dir="${home_dir}/benchmark/ECP/miniFE/openmp/src/"
-    cd benchmark_dir
+    cd "${home_dir}/benchmark/ECP/miniFE/openmp/src/"
+    
     make
 
-    benchmark_dir="${home_dir}/benchmark/ECP/AMG2013/"
-    cd benchmark_dir
+    cd "${home_dir}/benchmark/ECP/AMG2013/"
+  
     make
 }
 
 setup_npb() {
-    benchmark_dir="${home_dir}/benchmark/NPB/NPB3.4-OMP/"
-    cd benchmark_dir
+    cd "${home_dir}/benchmark/NPB/NPB3.4-OMP/"
+    
     make suite
 
 }
 
 
-install_dependence
-load_benchmark
-setup_altis
-setup_pcm
-generate_altis_data
-setup_miniGAN_env
-setup_CRADL
-setup_Laghos
+# install_dependence
+# load_benchmark
+# setup_altis
+# setup_pcm
+# generate_altis_data
+# setup_miniGAN_env
+# setup_CRADL
+# setup_Laghos
 setup_XSBench
 setup_RSBench
 setup_ecp_cpu
