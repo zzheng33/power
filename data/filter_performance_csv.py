@@ -4,7 +4,7 @@ import numpy as np
 import os  
 from matplotlib.ticker import PercentFormatter
 from scipy.optimize import curve_fit
-base_path = '/home/cc/power/data/cpu_performance/XSBench_omp/'
+base_path = '/home/cc/power/data/cpu_performance/'
 # List of second header values you are interested in
 desired_columns = ['Time','EXEC','INST','PhysIPC%', 'CFREQ', 'READ', 'WRITE', 'Proc Energy (Joules)', 'DRAM Energy (Joules)', 'UncFREQ (Ghz)']
 
