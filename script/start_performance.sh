@@ -9,7 +9,7 @@
 ./power_util/gpu_cap.sh 260
 
 # sudo python3 exp_performance.py --suite 2 --test 0 --benchmark_size 0
-sudo python3 exp_performance.py --suite 0 --test 0 --benchmark_size 0
+sudo python3 exp_performance.py --suite 2 --test 0 --benchmark_size 1
 
 
 
