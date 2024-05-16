@@ -26,7 +26,7 @@ ecp_benchmarks = ['XSBench','miniGAN','CRADL','sw4lite','Laghos']
 # ecp_benchmarks = ['miniGAN','CRADL','sw4lite','Laghos']
 
 npb_benchmarks = ['bt','cg','ep','ft','is','lu','mg','sp','ua','miniFE']
-npb_benchmarks = ['is','mg']
+npb_benchmarks = ['is']
 
 altis_benchmarks_0 = ['busspeeddownload','busspeedreadback','maxflops']
 altis_benchmarks_1 = ['bfs','gemm','gups','pathfinder','sort']
@@ -55,6 +55,7 @@ gpu_caps = [100, 120, 140, 160, 180, 200, 220, 240, 260]
 cpu_caps = [65, 70, 75, 80, 85, 90, 95, 110, 120]
 
 
+cpu_caps = [70, 90, 110, 130, 150, 170, 190, 210, 230, 250]
 
 # Setup environment
 modprobe_command = "sudo modprobe msr"
@@ -156,10 +157,10 @@ def run_benchmark(benchmark_script_dir,benchmark, suite, test, size,cap_type):
     
    
     
-    # # CPU cap only 
-    # for cpu_cap in cpu_caps:
-    #     gpu_cap = max(gpu_caps)
-    #     cap_exp(cpu_cap, gpu_cap, output_file_cpu)
+    # CPU cap only 
+    for cpu_cap in cpu_caps:
+        gpu_cap = max(gpu_caps)
+        cap_exp(cpu_cap, gpu_cap, output_file_cpu)
        
 
     # # GPU cap only
@@ -171,9 +172,9 @@ def run_benchmark(benchmark_script_dir,benchmark, suite, test, size,cap_type):
 
     
     # dual cap
-    for cpu_cap in cpu_caps:
-        for gpu_cap in gpu_caps:
-            cap_exp(cpu_cap, gpu_cap, output_file_dual)
+    # for cpu_cap in cpu_caps:
+    #     for gpu_cap in gpu_caps:
+    #         cap_exp(cpu_cap, gpu_cap, output_file_dual)
 
 
 

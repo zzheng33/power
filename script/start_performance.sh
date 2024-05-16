@@ -4,6 +4,9 @@
 # suite 1: ALTIS
 # suite 2: npb
 
+# 0 for big
+# 1 for small
+
 # test
 ./power_util/cpu_cap.sh 250
 ./power_util/gpu_cap.sh 260
