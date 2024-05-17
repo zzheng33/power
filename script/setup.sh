@@ -145,14 +145,14 @@ setup_npb() {
 }
 
 
-# install_dependence
-# load_benchmark
-# setup_altis
-# setup_pcm
-# generate_altis_data
-# setup_miniGAN_env
-# setup_CRADL
-# setup_Laghos
+install_dependence
+load_benchmark
+setup_altis
+setup_pcm
+generate_altis_data
+setup_miniGAN_env
+setup_CRADL
+setup_Laghos
 setup_XSBench
 setup_RSBench
 setup_ecp_cpu
