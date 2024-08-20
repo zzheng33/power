@@ -29,7 +29,7 @@ with open(output_file, "w") as f:
         f.flush()
 
         # Wait for 0.1 seconds before the next iteration
-        time.sleep(0.1)
+        time.sleep(0.05)
 
 # Shutdown NVML
 nvmlShutdown()
