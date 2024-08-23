@@ -6,10 +6,10 @@
 
 
 # test
-./power_util/cpu_cap.sh 250
-./power_util/gpu_cap.sh 260
+# ./power_util/cpu_cap.sh 250
+# ./power_util/gpu_cap.sh 260
 
-python3 exp_power_motif.py --suite 2 --test 0 
+python3 exp_power_motif.py --suite 1 --test 0 
 
 
 

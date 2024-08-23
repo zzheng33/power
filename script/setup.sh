@@ -13,6 +13,7 @@ install_dependence() {
     sudo apt-get --assume-yes install liblapack-dev
     sudo pip install jupyterlab
     sudo pip install numpy matplotlib pandas
+    sudo pip install nvidia-ml-py3
     sudo pip install scipy
     sudo pip install plotly
 }
