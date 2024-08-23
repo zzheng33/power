@@ -41,6 +41,7 @@ setup_pcm() {
     cd build
     cmake ..
     cmake --build . --parallel
+    sudo modprobe msr
 }
 
 load_benchmark() {
