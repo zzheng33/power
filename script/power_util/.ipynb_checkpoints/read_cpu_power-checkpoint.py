@@ -122,7 +122,7 @@ def read_socket_power():
 
 
 # Function to monitor power consumption updated to add socket powers together
-def monitor_power(benchmark_pid, output_csv, avg, interval=0.3):
+def monitor_power(benchmark_pid, output_csv, avg, interval=0.2):
     start_time = time.time()
     power_data = []
     total_energy = 0

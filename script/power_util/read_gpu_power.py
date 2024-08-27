@@ -49,7 +49,7 @@ def get_gpu_power():
         return []
 
 # Function to monitor power consumption of all GPUs
-def monitor_gpu_power(benchmark_pid, output_csv, avg, interval=0.4):
+def monitor_gpu_power(benchmark_pid, output_csv, avg, interval=0.3):
     start_time = time.time()
     power_data = []
 
