@@ -113,7 +113,7 @@ def read_energy(file_path):
         return 0
     
 # Function to monitor power consumption updated to add socket powers together
-def monitor_power(benchmark_pid, output_csv, avg, interval=0.1):
+def monitor_power(benchmark_pid, output_csv, avg, interval=0.3):
     start_time = time.time()
     initial_values = {key: read_energy(os.path.join(RAPL_PATH, path)) for key, path in ENERGY_FILES.items()}
     power_data = []
