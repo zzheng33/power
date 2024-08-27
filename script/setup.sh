@@ -109,7 +109,7 @@ setup_RSBench() {
 
 setup_Laghos() {
     cd "${home_dir}/benchmark/ECP/hypre-2.11.2/src/"
-    ./configure --with-cuda --with-gpu-arch="75" --disable-fortran
+    ./configure --with-cuda --with-gpu-arch="80" --disable-fortran
     make -j
     cd ../..
     ln -s hypre-2.11.2 hypre
@@ -120,7 +120,7 @@ setup_Laghos() {
     ln -s metis-4.0.3 metis-4.0
 
     cd mfem/
-    make pcuda CUDA_ARCH=sm_75 -j
+    make pcuda CUDA_ARCH=sm_80 -j
     cd ..
 
     cd Laghos/
