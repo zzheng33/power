@@ -97,29 +97,29 @@ import argparse
 # Function to read the socket power using e_smi_tool
 def read_socket_power():
     try:
-        result = subprocess.run(['sudo', './e_smi_tool', '--showsockpower'], capture_output=True, text=True)
+        result = subprocess.run(['sudo', '/home/cc/esmi_ib_library/build/e_smi_tool', '--showsockpower'], capture_output=True, text=True)
         output = result.stdout
-        power_values = []
-        
+
+        # The rest of the parsing logic
         for line in output.splitlines():
             if "Power (Watts)" in line:
                 parts = line.split('|')
-                power_socket_0 = float(parts[2].strip())
-                power_socket_1 = float(parts[3].strip())
-                power_values = [power_socket_0, power_socket_1]
-                break
-                
-        if not power_values:
-            raise ValueError("Failed to parse power values.")
-        
-        return power_values
-    
+                if len(parts) >= 4:
+                    power_socket_0 = float(parts[2].strip())
+                    power_socket_1 = float(parts[3].strip())
+                    return [power_socket_0, power_socket_1]
+                else:
+                    raise ValueError("Unexpected format in power line: " + line)
+
+        raise ValueError("Failed to parse power values from e_smi_tool output.")
+
     except subprocess.CalledProcessError as e:
         print(f"Error executing e_smi_tool: {e}")
         return [0, 0]
     except Exception as e:
         print(f"Error reading socket power: {e}")
         return [0, 0]
+
 
 # Function to monitor power consumption updated to add socket powers together
 def monitor_power(benchmark_pid, output_csv, avg, interval=0.3):
