@@ -18,7 +18,7 @@ import pandas as pd
 #         return 0
 
 # # Function to monitor power consumption of GPU
-# def monitor_gpu_power(benchmark_pid, output_csv, interval=0.1):
+# def monitor_gpu_power(benchmark_pid, output_csv, interval=0.3):
 #     start_time = time.time()
 #     power_data = []
 
