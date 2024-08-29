@@ -10,6 +10,15 @@ fi
 # Extract the last argument as the frequency
 FREQUENCY=${@: -1}
 
+# Remove the "GHz" suffix and convert to a floating-point number for comparison
+FREQUENCY_NUM=$(echo $FREQUENCY | sed 's/GHz//' | bc)
+
+# Check if the frequency is within the allowed range (0.8 GHz to 2.2 GHz)
+if (( $(echo "$FREQUENCY_NUM < 0.8" | bc -l) )) || (( $(echo "$FREQUENCY_NUM > 2.2" | bc -l) )); then
+    echo "Error: Frequency must be between 0.8 GHz and 2.2 GHz"
+    exit 1
+fi
+
 # Extract all but the last argument as CPU IDs
 CPU_IDS=${@:1:$#-1}
 
@@ -23,4 +32,3 @@ for CPU_ID in $CPU_IDS; do
 
     echo "CPU $CPU_ID frequency set to $FREQUENCY"
 done
-
