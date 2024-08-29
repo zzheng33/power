@@ -77,7 +77,7 @@ def run_benchmark(benchmark_script_dir, benchmark, suite, test):
         benchmark_process.wait()
 
         # Write IPC values to CSV
-        csv_filename = f"/home/cc/power/data/cpu_performance/{benchmark}/ipc_{benchmark}_{cpu_cap}.csv"
+        csv_filename = f"/home/cc/power/data/cpu_performance/{suite}/{benchmark}/ipc_{benchmark}_{cpu_cap}.csv"
         os.makedirs(os.path.dirname(csv_filename), exist_ok=True)
         
         with open(csv_filename, 'w', newline='') as file:
@@ -132,6 +132,39 @@ if __name__ == "__main__":
         else:
             for benchmark in npb_benchmarks:
                 run_benchmark(benchmark_script_dir, benchmark, "npb", test)
+
+     if suite == 1 or suite ==3:
+        # Map of benchmarks to their paths
+        benchmark_paths = {
+            "level0": altis_benchmarks_0,
+            "level1": altis_benchmarks_1,
+            "level2": altis_benchmarks_2
+        }
+    
+        if benchmark:
+            # Find which level the input benchmark belongs to
+            found = False
+            for level, benchmarks in benchmark_paths.items():
+                if benchmark in benchmarks:
+                    benchmark_script_dir = f"power/script/run_benchmark/altis_script/{level}"
+                    run_benchmark(benchmark_script_dir, benchmark,"altis",test)
+                    found = True
+                    break
+        else:
+    
+            for benchmark in altis_benchmarks_0:
+                benchmark_script_dir = "power/script/run_benchmark/altis_script/level0"
+                run_benchmark(benchmark_script_dir, benchmark,"altis",test)
+            
+            
+            for benchmark in altis_benchmarks_1:
+                benchmark_script_dir = "power/script/run_benchmark/altis_script/level1"
+                run_benchmark(benchmark_script_dir, benchmark,"altis",test)
+            
+            
+            for benchmark in altis_benchmarks_2:
+                benchmark_script_dir = "power/script/run_benchmark/altis_script/level2"
+                run_benchmark(benchmark_script_dir, benchmark,"altis",test)
 
 
 
