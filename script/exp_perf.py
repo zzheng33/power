@@ -4,6 +4,7 @@ import time
 import signal
 import argparse
 import csv
+import psutil
 
 # Define paths and executables
 home_dir = os.path.expanduser('~')
@@ -21,6 +22,14 @@ run_altis = "./run_benchmark/run_altis.py"
 
 npb_benchmarks = ['bt','cg','ep','ft','is','lu','mg','sp','ua']
 ecp_benchmarks = ['LULESH', 'XSBench_omp','RSBench_omp']
+
+
+altis_benchmarks_0 = ['busspeeddownload','busspeedreadback','maxflops']
+altis_benchmarks_1 = ['bfs','gemm','gups','pathfinder','sort']
+altis_benchmarks_2 = ['cfd','cfd_double','fdtd2d','kmeans','lavamd',
+                      'nw','particlefilter_float','particlefilter_naive','raytracing',
+                      'srad','where']
+
 
 cpu_caps = [70, 90, 110, 130, 150, 170, 190, 210, 230, 250]
 
@@ -47,7 +56,7 @@ def run_benchmark(benchmark_script_dir, benchmark, suite, test):
         elif suite == "npb":
             run_benchmark_command = f"{python_executable} {run_npb} --benchmark {benchmark} --benchmark_script_dir {os.path.join(home_dir, benchmark_script_dir)}"
         else:
-            run_benchmark_command = f"{python_executable} {run_npb} --benchmark {benchmark} --benchmark_script_dir {os.path.join(home_dir, benchmark_script_dir)}"
+            run_benchmark_command = f"{python_executable} {run_altis} --benchmark {benchmark} --benchmark_script_dir {os.path.join(home_dir, benchmark_script_dir)}"
     
         start = time.time()
         
@@ -133,7 +142,7 @@ if __name__ == "__main__":
             for benchmark in npb_benchmarks:
                 run_benchmark(benchmark_script_dir, benchmark, "npb", test)
 
-     if suite == 1 or suite ==3:
+    if suite == 1 or suite ==3:
         # Map of benchmarks to their paths
         benchmark_paths = {
             "level0": altis_benchmarks_0,
