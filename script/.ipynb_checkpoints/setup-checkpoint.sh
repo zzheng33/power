@@ -149,12 +149,15 @@ setup_npb() {
 }
 
 setup_cpu_freq() {
+    sudo apt-get --assume-yes install msr-tools
     sudo apt --assume-yes install cpufrequtils
     sudo modprobe cpufreq_stats
     sudo modprobe cpufreq_userspace
     sudo modprobe cpufreq_powersave
     sudo modprobe cpufreq_conservative
     sudo modprobe cpufreq_ondemand
+    sudo modprobe msr
+
 
 }
 
