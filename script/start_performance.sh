@@ -15,10 +15,6 @@
 sudo python3 exp_performance.py --suite 0 --test 0 --benchmark_size 0
 sudo python3 exp_performance.py --suite 0 --test 0 --benchmark_size 0
 
-cd ..
-git add .
-git commit -m "/"
-git push
 
 
 
