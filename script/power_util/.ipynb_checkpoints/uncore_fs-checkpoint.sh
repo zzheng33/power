@@ -10,6 +10,12 @@ fi
 # Assign the argument to a variable
 FREQUENCY_GHZ=$1
 
+# Check if the frequency is within the allowed range (0.8 GHz to 2.2 GHz)
+if (( $(echo "$FREQUENCY_GHZ < 0.8" | bc -l) )) || (( $(echo "$FREQUENCY_GHZ > 2.2" | bc -l) )); then
+    echo "Error: Frequency must be between 0.8 GHz and 2.2 GHz"
+    exit 1
+fi
+
 # Calculate the ratio (frequency in GHz * 10)
 # The base clock is typically 100 MHz, so a 1 GHz ratio is 10
 RATIO=$(echo "$FREQUENCY_GHZ * 10" | bc | awk '{printf "%d\n", $1}')
@@ -25,3 +31,4 @@ sudo wrmsr -p 0 0x620 $COMBINED_HEX
 sudo wrmsr -p 1 0x620 $COMBINED_HEX
 
 echo "Set uncore frequency to $FREQUENCY_GHZ GHz (Hex: $COMBINED_HEX) for CPU 0 and 1"
+
