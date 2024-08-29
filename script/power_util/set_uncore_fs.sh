@@ -11,8 +11,8 @@ fi
 FREQUENCY_GHZ=$1
 
 # Check if the frequency is within the allowed range (0.8 GHz to 2.2 GHz)
-if (( $(echo "$FREQUENCY_GHZ < 0.8" | bc -l) )) || (( $(echo "$FREQUENCY_GHZ > 2.2" | bc -l) )); then
-    echo "Error: Frequency must be between 0.8 GHz and 2.2 GHz"
+if (( $(echo "$FREQUENCY_GHZ < 0.8" | bc -l) )) || (( $(echo "$FREQUENCY_GHZ > 2.4" | bc -l) )); then
+    echo "Error: Frequency must be between 0.8 GHz and 2.4 GHz"
     exit 1
 fi
 
