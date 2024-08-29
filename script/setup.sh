@@ -8,6 +8,7 @@ install_dependence() {
     sudo apt-get --assume-yes install libopenmpi-dev
     # sudo apt-get --assume-yes install linux-intel-iotg-5.15-tools-common
     # sudo apt --assume-yes install linux-tools-5.4.0-174-generic
+    sudo apt --assume-yes install cpufrequtils
     sudo apt-get --assume-yes install mpich
     sudo apt --assume-yes install cmake
     sudo apt --assume-yes install python3-pip
