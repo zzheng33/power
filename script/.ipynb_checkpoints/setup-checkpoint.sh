@@ -6,6 +6,9 @@ install_dependence() {
     sudo apt-get update
     sudo apt-get --assume-yes install gfortran
     sudo apt-get --assume-yes install libopenmpi-dev
+    # sudo apt-get --assume-yes install linux-intel-iotg-5.15-tools-common
+    # sudo apt --assume-yes install linux-tools-5.4.0-174-generic
+    sudo apt --assume-yes install cpufrequtils
     sudo apt-get --assume-yes install mpich
     sudo apt --assume-yes install cmake
     sudo apt --assume-yes install python3-pip
@@ -13,7 +16,6 @@ install_dependence() {
     sudo apt-get --assume-yes install liblapack-dev
     sudo pip install jupyterlab
     sudo pip install numpy matplotlib pandas
-    sudo pip install nvidia-ml-py3
     sudo pip install scipy
     sudo pip install plotly
 }
@@ -146,6 +148,15 @@ setup_npb() {
 
 }
 
+setup_cpu_freq() {
+    sudo apt --assume-yes install cpufrequtils
+    sudo modprobe cpufreq_stats
+    sudo modprobe cpufreq_userspace
+    sudo modprobe cpufreq_powersave
+    sudo modprobe cpufreq_conservative
+    sudo modprobe cpufreq_ondemand
+
+}
 
 install_dependence
 load_benchmark
@@ -159,4 +170,4 @@ setup_XSBench
 setup_RSBench
 setup_ecp_cpu
 setup_npb
-
+setup_cpu_freq
