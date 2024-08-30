@@ -18,9 +18,8 @@ for CPU_ID in $CPU_IDS; do
     # Set the governor to userspace for the specified CPU core
     sudo cpufreq-set -c $CPU_ID -g userspace
     
-    # Set the desired frequency for the specified CPU core
-    sudo cpupower -c $CPU_ID frequency-set -f $FREQUENCY
+    # Set the desired frequency for the specified CPU core using cpufreq-set
+    sudo cpufreq-set -c $CPU_ID -f $FREQUENCY
 
     echo "CPU $CPU_ID frequency set to $FREQUENCY"
 done
-
