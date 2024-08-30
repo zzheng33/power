@@ -6,7 +6,7 @@ import argparse
 import csv
 import psutil
 import threading
-
+import tempfile
 
 # Define paths and executables
 home_dir = os.path.expanduser('~')
@@ -31,10 +31,11 @@ altis_benchmarks_1 = ['bfs','gemm','gups','pathfinder','sort']
 altis_benchmarks_2 = ['cfd','cfd_double','fdtd2d','kmeans','lavamd',
                       'nw','particlefilter_float','particlefilter_naive','raytracing',
                       'srad','where']
+
+
 altis_benchmarks_0 = []
 altis_benchmarks_1 = []
-altis_benchmarks_2 = ['raytracing',
-                      'srad','where']
+altis_benchmarks_2 = ['fdtd2d']
 
 cpu_caps = [70, 90, 110, 130, 150, 170, 190, 210, 230, 250]
 
@@ -49,57 +50,51 @@ subprocess.run(pm_command, shell=True)
 
 
 def run_benchmark(benchmark_script_dir, benchmark, suite, test):
-
     def cap_exp(cpu_cap):  
-        # subprocess.run([f"./power_util/cpu_cap.sh {cpu_cap}"], shell=True)
-        
-        # time.sleep(1)  # Wait for the power caps to take effect
-        
-        # Construct the benchmark run command
         if suite == "ecp":
             run_benchmark_command = f"{python_executable} {run_ecp} --benchmark {benchmark} --benchmark_script_dir {os.path.join(home_dir, benchmark_script_dir)}"
         elif suite == "npb":
             run_benchmark_command = f"{python_executable} {run_npb} --benchmark {benchmark} --benchmark_script_dir {os.path.join(home_dir, benchmark_script_dir)}"
         else:
             run_benchmark_command = f"{python_executable} {run_altis} --benchmark {benchmark} --benchmark_script_dir {os.path.join(home_dir, benchmark_script_dir)}"
-    
+
         start = time.time()
-        
-        # List to store IPC values
         ipc_values = []
 
-        def collect_ipc_values():
-            while True:
-                try:
-                    result = subprocess.run(['perf', 'stat', '-e', 'instructions,cycles', '-a', 'sleep', '0.2'], 
-                                            capture_output=True, text=True)
-                    for line in result.stderr.splitlines():
-                        if "insn per cycle" in line:
-                            ipc = float(line.split()[3])
-                            ipc_values.append(ipc)
-                            break
-                except Exception as e:
-                    print(f"Error collecting IPC: {e}")
-                
-                time.sleep(0.2)
+        # Create a temporary file to store the perf output
+        with tempfile.NamedTemporaryFile(delete=False) as temp_file:
+            temp_file_path = temp_file.name
 
-                # Break the loop if the benchmark process has ended
-                if benchmark_process.poll() is not None:
-                    break
-
-        # Start the benchmark process as a background process
+        # Start the benchmark process
         benchmark_process = subprocess.Popen(run_benchmark_command, shell=True)
-    
-        # Start the IPC collection in a separate thread
-        ipc_thread = threading.Thread(target=collect_ipc_values)
-        ipc_thread.start()
-    
-        # Wait for the benchmark to finish
+
+        # Start the perf process and redirect the output to the temp file
+        perf_command = ['perf', 'stat', '-I', '200', '-e', 'instructions,cycles', '-a']
+        with open(temp_file_path, 'w') as temp_file:
+            perf_process = subprocess.Popen(perf_command, stdout=temp_file, stderr=temp_file, text=True)
+
+        # Wait for the benchmark process to finish
         benchmark_process.wait()
-        ipc_thread.join()  # Ensure the IPC collection thread also finishes
+
+        # Terminate the perf process after the benchmark ends
+        perf_process.terminate()
+        perf_process.wait()
         
-        print("hello")
-        
+        # Post-process the temporary file to extract IPC values
+        with open(temp_file_path, 'r') as temp_file:
+            for line in temp_file:
+                if "insn per cycle" in line:
+                    parts = line.split()
+                    # The IPC value should be in the 4th position after splitting by spaces
+                    try:
+                        ipc = float(parts[-4])
+                        ipc_values.append(ipc)
+                    except ValueError:
+                        print(f"Skipping invalid IPC value: {parts[-4]}")
+
+        # Clean up the temporary file
+        os.remove(temp_file_path)
+
         # Write IPC values to CSV
         csv_filename = f"/home/cc/power/data/cpu_performance/{suite}/ipc_{benchmark}_{cpu_cap}.csv"
         os.makedirs(os.path.dirname(csv_filename), exist_ok=True)
@@ -108,17 +103,14 @@ def run_benchmark(benchmark_script_dir, benchmark, suite, test):
             writer = csv.writer(file)
             writer.writerow(['Time (s)', 'IPC'])
             for i, ipc in enumerate(ipc_values):
-                writer.writerow([i * 0.2, ipc])  # Assuming 0.2 seconds interval
+                writer.writerow([i * 0.2, ipc])  # Assuming 1-second intervals for simplicity
     
         end = time.time()
         runtime = end - start
-        print("Runtime: ", runtime)
+        print(f"Benchmark {benchmark} completed in {runtime:.2f} seconds")
 
-    
-    cap_exp(540)
-
-    # subprocess.run([f"./power_util/cpu_cap.sh 250"], shell=True)
-    # subprocess.run([f"./power_util/gpu_cap.sh 260"], shell=True)
+    # Run the experiment for the given CPU cap
+    cap_exp(540)  # Replace with actual `cpu_cap` values or logic as needed
 
 
 if __name__ == "__main__":
