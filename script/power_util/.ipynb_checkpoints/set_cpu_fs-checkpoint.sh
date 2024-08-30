@@ -19,7 +19,7 @@ CPU_IDS=${@:1:$#-1}
 # Iterate over each CPU ID and apply the settings
 for CPU_ID in $CPU_IDS; do
     # Set the governor to userspace for the specified CPU core
-    sudo cpufreq-set -c $CPU_ID -g userspace
+    # sudo cpufreq-set -c $CPU_ID -g userspace
     
     # Set the maximum frequency for the specified CPU core using cpufreq-set
     sudo cpufreq-set -c $CPU_ID -u $FREQUENCY  # Set the maximum frequency
