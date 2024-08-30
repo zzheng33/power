@@ -5,6 +5,8 @@ import signal
 import argparse
 import csv
 import psutil
+import threading
+
 
 # Define paths and executables
 home_dir = os.path.expanduser('~')
@@ -29,7 +31,10 @@ altis_benchmarks_1 = ['bfs','gemm','gups','pathfinder','sort']
 altis_benchmarks_2 = ['cfd','cfd_double','fdtd2d','kmeans','lavamd',
                       'nw','particlefilter_float','particlefilter_naive','raytracing',
                       'srad','where']
-
+altis_benchmarks_0 = []
+altis_benchmarks_1 = []
+altis_benchmarks_2 = ['raytracing',
+                      'srad','where']
 
 cpu_caps = [70, 90, 110, 130, 150, 170, 190, 210, 230, 250]
 
@@ -48,7 +53,7 @@ def run_benchmark(benchmark_script_dir, benchmark, suite, test):
     def cap_exp(cpu_cap):  
         # subprocess.run([f"./power_util/cpu_cap.sh {cpu_cap}"], shell=True)
         
-        time.sleep(1)  # Wait for the power caps to take effect
+        # time.sleep(1)  # Wait for the power caps to take effect
         
         # Construct the benchmark run command
         if suite == "ecp":
@@ -64,7 +69,7 @@ def run_benchmark(benchmark_script_dir, benchmark, suite, test):
         ipc_values = []
 
         def collect_ipc_values():
-            while psutil.pid_exists(benchmark_process.pid):
+            while True:
                 try:
                     result = subprocess.run(['perf', 'stat', '-e', 'instructions,cycles', '-a', 'sleep', '0.2'], 
                                             capture_output=True, text=True)
@@ -75,18 +80,28 @@ def run_benchmark(benchmark_script_dir, benchmark, suite, test):
                             break
                 except Exception as e:
                     print(f"Error collecting IPC: {e}")
+                
                 time.sleep(0.2)
 
-        # Start the benchmark process
+                # Break the loop if the benchmark process has ended
+                if benchmark_process.poll() is not None:
+                    break
+
+        # Start the benchmark process as a background process
         benchmark_process = subprocess.Popen(run_benchmark_command, shell=True)
     
-        # Start the IPC collection in a loop
-        collect_ipc_values()
+        # Start the IPC collection in a separate thread
+        ipc_thread = threading.Thread(target=collect_ipc_values)
+        ipc_thread.start()
     
+        # Wait for the benchmark to finish
         benchmark_process.wait()
-
+        ipc_thread.join()  # Ensure the IPC collection thread also finishes
+        
+        print("hello")
+        
         # Write IPC values to CSV
-        csv_filename = f"/home/cc/power/data/cpu_performance/{suite}/{benchmark}/ipc_{benchmark}_{cpu_cap}.csv"
+        csv_filename = f"/home/cc/power/data/cpu_performance/{suite}/ipc_{benchmark}_{cpu_cap}.csv"
         os.makedirs(os.path.dirname(csv_filename), exist_ok=True)
         
         with open(csv_filename, 'w', newline='') as file:
@@ -99,8 +114,7 @@ def run_benchmark(benchmark_script_dir, benchmark, suite, test):
         runtime = end - start
         print("Runtime: ", runtime)
 
- 
-   
+    
     cap_exp(540)
 
     # subprocess.run([f"./power_util/cpu_cap.sh 250"], shell=True)
