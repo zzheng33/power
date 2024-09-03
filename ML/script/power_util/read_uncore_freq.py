@@ -3,6 +3,7 @@ import csv
 import argparse
 import subprocess
 import psutil
+import os
 
 # Function to read uncore frequency for a specific core
 def read_uncore_frequency(core):
