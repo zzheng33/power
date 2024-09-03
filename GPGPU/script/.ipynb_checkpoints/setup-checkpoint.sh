@@ -6,8 +6,8 @@ install_dependence() {
     sudo apt-get update
     sudo apt-get --assume-yes install gfortran
     sudo apt-get --assume-yes install libopenmpi-dev
-    sudo apt install linux-intel-iotg-tools-common
-    sudo apt install --assume-yes linux-tools-5.15.0-92-generic
+    # sudo apt install linux-intel-iotg-tools-common
+    # sudo apt install --assume-yes linux-tools-5.15.0-92-generic
     sudo apt --assume-yes install cpufrequtils
     sudo apt-get --assume-yes install mpich
     sudo apt --assume-yes install cmake
@@ -149,6 +149,7 @@ setup_npb() {
 }
 
 setup_cpu_freq() {
+    sudo apt-get update
     sudo apt-get --assume-yes install msr-tools
     sudo apt --assume-yes install cpufrequtils
     sudo modprobe cpufreq_stats

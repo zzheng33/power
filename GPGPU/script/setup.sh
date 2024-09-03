@@ -149,6 +149,7 @@ setup_npb() {
 }
 
 setup_cpu_freq() {
+    sudo apt-get update
     sudo apt-get --assume-yes install msr-tools
     sudo apt --assume-yes install cpufrequtils
     sudo modprobe cpufreq_stats
