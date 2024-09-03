@@ -20,18 +20,22 @@ train_transforms = transforms.Compose([
 # Load the ImageNet training dataset
 train_dataset = datasets.ImageFolder(root='/home/cc/imagenet-mini/train', transform=train_transforms)
 
-# Select 50% of the dataset
+# Split the dataset into two halves
 dataset_size = len(train_dataset)
 indices = list(range(dataset_size))
 np.random.shuffle(indices)
-split = int(np.floor(1 * dataset_size))
-subset_indices = indices[:split]
+split = int(np.floor(0.5 * dataset_size))
+first_half_indices = indices[:split]
+second_half_indices = indices[split:]
 
-# Create a sampler for the subset
-subset_sampler = SubsetRandomSampler(subset_indices)
+# Function to create a DataLoader for a subset of the dataset
+def get_dataloader(subset_indices, batch_size=400, num_workers=32):
+    subset_sampler = SubsetRandomSampler(subset_indices)
+    return DataLoader(train_dataset, batch_size=batch_size, sampler=subset_sampler, num_workers=num_workers)
 
-# Create DataLoader with the subset sampler
-train_loader = DataLoader(train_dataset, batch_size=400, sampler=subset_sampler, num_workers=32)
+# Create DataLoaders for each half of the dataset
+train_loader_first_half = get_dataloader(first_half_indices)
+train_loader_second_half = get_dataloader(second_half_indices)
 
 # Load the pre-trained ResNet-50 model
 model = models.resnet50(weights=models.ResNet50_Weights.IMAGENET1K_V1)
@@ -49,61 +53,55 @@ optimizer = optim.SGD(model.parameters(), lr=0.001, momentum=0.9)
 
 # Training loop
 num_epochs = 1
-t0 = time.time()
 for epoch in range(num_epochs):
     model.train()
     running_loss = 0.0
     data_transfer_time = 0.0
     computation_time = 0.0
     
-    for i, (inputs, labels) in enumerate(train_loader):
-        # Measure data preparation time (loading and transformation)
-        inputs, labels = inputs, labels        
-        # Measure data transfer time from CPU to GPU
-        start_event = torch.cuda.Event(enable_timing=True)
-        end_event = torch.cuda.Event(enable_timing=True)
-        
-        start_event.record()
-        inputs, labels = inputs.to(device), labels.to(device)
-        end_event.record()
-        torch.cuda.synchronize()  # Wait for the events to be recorded
-        
-        batch_transfer_time = start_event.elapsed_time(end_event)  # Time in milliseconds
-        data_transfer_time += batch_transfer_time
+    # Start with the first half of the dataset
+    t0 = time.time()
+    for train_loader in [train_loader_first_half, train_loader_second_half]:
+        for i, (inputs, labels) in enumerate(train_loader):
+            # Measure data preparation time (loading and transformation)
+            inputs, labels = inputs, labels        
+            # Measure data transfer time from CPU to GPU
+            start_event = torch.cuda.Event(enable_timing=True)
+            end_event = torch.cuda.Event(enable_timing=True)
+            
+            start_event.record()
+            inputs, labels = inputs.to(device), labels.to(device)
+            end_event.record()
+            torch.cuda.synchronize()  # Wait for the events to be recorded
+            
+            batch_transfer_time = start_event.elapsed_time(end_event)  # Time in milliseconds
+            data_transfer_time += batch_transfer_time
 
-        # Zero the parameter gradients
-        optimizer.zero_grad()
+            # Zero the parameter gradients
+            optimizer.zero_grad()
 
-        # Measure computation time on GPU
-        start_event.record()
-        outputs = model(inputs)
-        loss = criterion(outputs, labels)
+            # Measure computation time on GPU
+            start_event.record()
+            outputs = model(inputs)
+            loss = criterion(outputs, labels)
 
-        # Backward pass and optimization
-        loss.backward()
-        optimizer.step()
-        end_event.record()
-        torch.cuda.synchronize()
+            # Backward pass and optimization
+            loss.backward()
+            optimizer.step()
+            end_event.record()
+            torch.cuda.synchronize()
 
-        batch_computation_time = start_event.elapsed_time(end_event)  # Time in milliseconds
-        computation_time += batch_computation_time
+            batch_computation_time = start_event.elapsed_time(end_event)  # Time in milliseconds
+            computation_time += batch_computation_time
 
-        running_loss += loss.item()
+            running_loss += loss.item()
 
-        # Print timings for the current batch
-        # print(f'Batch [{i+1}/{len(train_loader)}]')
-        # print(f'    Data Transfer Time (ms): {batch_transfer_time:.2f}')
-        # print(f'    Computation Time (ms): {batch_computation_time:.2f}')
+    t1 = time.time()
+    data_loading_time = (t1 - t0) - (data_transfer_time / 1000) - (computation_time / 1000)
 
-
-t1 = time.time()
-
-data_loading_time = (t1 - t0) - (data_transfer_time / 1000) - (computation_time / 1000)
-
-# Print the results
-print(f'Epoch [{epoch+1}/{num_epochs}]')
-print(f'Batch Loading Time (s): {data_transfer_time/1000:.2f}')
-print(f'Total Computation Time (s): {computation_time/1000:.2f}')
-print(f'Data Loading (Disk->DRAM) Time (s): {data_loading_time:.2f}')
-
+    # Print the results
+    print(f'Epoch [{epoch+1}/{num_epochs}]')
+    print(f'Batch Loading Time (s): {data_transfer_time/1000:.2f}')
+    print(f'Total Computation Time (s): {computation_time/1000:.2f}')
+    print(f'Data Loading (Disk->DRAM) Time (s): {data_loading_time:.2f}')
 
