@@ -6,8 +6,8 @@ install_dependence() {
     sudo apt-get update
     sudo apt-get --assume-yes install gfortran
     sudo apt-get --assume-yes install libopenmpi-dev
-    sudo apt install linux-intel-iotg-tools-common
-    sudo apt install --assume-yes linux-tools-5.15.0-92-generic
+    # sudo apt install linux-intel-iotg-tools-common
+    # sudo apt install --assume-yes linux-tools-5.15.0-92-generic
     sudo apt --assume-yes install cpufrequtils
     sudo apt-get --assume-yes install mpich
     sudo apt --assume-yes install cmake
