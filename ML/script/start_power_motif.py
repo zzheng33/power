@@ -12,6 +12,7 @@ python_executable = subprocess.getoutput('which python3')  # Adjust based on you
 # scripts for CPU, GPU power monitoring
 read_cpu_power = "./power_util/read_cpu_power.py"
 read_gpu_power = "./power_util/read_gpu_power.py"
+read_uncore_frequency = "./power_util/read_uncore_freq.py"
 
 
 train = './train_model/train.py'
@@ -30,10 +31,12 @@ def run_benchmark(model, test):
     if not test:
         output_cpu = f"../data/{model}/{model}_power_cpu.csv"
         output_gpu = f"../data/{model}/{model}_power_gpu.csv"
+        output_uncore = f"../data/{model}/{model}_uncore_freq.csv"
     else:
         output_cpu = f"../data/test/{model}_power_cpu.csv"
         output_gpu = f"../data/test/{model}_power_gpu.csv"
-    
+        output_uncore = f"../data/test/{model}_uncore_freq.csv"
+        
     # run_benchmark_command = f"{python_executable} {train} --model {model}"
     train_model_command = f"{python_executable} {train}"
         
@@ -41,12 +44,17 @@ def run_benchmark(model, test):
     benchmark_process = subprocess.Popen(train_model_command, shell=True)
     benchmark_pid = benchmark_process.pid
 
+
+    # start CPU power monitoring 
     monitor_command_cpu = f"echo 9900 | sudo -S {python_executable} {read_cpu_power}  --output_csv {output_cpu} --pid {benchmark_pid}"
     monitor_process = subprocess.Popen(monitor_command_cpu, shell=True, stdin=subprocess.PIPE, text=True)
     
     # Start GPU power monitoring, passing the PID of the benchmark process
     monitor_command_gpu = f"echo 9900 | sudo -S {python_executable} {read_gpu_power}  --output_csv {output_gpu} --pid {benchmark_pid}"
     monitor_process = subprocess.Popen(monitor_command_gpu, shell=True, stdin=subprocess.PIPE, text=True)
+
+     monitor_command_cpu = f"echo 9900 | sudo -S {python_executable} {read_uncore_frequency}  --output_csv {output_uncore} --pid {benchmark_pid}"
+    monitor_process = subprocess.Popen(monitor_command_cpu, shell=True, stdin=subprocess.PIPE, text=True)
 
     
     # Wait for the benchmark process to complete
