@@ -9,7 +9,7 @@ import pandas as pd
 
 
 high_uncore_freq = 1
-gpu_power_ts = 150
+gpu_power_ts = 200
 script_dir = "/home/cc/power/ML/script/power_util/"
 
 def scale_uncore_freq(gpu_powers):
@@ -22,7 +22,7 @@ def scale_uncore_freq(gpu_powers):
             high_uncore_freq = 1
         # Scale down: set uncore frequency to 0.8 GHz
         elif p > gpu_power_ts and high_uncore_freq == 1:
-            subprocess.run([script_dir + "/set_uncore_freq.sh", "0.8"], check=True)
+            subprocess.run([script_dir + "/set_uncore_freq.sh", "1"], check=True)
             high_uncore_freq = 0
 
 def get_gpu_power():
@@ -33,7 +33,7 @@ def get_gpu_power():
     return power_draws
 
 # Function to monitor power consumption of all GPUs
-def monitor_gpu_power(benchmark_pid, output_csv, avg, interval=0.2):
+def monitor_gpu_power(benchmark_pid, output_csv, avg, interval=0.1):
     start_time = time.time()
     power_data = []
 
