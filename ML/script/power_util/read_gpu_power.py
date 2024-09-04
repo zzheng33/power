@@ -6,8 +6,23 @@ import psutil
 import subprocess  # Import subprocess to run nvidia-smi
 import pandas as pd
 
-def get_gpu_power():
+
+
+high_uncore_freq = 1
+
+def scale_uncore_freq(p):
+    global high_uncore_freq
     
+    # Scale up: set uncore frequency to 2.4 GHz
+    if p <= 200 and high_uncore_freq == 0:
+        subprocess.run(["./set_uncore_freq.sh", "2.4"], check=True)
+        high_uncore_freq = 1
+    # Scale down: set uncore frequency to 0.8 GHz
+    elif p > 200 and high_uncore_freq == 1:
+        subprocess.run(["./set_uncore_freq.sh", "0.8"], check=True)
+        high_uncore_freq = 0
+
+def get_gpu_power():
     # Run the nvidia-smi command to get power usage for all GPUs, parse it
     smi_output = subprocess.check_output(['nvidia-smi', '--query-gpu=power.draw', '--format=csv,noheader,nounits'], encoding='utf-8')
     # Split the output by lines, convert each one from string to float
@@ -15,7 +30,7 @@ def get_gpu_power():
     return power_draws
 
 # Function to monitor power consumption of all GPUs
-def monitor_gpu_power(benchmark_pid, output_csv, avg, interval=0.3):
+def monitor_gpu_power(benchmark_pid, output_csv, avg, interval=0.1):
     start_time = time.time()
     power_data = []
 
@@ -25,6 +40,10 @@ def monitor_gpu_power(benchmark_pid, output_csv, avg, interval=0.3):
         elapsed_time = current_time - start_time
 
         gpu_powers = get_gpu_power()
+
+        scale_uncore_freq(gpu_powers)
+        
+        
         row = [elapsed_time] + gpu_powers
         power_data.append(row)
 
@@ -60,3 +79,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     monitor_gpu_power(args.pid, args.output_csv, args.avg)
+
+
+
+
