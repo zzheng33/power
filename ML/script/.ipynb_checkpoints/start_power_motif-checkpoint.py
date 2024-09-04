@@ -13,7 +13,7 @@ python_executable = subprocess.getoutput('which python3')  # Adjust based on you
 read_cpu_power = "./power_util/read_cpu_power.py"
 read_gpu_power = "./power_util/read_gpu_power.py"
 read_uncore_frequency = "./power_util/read_uncore_freq.py"
-
+dynamic_uncore = 1
 
 train = './train_model/train.py'
 
@@ -51,7 +51,7 @@ def run_benchmark(model, test):
     monitor_process = subprocess.Popen(monitor_command_cpu, shell=True, stdin=subprocess.PIPE, text=True)
     
     # Start GPU power monitoring, passing the PID of the benchmark process
-    monitor_command_gpu = f"echo 9900 | sudo -S {python_executable} {read_gpu_power}  --output_csv {output_gpu} --pid {benchmark_pid}"
+    monitor_command_gpu = f"echo 9900 | sudo -S {python_executable} {read_gpu_power}  --output_csv {output_gpu} --pid {benchmark_pid} --dynamic_uncore_frequency {dynamic_uncore}"
     monitor_process = subprocess.Popen(monitor_command_gpu, shell=True, stdin=subprocess.PIPE, text=True)
 
     # start CPU uncore frequency monitoring

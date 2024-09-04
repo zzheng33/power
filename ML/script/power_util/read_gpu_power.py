@@ -11,6 +11,7 @@ import pandas as pd
 high_uncore_freq = 1
 gpu_power_ts = 70
 script_dir = "/home/cc/power/ML/script/power_util/"
+dynamic_uncore = 0
 
 def scale_uncore_freq(gpu_powers):
     global high_uncore_freq
@@ -44,7 +45,8 @@ def monitor_gpu_power(benchmark_pid, output_csv, avg, interval=0.05):
 
         gpu_powers = get_gpu_power()
 
-        scale_uncore_freq(gpu_powers)
+        if dynamic_uncore:
+            scale_uncore_freq(gpu_powers)
         
         
         row = [elapsed_time] + gpu_powers
@@ -80,8 +82,9 @@ if __name__ == "__main__":
     parser.add_argument('--pid', type=int, help='PID of the benchmark process', required=True)
     parser.add_argument('--output_csv', type=str, help='Output CSV file path', required=True)
     parser.add_argument('--avg', type=str, help='avg_power', default=0)
+    parser.add_argument('--dynamic_uncore_frequency', type=int, help='enable dynamic uncore frequency scaling', default=0)
     args = parser.parse_args()
-
+    dynamic_uncore = args.dynamic_uncore_frequency
     monitor_gpu_power(args.pid, args.output_csv, args.avg)
 
 
