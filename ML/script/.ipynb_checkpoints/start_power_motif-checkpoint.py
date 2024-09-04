@@ -38,6 +38,7 @@ def run_benchmark(model, test):
         output_uncore = f"../data/test/{model}_uncore_freq.csv"
         
     # run_benchmark_command = f"{python_executable} {train} --model {model}"
+    
     train_model_command = f"{python_executable} {train}"
         
 
@@ -53,6 +54,7 @@ def run_benchmark(model, test):
     monitor_command_gpu = f"echo 9900 | sudo -S {python_executable} {read_gpu_power}  --output_csv {output_gpu} --pid {benchmark_pid}"
     monitor_process = subprocess.Popen(monitor_command_gpu, shell=True, stdin=subprocess.PIPE, text=True)
 
+    # start CPU uncore frequency monitoring
     monitor_command_cpu = f"echo 9900 | sudo -S {python_executable} {read_uncore_frequency}  --output_csv {output_uncore} --pid {benchmark_pid}"
     monitor_process = subprocess.Popen(monitor_command_cpu, shell=True, stdin=subprocess.PIPE, text=True)
 
