@@ -22,7 +22,7 @@ def scale_uncore_freq(gpu_powers):
             high_uncore_freq = 1
         # Scale down: set uncore frequency to 0.8 GHz
         elif p > gpu_power_ts and high_uncore_freq == 1:
-            subprocess.run([script_dir + "/set_uncore_freq.sh", "1"], check=True)
+            subprocess.run([script_dir + "/set_uncore_freq.sh", "1.2"], check=True)
             high_uncore_freq = 0
 
 def get_gpu_power():
