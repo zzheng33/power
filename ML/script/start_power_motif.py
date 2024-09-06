@@ -13,7 +13,7 @@ python_executable = subprocess.getoutput('which python3')  # Adjust based on you
 read_cpu_power = "./power_util/read_cpu_power.py"
 read_gpu_power = "./power_util/read_gpu_power.py"
 read_uncore_frequency = "./power_util/read_uncore_freq.py"
-dynamic_uncore = 1
+dynamic_uncore = 0
 
 train = './train_model/train.py'
 
