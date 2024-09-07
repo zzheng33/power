@@ -9,7 +9,7 @@
 # ./power_util/cpu_cap.sh 250
 # ./power_util/gpu_cap.sh 260
 
-python3 exp_power_motif.py --suite 1 --test 0 --benchmark fdtd2d
+python3 exp_power_motif.py --suite 1 --test 0 --benchmark busspeeddownload
 
 
 # python3 exp_power_motif.py --suite 0 --benchmark CRADL --test 1

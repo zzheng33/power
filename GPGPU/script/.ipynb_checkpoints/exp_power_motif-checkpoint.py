@@ -103,7 +103,7 @@ if __name__ == "__main__":
 
 
     if suite == 0 or suite ==3:
-        benchmark_script_dir = f"power/script/run_benchmark/ecp_script"
+        benchmark_script_dir = f"power/GPGPU/script/run_benchmark/ecp_script"
         # single test
         if benchmark:
             run_benchmark(benchmark_script_dir, benchmark,"ecp",test)
@@ -126,31 +126,31 @@ if __name__ == "__main__":
             found = False
             for level, benchmarks in benchmark_paths.items():
                 if benchmark in benchmarks:
-                    benchmark_script_dir = f"power/script/run_benchmark/altis_script/{level}"
+                    benchmark_script_dir = f"power/GPGPU/script/run_benchmark/altis_script/{level}"
                     run_benchmark(benchmark_script_dir, benchmark,"altis",test)
                     found = True
                     break
         else:
     
             for benchmark in altis_benchmarks_0:
-                benchmark_script_dir = "power/script/run_benchmark/altis_script/level0"
+                benchmark_script_dir = "power/GPGPU/script/run_benchmark/altis_script/level0"
                 run_benchmark(benchmark_script_dir, benchmark,"altis",test)
             
             
             for benchmark in altis_benchmarks_1:
-                benchmark_script_dir = "power/script/run_benchmark/altis_script/level1"
+                benchmark_script_dir = "power/GPGPU/script/run_benchmark/altis_script/level1"
                 run_benchmark(benchmark_script_dir, benchmark,"altis",test)
             
             
             for benchmark in altis_benchmarks_2:
-                benchmark_script_dir = "power/script/run_benchmark/altis_script/level2"
+                benchmark_script_dir = "power/GPGPU/script/run_benchmark/altis_script/level2"
                 run_benchmark(benchmark_script_dir, benchmark,"altis",test)
 
 
     if suite == 2 or suite == 3:
-        benchmark_script_dir = f"power/script/run_benchmark/npb_script/big/"
+        benchmark_script_dir = f"power/GPGPU/script/run_benchmark/npb_script/big/"
         if benchmark_size ==1:
-            benchmark_script_dir = f"power/script/run_benchmark/npb_script/small/"
+            benchmark_script_dir = f"power/GPGPU/script/run_benchmark/npb_script/small/"
         
         # single test
         if benchmark:
