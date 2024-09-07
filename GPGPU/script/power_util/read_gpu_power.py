@@ -3,50 +3,35 @@ import os
 import csv
 import argparse
 import psutil
-import subprocess  # Import subprocess to run nvidia-smi
+import subprocess  
 import pandas as pd
 
-# Function to get current GPU power usage
-# def get_gpu_power():
-#     try:
-#         # Run the nvidia-smi command to get power usage, parse it
-#         smi_output = subprocess.check_output(['nvidia-smi', '--query-gpu=power.draw', '--format=csv,noheader,nounits'], encoding='utf-8')
-#         power_draw = float(smi_output.strip())  # Convert power draw from string to float
-#         return power_draw
-#     except Exception as e:
-#         print(f"Error getting GPU power usage: {e}")
-#         return 0
 
-# # Function to monitor power consumption of GPU
-# def monitor_gpu_power(benchmark_pid, output_csv, interval=0.1):
-#     start_time = time.time()
-#     power_data = []
 
-#     while psutil.pid_exists(benchmark_pid):
-#         time.sleep(interval)
-#         current_time = time.time()
-#         elapsed_time = current_time - start_time
+high_uncore_freq = 1
+gpu_power_ts = 70
+script_dir = "/home/cc/power/ML/script/power_util/"
+dynamic_uncore = 0
 
-#         gpu_power = get_gpu_power()
+def scale_uncore_freq(gpu_powers):
+    global high_uncore_freq
 
-#         power_data.append([elapsed_time, gpu_power])
-
-#     os.makedirs(os.path.dirname(output_csv), exist_ok=True)
-#     with open(output_csv, 'w', newline='') as file:
-#         writer = csv.writer(file)
-#         writer.writerow(['Time (s)', 'GPU Power (W)'])
-#         writer.writerows(power_data)
+    for p in gpu_powers:
+        # Scale up: set uncore frequency to 2.4 GHz
+        if p <= gpu_power_ts and high_uncore_freq == 0:
+            subprocess.run([script_dir + "/set_uncore_freq.sh", "2.4"], check=True)
+            high_uncore_freq = 1
+        # Scale down: set uncore frequency to 0.8 GHz
+        elif p > gpu_power_ts and high_uncore_freq == 1:
+            subprocess.run([script_dir + "/set_uncore_freq.sh", "0.8"], check=True)
+            high_uncore_freq = 0
 
 def get_gpu_power():
-    try:
-        # Run the nvidia-smi command to get power usage for all GPUs, parse it
-        smi_output = subprocess.check_output(['nvidia-smi', '--query-gpu=power.draw', '--format=csv,noheader,nounits'], encoding='utf-8')
-        # Split the output by lines, convert each one from string to float
-        power_draws = [float(power_draw.strip()) for power_draw in smi_output.strip().split('\n')]
-        return power_draws
-    except Exception as e:
-        print(f"Error getting GPU power usage: {e}")
-        return []
+    # Run the nvidia-smi command to get power usage for all GPUs, parse it
+    smi_output = subprocess.check_output(['nvidia-smi', '--query-gpu=power.draw', '--format=csv,noheader,nounits'], encoding='utf-8')
+    # Split the output by lines, convert each one from string to float
+    power_draws = [float(power_draw.strip()) for power_draw in smi_output.strip().split('\n')]
+    return power_draws
 
 # Function to monitor power consumption of all GPUs
 def monitor_gpu_power(benchmark_pid, output_csv, avg, interval=0.1):
@@ -59,9 +44,15 @@ def monitor_gpu_power(benchmark_pid, output_csv, avg, interval=0.1):
         elapsed_time = current_time - start_time
 
         gpu_powers = get_gpu_power()
+
+        if dynamic_uncore:
+            scale_uncore_freq(gpu_powers)
+        
+        
         row = [elapsed_time] + gpu_powers
         power_data.append(row)
 
+    subprocess.run([script_dir + "/set_uncore_freq.sh", "2.4"], check=True)
     os.makedirs(os.path.dirname(output_csv), exist_ok=True)
 
     if avg:
@@ -91,6 +82,11 @@ if __name__ == "__main__":
     parser.add_argument('--pid', type=int, help='PID of the benchmark process', required=True)
     parser.add_argument('--output_csv', type=str, help='Output CSV file path', required=True)
     parser.add_argument('--avg', type=str, help='avg_power', default=0)
+    parser.add_argument('--dynamic_uncore_frequency', type=int, help='enable dynamic uncore frequency scaling', default=0)
     args = parser.parse_args()
-
+    dynamic_uncore = args.dynamic_uncore_frequency
     monitor_gpu_power(args.pid, args.output_csv, args.avg)
+
+
+
+

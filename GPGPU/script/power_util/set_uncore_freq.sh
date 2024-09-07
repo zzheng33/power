@@ -30,5 +30,5 @@ COMBINED_HEX="0x${RATIO_HEX}${RATIO_HEX}"
 sudo wrmsr -p 0 0x620 $COMBINED_HEX
 sudo wrmsr -p 1 0x620 $COMBINED_HEX
 
-echo "Set uncore frequency to $FREQUENCY_GHZ GHz (Hex: $COMBINED_HEX) for CPU 0 and 1"
+# echo "Set uncore frequency to $FREQUENCY_GHZ GHz (Hex: $COMBINED_HEX) for CPU 0 and 1"
 
