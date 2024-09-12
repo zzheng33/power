@@ -52,8 +52,8 @@ def monitor_gpu_power(benchmark_pid, output_csv, avg, interval=0.1):
         row = [elapsed_time] + gpu_powers
         power_data.append(row)
 
-    subprocess.run([script_dir + "/set_uncore_freq.sh", "2.4"], check=True)
-    os.makedirs(os.path.dirname(output_csv), exist_ok=True)
+    # subprocess.run([script_dir + "/set_uncore_freq.sh", "2.4"], check=True)
+    # os.makedirs(os.path.dirname(output_csv), exist_ok=True)
 
     if avg:
         file_exists = os.path.isfile(output_csv)
