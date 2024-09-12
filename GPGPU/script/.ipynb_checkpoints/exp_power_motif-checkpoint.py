@@ -40,6 +40,8 @@ subprocess.run(modprobe_command, shell=True)
 subprocess.run(sysctl_command, shell=True)
 subprocess.run(pm_command, shell=True)
 
+dynamic_uncore_fs = 1
+
 
 def run_benchmark(benchmark_script_dir,benchmark, suite, test):
     if not test:
@@ -69,7 +71,7 @@ def run_benchmark(benchmark_script_dir,benchmark, suite, test):
     
     if suite == "altis" or suite == "ecp": 
         # Start GPU power monitoring, passing the PID of the benchmark process
-        monitor_command_gpu = f"echo 9900 | sudo -S {python_executable} {read_gpu_power}  --output_csv {output_gpu} --pid {benchmark_pid}"
+        monitor_command_gpu = f"echo 9900 | sudo -S {python_executable} {read_gpu_power}  --output_csv {output_gpu} --pid {benchmark_pid} --dynamic_uncore {dynamic_uncore_fs} "
         monitor_process = subprocess.Popen(monitor_command_gpu, shell=True, stdin=subprocess.PIPE, text=True)
 
     # Wait for the benchmark process to complete
@@ -95,6 +97,8 @@ if __name__ == "__main__":
     parser.add_argument('--suite', type=int, help='0 for ECP, 1 for ALTIS, 2 for NPB, 3 for all', default=1)
     parser.add_argument('--benchmark_size', type=int, help='0 for big, 1 for small', default=0)
     parser.add_argument('--low_uncore', type=int, help='0 for no, 1 for yes', default=0)
+    parser.add_argument('--dynamic_uncore_fs', type=int, help='0 for no, 1 for yes', default=0)
+    
     
 
 
@@ -103,6 +107,7 @@ if __name__ == "__main__":
     test = args.test
     suite = args.suite
     benchmark_size = args.benchmark_size
+    dynamic_uncore_fs = args.dynamic_uncore_fs
 
     script_dir = "/home/cc/power/ML/script/power_util/"
     if args.low_uncore:
