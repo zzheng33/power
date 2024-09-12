@@ -121,10 +121,10 @@ if __name__ == "__main__":
     dynamic_uncore_fs = args.dynamic_uncore_fs
 
     script_dir = "/home/cc/power/ML/script/power_util/"
-    if args.low_uncore:
-        subprocess.run([script_dir + "/set_uncore_freq.sh", "0.8"], check=True)
-    else:
-        subprocess.run([script_dir + "/set_uncore_freq.sh", "2.4"], check=True)
+    # if args.low_uncore:
+    #     subprocess.run([script_dir + "/set_uncore_freq.sh", "0.8"], check=True)
+    # else:
+    #     subprocess.run([script_dir + "/set_uncore_freq.sh", "2.4"], check=True)
 
 
     if suite == 0 or suite ==3:
