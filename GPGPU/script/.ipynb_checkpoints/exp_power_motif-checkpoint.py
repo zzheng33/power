@@ -19,6 +19,10 @@ run_altis = "./run_benchmark/run_altis.py"
 run_ecp = "./run_benchmark/run_ecp.py"
 run_npb = "./run_benchmark/run_npb.py"
 
+
+# gpu power threshold for trigger the dynamic uncore frequency scaling
+gpu_power_ts = 70
+
 # Define your benchmarks, for testing replace the list with just ['FT'] for example
 ecp_benchmarks = ['FT', 'CG', 'LULESH', 'Nekbone', 'AMG2013', 'miniFE']
 
@@ -74,7 +78,7 @@ def run_benchmark(benchmark_script_dir,benchmark, suite, test):
     
     if suite == "altis" or suite == "ecp": 
         # Start GPU power monitoring, passing the PID of the benchmark process
-        monitor_command_gpu = f"echo 9900 | sudo -S {python_executable} {read_gpu_power}  --output_csv {output_gpu} --pid {benchmark_pid} --dynamic_uncore {dynamic_uncore_fs} "
+        monitor_command_gpu = f"echo 9900 | sudo -S {python_executable} {read_gpu_power}  --output_csv {output_gpu} --pid {benchmark_pid} --dynamic_uncore {dynamic_uncore_fs} --gpu_power_ts {gpu_power_ts}"
         monitor_process = subprocess.Popen(monitor_command_gpu, shell=True, stdin=subprocess.PIPE, text=True)
 
     # start CPU uncore frequency monitoring

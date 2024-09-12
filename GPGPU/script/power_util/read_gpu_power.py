@@ -9,7 +9,7 @@ import pandas as pd
 
 
 high_uncore_freq = 1
-gpu_power_ts = 50
+gpu_power_ts = 0
 script_dir = "/home/cc/power/ML/script/power_util/"
 dynamic_uncore = 0
 
@@ -83,8 +83,11 @@ if __name__ == "__main__":
     parser.add_argument('--output_csv', type=str, help='Output CSV file path', required=True)
     parser.add_argument('--avg', type=str, help='avg_power', default=0)
     parser.add_argument('--dynamic_uncore_frequency', type=int, help='enable dynamic uncore frequency scaling', default=0)
+    parser.add_argument('--gpu_power_ts', type=int, help='gpu power threshold for dynamic uncore frequency scaling', default=70)
     args = parser.parse_args()
     dynamic_uncore = args.dynamic_uncore_frequency
+    gpu_power_ts = args.gpu_power_ts
+    
     monitor_gpu_power(args.pid, args.output_csv, args.avg)
 
 
