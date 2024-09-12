@@ -107,10 +107,8 @@ if __name__ == "__main__":
     script_dir = "/home/cc/power/ML/script/power_util/"
     if args.low_uncore:
         subprocess.run([script_dir + "/set_uncore_freq.sh", "0.8"], check=True)
-        os.makedirs(os.path.dirname(output_csv), exist_ok=True)
     else:
         subprocess.run([script_dir + "/set_uncore_freq.sh", "2.4"], check=True)
-        os.makedirs(os.path.dirname(output_csv), exist_ok=True)
 
 
     if suite == 0 or suite ==3:
