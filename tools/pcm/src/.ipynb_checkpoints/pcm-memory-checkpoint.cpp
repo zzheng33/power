@@ -28,7 +28,7 @@
 #include <fstream>
 #include <iomanip>  
 
-#define PCM_DELAY_DEFAULT 0.2 // in seconds
+#define PCM_DELAY_DEFAULT 1 // in seconds
 #define PCM_DELAY_MIN 0.015 // 15 milliseconds is practical on most modern CPUs
 
 #define DEFAULT_DISPLAY_COLUMNS 2
