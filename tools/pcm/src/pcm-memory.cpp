@@ -1415,40 +1415,40 @@ int mainThrows(int argc, char * argv[])
     m->disableJKTWorkaround();
     print_cpu_details();
     const auto cpu_model = m->getCPUModel();
-    // if (!m->hasPCICFGUncore())
-    // {
-    //     cerr << "Unsupported processor model (" << cpu_model << ").\n";
-    //     if (m->memoryTrafficMetricsAvailable())
-    //         cerr << "For processor-level memory bandwidth statistics please use 'pcm' utility\n";
-    //     exit(EXIT_FAILURE);
-    // }
-    // if (anyPmem(metrics) && (m->PMMTrafficMetricsAvailable() == false))
-    // {
-    //     cerr << "PMM/Pmem traffic metrics are not available on your processor.\n";
-    //     exit(EXIT_FAILURE);
-    // }
-    // if (metrics == PmemMemoryMode && m->PMMMemoryModeMetricsAvailable() == false)
-    // {
-    //    cerr << "PMM Memory Mode metrics are not available on your processor.\n";
-    //    exit(EXIT_FAILURE);
-    // }
-    // if (metrics == PmemMixedMode && m->PMMMixedModeMetricsAvailable() == false)
-    // {
-    //     cerr << "PMM Mixed Mode metrics are not available on your processor.\n";
-    //     exit(EXIT_FAILURE);
-    // }
-    // if((rankA >= 0 || rankB >= 0) && anyPmem(metrics))
-    // {
-    //     cerr << "PMM/Pmem traffic metrics are not available on rank level\n";
-    //     exit(EXIT_FAILURE);
-    // }
-    // if((rankA >= 0 || rankB >= 0) && !show_channel_output)
-    // {
-    //     cerr << "Rank level output requires channel output\n";
-    //     exit(EXIT_FAILURE);
-    // }
-    // PCM::ErrorCode status = m->programServerUncoreMemoryMetrics(metrics, rankA, rankB);
-    // m->checkError(status);
+    if (!m->hasPCICFGUncore())
+    {
+        cerr << "Unsupported processor model (" << cpu_model << ").\n";
+        if (m->memoryTrafficMetricsAvailable())
+            cerr << "For processor-level memory bandwidth statistics please use 'pcm' utility\n";
+        exit(EXIT_FAILURE);
+    }
+    if (anyPmem(metrics) && (m->PMMTrafficMetricsAvailable() == false))
+    {
+        cerr << "PMM/Pmem traffic metrics are not available on your processor.\n";
+        exit(EXIT_FAILURE);
+    }
+    if (metrics == PmemMemoryMode && m->PMMMemoryModeMetricsAvailable() == false)
+    {
+       cerr << "PMM Memory Mode metrics are not available on your processor.\n";
+       exit(EXIT_FAILURE);
+    }
+    if (metrics == PmemMixedMode && m->PMMMixedModeMetricsAvailable() == false)
+    {
+        cerr << "PMM Mixed Mode metrics are not available on your processor.\n";
+        exit(EXIT_FAILURE);
+    }
+    if((rankA >= 0 || rankB >= 0) && anyPmem(metrics))
+    {
+        cerr << "PMM/Pmem traffic metrics are not available on rank level\n";
+        exit(EXIT_FAILURE);
+    }
+    if((rankA >= 0 || rankB >= 0) && !show_channel_output)
+    {
+        cerr << "Rank level output requires channel output\n";
+        exit(EXIT_FAILURE);
+    }
+    PCM::ErrorCode status = m->programServerUncoreMemoryMetrics(metrics, rankA, rankB);
+    m->checkError(status);
 
     max_imc_channels = (pcm::uint32)m->getMCChannelsPerSocket();
 

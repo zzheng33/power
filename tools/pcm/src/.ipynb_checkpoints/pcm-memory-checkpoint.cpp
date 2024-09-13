@@ -1041,20 +1041,20 @@ void calculate_bandwidth(PCM *m,
 
     const auto CXL_Read_BW = toBW(SPR_CHA_CXL_Count);
 
-    // if (csv)
-    // {
-    //     if (csvheader)
-    //     {
-    //         display_bandwidth_csv(m, &md, elapsedTime, show_channel_output, Header1, CXL_Read_BW);
-    //         display_bandwidth_csv(m, &md, elapsedTime, show_channel_output, Header2, CXL_Read_BW);
-    //         csvheader = false;
-    //     }
-    //     display_bandwidth_csv(m, &md, elapsedTime, show_channel_output, Data, CXL_Read_BW);
-    // }
-    // else
-    // {
-    //     display_bandwidth(m, &md, no_columns, show_channel_output, print_update, CXL_Read_BW);
-    // }
+    if (csv)
+    {
+        if (csvheader)
+        {
+            display_bandwidth_csv(m, &md, elapsedTime, show_channel_output, Header1, CXL_Read_BW);
+            display_bandwidth_csv(m, &md, elapsedTime, show_channel_output, Header2, CXL_Read_BW);
+            csvheader = false;
+        }
+        display_bandwidth_csv(m, &md, elapsedTime, show_channel_output, Data, CXL_Read_BW);
+    }
+    else
+    {
+        display_bandwidth(m, &md, no_columns, show_channel_output, print_update, CXL_Read_BW);
+    }
 }
 
 void calculate_bandwidth_rank(PCM *m, const std::vector<ServerUncoreCounterState> & uncState1, const std::vector<ServerUncoreCounterState>& uncState2,
@@ -1232,8 +1232,8 @@ PCM_MAIN_NOTHROW;
 
 int mainThrows(int argc, char * argv[])
 {
-    if(print_version(argc, argv))
-        exit(EXIT_SUCCESS);
+    // if(print_version(argc, argv))
+    //     exit(EXIT_SUCCESS);
 
     null_stream nullStream2;
 #ifdef PCM_FORCE_SILENT
@@ -1246,12 +1246,12 @@ int mainThrows(int argc, char * argv[])
 
     set_signal_handlers();
 
-    cerr << "\n";
-    cerr << " Intel(r) Performance Counter Monitor: Memory Bandwidth Monitoring Utility " << PCM_VERSION << "\n";
-    cerr << "\n";
+    // cerr << "\n";
+    // cerr << " Intel(r) Performance Counter Monitor: Memory Bandwidth Monitoring Utility " << PCM_VERSION << "\n";
+    // cerr << "\n";
 
-    cerr << " This utility measures memory bandwidth per channel or per DIMM rank in real-time\n";
-    cerr << "\n";
+    // cerr << " This utility measures memory bandwidth per channel or per DIMM rank in real-time\n";
+    // cerr << "\n";
 
     double delay = -1.0;
     bool csv = false, csvheader = false, show_channel_output = true, print_update = false;
@@ -1265,11 +1265,13 @@ int mainThrows(int argc, char * argv[])
 
     PCM * m = PCM::getInstance();
     assert(m);
-    if (m->getNumSockets() > max_sockets)
-    {
-        cerr << "Only systems with up to " << max_sockets << " sockets are supported! Program aborted\n";
-        exit(EXIT_FAILURE);
-    }
+
+    // if (m->getNumSockets() > max_sockets)
+    // {
+    //     cerr << "Only systems with up to " << max_sockets << " sockets are supported! Program aborted\n";
+    //     exit(EXIT_FAILURE);
+    // }
+
     ServerUncoreMemoryMetrics metrics;
     metrics = m->PMMTrafficMetricsAvailable() ? Pmem : PartialWrites;
 
@@ -1468,7 +1470,7 @@ int mainThrows(int argc, char * argv[])
         // for non-CSV mode delay < 1.0 does not make a lot of practical sense:
         // hard to read from the screen, or
         // in case delay is not provided in command line => set default
-        if( ((delay<1.0) && (delay>0.0)) || (delay<=0.0) ) delay = PCM_DELAY_DEFAULT;
+        if( (delay<=0.0) ) delay = PCM_DELAY_DEFAULT;
     }
 
     shared_ptr<CHAEventCollector> chaEventCollector;
@@ -1481,10 +1483,10 @@ int mainThrows(int argc, char * argv[])
          chaEventCollector->programFirstGroup();
     }
 
-    cerr << "Update every " << delay << " seconds\n";
+    // cerr << "Update every " << delay << " seconds\n";
 
-    if (csv)
-        cerr << "Read/Write values expressed in (MB/s)" << endl;
+    // if (csv)
+    //     cerr << "Read/Write values expressed in (MB/s)" << endl;
 
     readState(BeforeState);
 
@@ -1525,7 +1527,8 @@ int mainThrows(int argc, char * argv[])
         }
 
         if(rankA >= 0 || rankB >= 0)
-          calculate_bandwidth_rank(m,BeforeState, AfterState, AfterTime - BeforeTime, csv, csvheader, no_columns, rankA, rankB);
+          {printf("hello");
+          calculate_bandwidth_rank(m,BeforeState, AfterState, AfterTime - BeforeTime, csv, csvheader, no_columns, rankA, rankB);}
         else
           calculate_bandwidth(m,BeforeState,AfterState,AfterTime-BeforeTime,csv,csvheader, no_columns, metrics,
                 show_channel_output, print_update, SPR_CHA_CXL_Event_Count);
