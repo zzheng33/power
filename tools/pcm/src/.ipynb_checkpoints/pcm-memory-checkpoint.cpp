@@ -25,8 +25,10 @@
 #include <assert.h>
 #include "cpucounters.h"
 #include "utils.h"
+#include <fstream>
+#include <iomanip>  
 
-#define PCM_DELAY_DEFAULT 1.0 // in seconds
+#define PCM_DELAY_DEFAULT 0.2 // in seconds
 #define PCM_DELAY_MIN 0.015 // 15 milliseconds is practical on most modern CPUs
 
 #define DEFAULT_DISPLAY_COLUMNS 2
@@ -533,12 +535,29 @@ void display_bandwidth(PCM *m, memdata_t *md, const uint32 no_columns, const boo
     {
         // cout << "\
         //     \r|---------------------------------------||---------------------------------------|\n";
-        if (anyPmem(md->metrics))
-        {
-            cout << "\
-            \r           System Memory Read Throughput(MB/s):" << setw(14) << sysReadDRAM <<                                     "                --|\n\
-            \r          System Memory Write Throughput(MB/s):" << setw(14) << sysWriteDRAM <<                                    "                --|\n";
-        }
+        // if (anyPmem(md->metrics))
+        // {
+        //     cout << "\
+        //     \r           System Memory Read Throughput(MB/s):" << setw(14) << sysReadDRAM <<                                     "                --|\n\
+        //     \r          System Memory Write Throughput(MB/s):" << setw(14) << sysWriteDRAM <<                                    "                --|\n";
+        // }
+
+        std::ofstream outfile("/home/cc/power/GPGPU/data/throughput.csv", std::ios::app); // Open file in append mode
+        if (outfile.is_open()) {
+            double totalThroughput = sysReadDRAM + sysWriteDRAM;
+            static bool firstWrite = true;
+                if (firstWrite) {
+                    outfile << "sys_mem_r(MB/s), sys_mem_w(MB/s), total(MB/s)\n";
+                    firstWrite = false;
+                }
+            
+                // Output the data in one row
+                outfile << sysReadDRAM << "," << sysWriteDRAM << "," << totalThroughput << "\n";
+            
+                outfile.close();  // Close the file after writing
+            } else {
+                std::cerr << "Unable to open file for writing!" << std::endl;
+            }
 
         // if (anyPmem(md->metrics))
         // {
