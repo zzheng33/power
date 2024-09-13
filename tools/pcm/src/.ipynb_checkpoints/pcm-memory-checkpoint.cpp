@@ -559,7 +559,7 @@ void display_bandwidth(PCM *m, memdata_t *md, const uint32 no_columns, const boo
             double totalThroughput = sysReadDRAM + sysWriteDRAM;
             static bool firstWrite = true;
                 if (firstWrite) {
-                    outfile << "sys_mem_r(MB/s), sys_mem_w(MB/s), total(MB/s)\n";
+                    outfile << "Time, sys_mem_r(MB/s), sys_mem_w(MB/s), total(MB/s)\n";
                     firstWrite = false;
                 }
             
