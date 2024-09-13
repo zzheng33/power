@@ -536,17 +536,24 @@ void display_bandwidth(PCM *m, memdata_t *md, const uint32 no_columns, const boo
         if (anyPmem(md->metrics))
         {
             cout << "\
-            \r|--            System DRAM Read Throughput(MB/s):" << setw(14) << sysReadDRAM <<                                     "                --|\n\
-            \r|--           System DRAM Write Throughput(MB/s):" << setw(14) << sysWriteDRAM <<                                    "                --|\n\
-            \r|--             System PMM Read Throughput(MB/s):" << setw(14) << sysReadPMM <<                                      "                --|\n\
-            \r|--            System PMM Write Throughput(MB/s):" << setw(14) << sysWritePMM <<                                     "                --|\n";
+            \r           System Memory Read Throughput(MB/s):" << setw(14) << sysReadDRAM <<                                     "                --|\n\
+            \r          System Memory Write Throughput(MB/s):" << setw(14) << sysWriteDRAM <<                                    "                --|\n";
         }
 
-        cout << "\
-            \r|--                 System Read Throughput(MB/s):" << setw(14) << sysReadDRAM+sysReadPMM <<                          "                --|\n\
-            \r|--                System Write Throughput(MB/s):" << setw(14) << sysWriteDRAM+sysWritePMM <<                        "                --|\n\
-            \r|--               System Memory Throughput(MB/s):" << setw(14) << sysReadDRAM+sysReadPMM+sysWriteDRAM+sysWritePMM << "                --|\n\
-            \r|---------------------------------------||---------------------------------------|\n";
+        // if (anyPmem(md->metrics))
+        // {
+        //     cout << "\
+        //     \r|--            System DRAM Read Throughput(MB/s):" << setw(14) << sysReadDRAM <<                                     "                --|\n\
+        //     \r|--           System DRAM Write Throughput(MB/s):" << setw(14) << sysWriteDRAM <<                                    "                --|\n\
+        //     \r|--             System PMM Read Throughput(MB/s):" << setw(14) << sysReadPMM <<                                      "                --|\n\
+        //     \r|--            System PMM Write Throughput(MB/s):" << setw(14) << sysWritePMM <<                                     "                --|\n";
+        // }
+
+        // cout << "\
+        //     \r|--                 System Read Throughput(MB/s):" << setw(14) << sysReadDRAM+sysReadPMM <<                          "                --|\n\
+        //     \r|--                System Write Throughput(MB/s):" << setw(14) << sysWriteDRAM+sysWritePMM <<                        "                --|\n\
+        //     \r|--               System Memory Throughput(MB/s):" << setw(14) << sysReadDRAM+sysReadPMM+sysWriteDRAM+sysWritePMM << "                --|\n\
+        //     \r|---------------------------------------||---------------------------------------|\n";
     
     
     }
