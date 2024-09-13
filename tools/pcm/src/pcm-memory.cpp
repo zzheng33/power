@@ -1,4 +1,3 @@
-
 // SPDX-License-Identifier: BSD-3-Clause
 // Copyright (c) 2009-2022, Intel Corporation
 // written by Patrick Lu
@@ -504,11 +503,11 @@ void display_bandwidth(PCM *m, memdata_t *md, const uint32 no_columns, const boo
             };
         auto printRow = [&skt,&show_channel_output,&m,&md,&sysReadDRAM,&sysWriteDRAM, &sysReadPMM, &sysWritePMM](const uint32 no_columns)
         {
-            // printSocketBWHeader(no_columns, skt, show_channel_output);
-            // if (show_channel_output)
-            //     printSocketChannelBW(m, md, no_columns, skt);
-            // printSocketBWFooter(no_columns, skt, md);
-            // printSocketCXLBW(m, md, no_columns, skt);
+            printSocketBWHeader(no_columns, skt, show_channel_output);
+            if (show_channel_output)
+                printSocketChannelBW(m, md, no_columns, skt);
+            printSocketBWFooter(no_columns, skt, md);
+            printSocketCXLBW(m, md, no_columns, skt);
             for (uint32 i = skt; i < (skt + no_columns); i++)
             {
                 sysReadDRAM += md->iMC_Rd_socket[i];
@@ -1232,8 +1231,8 @@ PCM_MAIN_NOTHROW;
 
 int mainThrows(int argc, char * argv[])
 {
-    // if(print_version(argc, argv))
-    //     exit(EXIT_SUCCESS);
+    if(print_version(argc, argv))
+        exit(EXIT_SUCCESS);
 
     null_stream nullStream2;
 #ifdef PCM_FORCE_SILENT
@@ -1265,13 +1264,11 @@ int mainThrows(int argc, char * argv[])
 
     PCM * m = PCM::getInstance();
     assert(m);
-
     // if (m->getNumSockets() > max_sockets)
     // {
     //     cerr << "Only systems with up to " << max_sockets << " sockets are supported! Program aborted\n";
     //     exit(EXIT_FAILURE);
     // }
-
     ServerUncoreMemoryMetrics metrics;
     metrics = m->PMMTrafficMetricsAvailable() ? Pmem : PartialWrites;
 
@@ -1415,38 +1412,38 @@ int mainThrows(int argc, char * argv[])
     m->disableJKTWorkaround();
     print_cpu_details();
     const auto cpu_model = m->getCPUModel();
-    if (!m->hasPCICFGUncore())
-    {
-        cerr << "Unsupported processor model (" << cpu_model << ").\n";
-        if (m->memoryTrafficMetricsAvailable())
-            cerr << "For processor-level memory bandwidth statistics please use 'pcm' utility\n";
-        exit(EXIT_FAILURE);
-    }
-    if (anyPmem(metrics) && (m->PMMTrafficMetricsAvailable() == false))
-    {
-        cerr << "PMM/Pmem traffic metrics are not available on your processor.\n";
-        exit(EXIT_FAILURE);
-    }
-    if (metrics == PmemMemoryMode && m->PMMMemoryModeMetricsAvailable() == false)
-    {
-       cerr << "PMM Memory Mode metrics are not available on your processor.\n";
-       exit(EXIT_FAILURE);
-    }
-    if (metrics == PmemMixedMode && m->PMMMixedModeMetricsAvailable() == false)
-    {
-        cerr << "PMM Mixed Mode metrics are not available on your processor.\n";
-        exit(EXIT_FAILURE);
-    }
-    if((rankA >= 0 || rankB >= 0) && anyPmem(metrics))
-    {
-        cerr << "PMM/Pmem traffic metrics are not available on rank level\n";
-        exit(EXIT_FAILURE);
-    }
-    if((rankA >= 0 || rankB >= 0) && !show_channel_output)
-    {
-        cerr << "Rank level output requires channel output\n";
-        exit(EXIT_FAILURE);
-    }
+    // if (!m->hasPCICFGUncore())
+    // {
+    //     cerr << "Unsupported processor model (" << cpu_model << ").\n";
+    //     if (m->memoryTrafficMetricsAvailable())
+    //         cerr << "For processor-level memory bandwidth statistics please use 'pcm' utility\n";
+    //     exit(EXIT_FAILURE);
+    // }
+    // if (anyPmem(metrics) && (m->PMMTrafficMetricsAvailable() == false))
+    // {
+    //     cerr << "PMM/Pmem traffic metrics are not available on your processor.\n";
+    //     exit(EXIT_FAILURE);
+    // }
+    // if (metrics == PmemMemoryMode && m->PMMMemoryModeMetricsAvailable() == false)
+    // {
+    //    cerr << "PMM Memory Mode metrics are not available on your processor.\n";
+    //    exit(EXIT_FAILURE);
+    // }
+    // if (metrics == PmemMixedMode && m->PMMMixedModeMetricsAvailable() == false)
+    // {
+    //     cerr << "PMM Mixed Mode metrics are not available on your processor.\n";
+    //     exit(EXIT_FAILURE);
+    // }
+    // if((rankA >= 0 || rankB >= 0) && anyPmem(metrics))
+    // {
+    //     cerr << "PMM/Pmem traffic metrics are not available on rank level\n";
+    //     exit(EXIT_FAILURE);
+    // }
+    // if((rankA >= 0 || rankB >= 0) && !show_channel_output)
+    // {
+    //     cerr << "Rank level output requires channel output\n";
+    //     exit(EXIT_FAILURE);
+    // }
     PCM::ErrorCode status = m->programServerUncoreMemoryMetrics(metrics, rankA, rankB);
     m->checkError(status);
 
@@ -1527,8 +1524,7 @@ int mainThrows(int argc, char * argv[])
         }
 
         if(rankA >= 0 || rankB >= 0)
-          {printf("hello");
-          calculate_bandwidth_rank(m,BeforeState, AfterState, AfterTime - BeforeTime, csv, csvheader, no_columns, rankA, rankB);}
+          calculate_bandwidth_rank(m,BeforeState, AfterState, AfterTime - BeforeTime, csv, csvheader, no_columns, rankA, rankB);
         else
           calculate_bandwidth(m,BeforeState,AfterState,AfterTime-BeforeTime,csv,csvheader, no_columns, metrics,
                 show_channel_output, print_update, SPR_CHA_CXL_Event_Count);
