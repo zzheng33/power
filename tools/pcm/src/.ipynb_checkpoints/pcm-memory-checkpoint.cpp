@@ -1,4 +1,3 @@
-
 // SPDX-License-Identifier: BSD-3-Clause
 // Copyright (c) 2009-2022, Intel Corporation
 // written by Patrick Lu
@@ -1232,8 +1231,8 @@ PCM_MAIN_NOTHROW;
 
 int mainThrows(int argc, char * argv[])
 {
-    // if(print_version(argc, argv))
-    //     exit(EXIT_SUCCESS);
+    if(print_version(argc, argv))
+        exit(EXIT_SUCCESS);
 
     null_stream nullStream2;
 #ifdef PCM_FORCE_SILENT
@@ -1265,13 +1264,11 @@ int mainThrows(int argc, char * argv[])
 
     PCM * m = PCM::getInstance();
     assert(m);
-
     // if (m->getNumSockets() > max_sockets)
     // {
     //     cerr << "Only systems with up to " << max_sockets << " sockets are supported! Program aborted\n";
     //     exit(EXIT_FAILURE);
     // }
-
     ServerUncoreMemoryMetrics metrics;
     metrics = m->PMMTrafficMetricsAvailable() ? Pmem : PartialWrites;
 
