@@ -430,14 +430,14 @@ void display_bandwidth(PCM *m, memdata_t *md, const uint32 no_columns, const boo
     {
         auto printHBM = [&]()
         {
-                cout << "\
-                    \r|---------------------------------------||---------------------------------------|\n\
-                    \r|--                              Processor socket "
-                     << skt << "                            --|\n\
-                    \r|---------------------------------------||---------------------------------------|\n\
-                    \r|--       DRAM Channel Monitoring     --||--        HBM Channel Monitoring     --|\n\
-                    \r|---------------------------------------||---------------------------------------|\n\
-                    \r";
+                // cout << "\
+                //     \r|---------------------------------------||---------------------------------------|\n\
+                //     \r|--                              Processor socket "
+                //      << skt << "                            --|\n\
+                //     \r|---------------------------------------||---------------------------------------|\n\
+                //     \r|--       DRAM Channel Monitoring     --||--        HBM Channel Monitoring     --|\n\
+                //     \r|---------------------------------------||---------------------------------------|\n\
+                //     \r";
                 const uint32 max_channels = (std::max)(max_edc_channels, max_imc_channels);
                 if (show_channel_output)
                 {
@@ -465,38 +465,38 @@ void display_bandwidth(PCM *m, memdata_t *md, const uint32 no_columns, const boo
                             EDC_Wr = -1.0;
                         }
 
-                        if (iMC_Rd >= 0.0 && iMC_Wr >= 0.0 && EDC_Rd >= 0.0 && EDC_Wr >= 0.0)
-                            cout << "|-- DRAM Ch " << setw(2) << channel << ": Reads (MB/s):" << setw(8) << iMC_Rd
-                                 << " --||-- HBM Ch " << setw(2) << channel << ": Reads (MB/s):" << setw(9) << EDC_Rd
-                                 << " --|\n|--             Writes(MB/s):" << setw(8) << iMC_Wr
-                                 << " --||--            Writes(MB/s):" << setw(9) << EDC_Wr
-                                 << " --|\n";
-                        else if ((iMC_Rd < 0.0 || iMC_Wr < 0.0) && EDC_Rd >= 0.0 && EDC_Wr >= 0.0)
-                            cout << "|--                                  "
-                                 << " --||-- HBM Ch " << setw(2) << channel << ": Reads (MB/s):" << setw(9) << EDC_Rd
-                                 << " --|\n|--                                  "
-                                 << " --||--            Writes(MB/s):" << setw(9) << EDC_Wr
-                                 << " --|\n";
+                        // if (iMC_Rd >= 0.0 && iMC_Wr >= 0.0 && EDC_Rd >= 0.0 && EDC_Wr >= 0.0)
+                        //     cout << "|-- DRAM Ch " << setw(2) << channel << ": Reads (MB/s):" << setw(8) << iMC_Rd
+                        //          << " --||-- HBM Ch " << setw(2) << channel << ": Reads (MB/s):" << setw(9) << EDC_Rd
+                        //          << " --|\n|--             Writes(MB/s):" << setw(8) << iMC_Wr
+                        //          << " --||--            Writes(MB/s):" << setw(9) << EDC_Wr
+                        //          << " --|\n";
+                        // else if ((iMC_Rd < 0.0 || iMC_Wr < 0.0) && EDC_Rd >= 0.0 && EDC_Wr >= 0.0)
+                        //     cout << "|--                                  "
+                        //          << " --||-- HBM Ch " << setw(2) << channel << ": Reads (MB/s):" << setw(9) << EDC_Rd
+                        //          << " --|\n|--                                  "
+                        //          << " --||--            Writes(MB/s):" << setw(9) << EDC_Wr
+                        //          << " --|\n";
 
-                        else if (iMC_Rd >= 0.0 && iMC_Wr >= 0.0 && (EDC_Rd < 0.0 || EDC_Wr < 0.0))
-                            cout << "|-- DRAM Ch " << setw(2) << channel << ": Reads (MB/s):" << setw(8) << iMC_Rd
-                                 << " --||--                                  "
-                                 << " --|\n|--             Writes(MB/s):" << setw(8) << iMC_Wr
-                                 << " --||--                                  "
-                                 << " --|\n";
-                        else
-                            continue;
+                        // else if (iMC_Rd >= 0.0 && iMC_Wr >= 0.0 && (EDC_Rd < 0.0 || EDC_Wr < 0.0))
+                        //     cout << "|-- DRAM Ch " << setw(2) << channel << ": Reads (MB/s):" << setw(8) << iMC_Rd
+                        //          << " --||--                                  "
+                        //          << " --|\n|--             Writes(MB/s):" << setw(8) << iMC_Wr
+                        //          << " --||--                                  "
+                        //          << " --|\n";
+                        // else
+                        //     continue;
                     }
                 }
-                cout << "\
-                    \r|-- DRAM Mem Read  (MB/s):"
-                     << setw(11) << md->iMC_Rd_socket[skt] << " --||-- HBM Read (MB/s):" << setw(14+3) << md->EDC_Rd_socket[skt] << " --|\n\
-                    \r|-- DRAM Mem Write (MB/s):"
-                     << setw(11) << md->iMC_Wr_socket[skt] << " --||-- HBM Write(MB/s):" << setw(14+3) << md->EDC_Wr_socket[skt] << " --|\n\
-                    \r|-- DRAM Memory (MB/s)   :"
-                     << setw(11) << md->iMC_Rd_socket[skt] + md->iMC_Wr_socket[skt] << " --||-- HBM (MB/s)     :" << setw(14+3) << md->EDC_Rd_socket[skt] + md->EDC_Wr_socket[skt] << " --|\n\
-                    \r|---------------------------------------||---------------------------------------|\n\
-                    \r";
+                // cout << "\
+                //     \r|-- DRAM Mem Read  (MB/s):"
+                //      << setw(11) << md->iMC_Rd_socket[skt] << " --||-- HBM Read (MB/s):" << setw(14+3) << md->EDC_Rd_socket[skt] << " --|\n\
+                //     \r|-- DRAM Mem Write (MB/s):"
+                //      << setw(11) << md->iMC_Wr_socket[skt] << " --||-- HBM Write(MB/s):" << setw(14+3) << md->EDC_Wr_socket[skt] << " --|\n\
+                //     \r|-- DRAM Memory (MB/s)   :"
+                //      << setw(11) << md->iMC_Rd_socket[skt] + md->iMC_Wr_socket[skt] << " --||-- HBM (MB/s)     :" << setw(14+3) << md->EDC_Rd_socket[skt] + md->EDC_Wr_socket[skt] << " --|\n\
+                //     \r|---------------------------------------||---------------------------------------|\n\
+                //     \r";
 
                 sysReadDRAM += (md->iMC_Rd_socket[skt] + md->EDC_Rd_socket[skt]);
                 sysWriteDRAM += (md->iMC_Wr_socket[skt] + md->EDC_Wr_socket[skt]);
@@ -504,11 +504,11 @@ void display_bandwidth(PCM *m, memdata_t *md, const uint32 no_columns, const boo
             };
         auto printRow = [&skt,&show_channel_output,&m,&md,&sysReadDRAM,&sysWriteDRAM, &sysReadPMM, &sysWritePMM](const uint32 no_columns)
         {
-            printSocketBWHeader(no_columns, skt, show_channel_output);
-            if (show_channel_output)
-                printSocketChannelBW(m, md, no_columns, skt);
-            printSocketBWFooter(no_columns, skt, md);
-            printSocketCXLBW(m, md, no_columns, skt);
+            // printSocketBWHeader(no_columns, skt, show_channel_output);
+            // if (show_channel_output)
+            //     printSocketChannelBW(m, md, no_columns, skt);
+            // printSocketBWFooter(no_columns, skt, md);
+            // printSocketCXLBW(m, md, no_columns, skt);
             for (uint32 i = skt; i < (skt + no_columns); i++)
             {
                 sysReadDRAM += md->iMC_Rd_socket[i];
@@ -532,8 +532,8 @@ void display_bandwidth(PCM *m, memdata_t *md, const uint32 no_columns, const boo
         }
     }
     {
-        cout << "\
-            \r|---------------------------------------||---------------------------------------|\n";
+        // cout << "\
+        //     \r|---------------------------------------||---------------------------------------|\n";
         if (anyPmem(md->metrics))
         {
             cout << "\

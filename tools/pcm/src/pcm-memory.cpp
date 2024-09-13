@@ -518,18 +518,18 @@ void display_bandwidth(PCM *m, memdata_t *md, const uint32 no_columns, const boo
             }
             skt += no_columns;
         };
-        // if (m->HBMmemoryTrafficMetricsAvailable())
-        // {
-        //     printHBM(); // no_columns is ignored, always 1 socket at a time
-        // }
-        // else if ((skt + no_columns) <= numSockets) // Full row
-        // {
-        //     printRow(no_columns);
-        // }
-        // else //Display the remaining sockets in this row
-        // {
-        //     printRow(numSockets - skt);
-        // }
+        if (m->HBMmemoryTrafficMetricsAvailable())
+        {
+            printHBM(); // no_columns is ignored, always 1 socket at a time
+        }
+        else if ((skt + no_columns) <= numSockets) // Full row
+        {
+            printRow(no_columns);
+        }
+        else //Display the remaining sockets in this row
+        {
+            printRow(numSockets - skt);
+        }
     }
     {
         // cout << "\
