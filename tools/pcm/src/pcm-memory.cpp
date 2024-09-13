@@ -1,4 +1,3 @@
-
 // SPDX-License-Identifier: BSD-3-Clause
 // Copyright (c) 2009-2022, Intel Corporation
 // written by Patrick Lu
@@ -504,11 +503,11 @@ void display_bandwidth(PCM *m, memdata_t *md, const uint32 no_columns, const boo
             };
         auto printRow = [&skt,&show_channel_output,&m,&md,&sysReadDRAM,&sysWriteDRAM, &sysReadPMM, &sysWritePMM](const uint32 no_columns)
         {
-            // printSocketBWHeader(no_columns, skt, show_channel_output);
-            // if (show_channel_output)
-            //     printSocketChannelBW(m, md, no_columns, skt);
-            // printSocketBWFooter(no_columns, skt, md);
-            // printSocketCXLBW(m, md, no_columns, skt);
+            printSocketBWHeader(no_columns, skt, show_channel_output);
+            if (show_channel_output)
+                printSocketChannelBW(m, md, no_columns, skt);
+            printSocketBWFooter(no_columns, skt, md);
+            printSocketCXLBW(m, md, no_columns, skt);
             for (uint32 i = skt; i < (skt + no_columns); i++)
             {
                 sysReadDRAM += md->iMC_Rd_socket[i];
@@ -1232,8 +1231,8 @@ PCM_MAIN_NOTHROW;
 
 int mainThrows(int argc, char * argv[])
 {
-    // if(print_version(argc, argv))
-    //     exit(EXIT_SUCCESS);
+    if(print_version(argc, argv))
+        exit(EXIT_SUCCESS);
 
     null_stream nullStream2;
 #ifdef PCM_FORCE_SILENT
@@ -1265,13 +1264,11 @@ int mainThrows(int argc, char * argv[])
 
     PCM * m = PCM::getInstance();
     assert(m);
-
     // if (m->getNumSockets() > max_sockets)
     // {
     //     cerr << "Only systems with up to " << max_sockets << " sockets are supported! Program aborted\n";
     //     exit(EXIT_FAILURE);
     // }
-
     ServerUncoreMemoryMetrics metrics;
     metrics = m->PMMTrafficMetricsAvailable() ? Pmem : PartialWrites;
 
