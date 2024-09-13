@@ -416,6 +416,17 @@ void printSocketBWFooter(uint32 no_columns, uint32 skt, const memdata_t *md)
     cout << "\n";
 }
 
+
+std::string getCurrentTime() {
+    auto now = std::chrono::system_clock::now();
+    std::time_t now_time = std::chrono::system_clock::to_time_t(now);
+    std::tm* local_time = std::localtime(&now_time);
+    
+    std::ostringstream oss;
+    oss << std::put_time(local_time, "%Y-%m-%d %H:%M:%S");
+    return oss.str();
+}
+
 void display_bandwidth(PCM *m, memdata_t *md, const uint32 no_columns, const bool show_channel_output, const bool print_update, const float CXL_Read_BW)
 {
     float sysReadDRAM = 0.0, sysWriteDRAM = 0.0, sysReadPMM = 0.0, sysWritePMM = 0.0;
@@ -542,6 +553,7 @@ void display_bandwidth(PCM *m, memdata_t *md, const uint32 no_columns, const boo
         //     \r          System Memory Write Throughput(MB/s):" << setw(14) << sysWriteDRAM <<                                    "                --|\n";
         // }
 
+
         std::ofstream outfile("/home/cc/power/GPGPU/data/throughput.csv", std::ios::app); // Open file in append mode
         if (outfile.is_open()) {
             double totalThroughput = sysReadDRAM + sysWriteDRAM;
@@ -552,9 +564,12 @@ void display_bandwidth(PCM *m, memdata_t *md, const uint32 no_columns, const boo
                 }
             
                 // Output the data in one row
-                outfile << sysReadDRAM << "," << sysWriteDRAM << "," << totalThroughput << "\n";
+                std::string timestamp = getCurrentTime();
             
-                outfile.close();  // Close the file after writing
+                // Output the timestamp and data in one row
+                outfile << timestamp << "," << sysReadDRAM << "," << sysWriteDRAM << "," << totalThroughput << "\n";
+            
+                outfile.close();
             } else {
                 std::cerr << "Unable to open file for writing!" << std::endl;
             }
