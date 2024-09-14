@@ -107,7 +107,7 @@ if __name__ == "__main__":
     parser.add_argument('--test', type=int, help='whether it is a test run', default=None)
     parser.add_argument('--suite', type=int, help='0 for ECP, 1 for ALTIS, 2 for NPB, 3 for all', default=1)
     parser.add_argument('--benchmark_size', type=int, help='0 for big, 1 for small', default=0)
-    parser.add_argument('--low_uncore', type=int, help='0 for no, 1 for yes', default=0)
+    parser.add_argument('--low_uncore', type=int, help='0 for no, 1 for yes, 2 for manual', default=2)
     parser.add_argument('--dynamic_uncore_fs', type=int, help='0 for no, 1 for yes', default=0)
     
     
@@ -121,10 +121,13 @@ if __name__ == "__main__":
     dynamic_uncore_fs = args.dynamic_uncore_fs
 
     script_dir = "/home/cc/power/ML/script/power_util/"
-    if args.low_uncore:
+    
+    if args.low_uncore == 1:
         subprocess.run([script_dir + "/set_uncore_freq.sh", "0.8"], check=True)
-    else:
+    elif args.low_uncore == 0:
         subprocess.run([script_dir + "/set_uncore_freq.sh", "2.4"], check=True)
+    else:
+        pass
 
 
     if suite == 0 or suite ==3:

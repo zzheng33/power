@@ -554,7 +554,7 @@ void display_bandwidth(PCM *m, memdata_t *md, const uint32 no_columns, const boo
         // }
 
 
-        std::ofstream outfile("/home/cc/power/GPGPU/data/throughput.csv", std::ios::app); // Open file in append mode
+        std::ofstream outfile("/home/cc/power/GPGPU/data/altis_power_res/throughput.csv", std::ios::app); // Open file in append mode
         if (outfile.is_open()) {
             double totalThroughput = sysReadDRAM + sysWriteDRAM;
             static bool firstWrite = true;
