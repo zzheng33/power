@@ -26,7 +26,9 @@
 #include "cpucounters.h"
 #include "utils.h"
 #include <fstream>
-#include <iomanip>  
+#include <iomanip>
+#include <cstdlib> // For system() function
+
 
 #define PCM_DELAY_DEFAULT 1 // in seconds
 #define PCM_DELAY_MIN 0.015 // 15 milliseconds is practical on most modern CPUs
@@ -1271,8 +1273,14 @@ PCM_MAIN_NOTHROW;
 
 int mainThrows(int argc, char * argv[])
 {
-    if(print_version(argc, argv))
-        exit(EXIT_SUCCESS);
+    int result = system("sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh 0.8 0.8");
+    if (result != 0) {
+        std::cerr << "Error: Failed to set the uncore frequency using the script." << std::endl;
+        return 1; // Exit the program if setting the frequency fails
+    }
+    
+    // if(print_version(argc, argv))
+    //     exit(EXIT_SUCCESS);
 
     null_stream nullStream2;
 #ifdef PCM_FORCE_SILENT
