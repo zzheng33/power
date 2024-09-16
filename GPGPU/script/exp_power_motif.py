@@ -140,7 +140,7 @@ if __name__ == "__main__":
     parser.add_argument('--uncore_0', type=float, default=2.4)
     parser.add_argument('--uncore_1', type=float, default=2.4)
     parser.add_argument('--dynamic_uncore_fs', type=int, help='0 for no, 1 for yes', default=0)
-     parser.add_argument('--pcm', type=int, help='0 for no, 1 for yes', default=0)
+    parser.add_argument('--pcm', type=int, help='0 for no, 1 for yes', default=0)
     
     
 
