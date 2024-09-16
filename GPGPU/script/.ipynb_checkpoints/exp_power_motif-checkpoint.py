@@ -92,13 +92,15 @@ def run_benchmark(benchmark_script_dir,benchmark, suite, test):
 
 
     # start pcm-memory
-    monitor_command_memory = f"echo 9900 | sudo -S {read_memory} 0.5"
+    monitor_command_memory = f"echo 9900 | sudo -S {read_memory} 0.1"
     monitor_process_memory = subprocess.Popen(monitor_command_memory, shell=True, stdin=subprocess.PIPE, text=True)
 
 
     # Wait for the benchmark process to complete
     benchmark_exit_code = benchmark_process.wait()
 
+
+    # kill pcm-memory
     if monitor_process_memory.poll() is None:  # Check if it's still running
         parent_pid = monitor_process_memory.pid
             # Get the parent process
@@ -133,7 +135,8 @@ if __name__ == "__main__":
     parser.add_argument('--test', type=int, help='whether it is a test run', default=None)
     parser.add_argument('--suite', type=int, help='0 for ECP, 1 for ALTIS, 2 for NPB, 3 for all', default=1)
     parser.add_argument('--benchmark_size', type=int, help='0 for big, 1 for small', default=0)
-    parser.add_argument('--uncore', type=float, default=2.4)
+    parser.add_argument('--uncore_0', type=float, default=2.4)
+    parser.add_argument('--uncore_1', type=float, default=2.4)
     parser.add_argument('--dynamic_uncore_fs', type=int, help='0 for no, 1 for yes', default=0)
     
     
@@ -146,11 +149,10 @@ if __name__ == "__main__":
     benchmark_size = args.benchmark_size
     dynamic_uncore_fs = args.dynamic_uncore_fs
 
-    script_dir = "/home/cc/power/ML/script/power_util/"
+    script_dir = "/home/cc/power/GPGPU/script/power_util/"
 
     if not args.dynamic_uncore_fs:
-        uncore_freq = args.uncore
-        subprocess.run([script_dir + "/set_uncore_freq.sh", str(uncore_freq)]) 
+        subprocess.run([script_dir + "/set_uncore_freq.sh", str(args.uncore_0), str(args.uncore_1)]) 
 
 
 

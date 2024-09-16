@@ -9,9 +9,9 @@
 # ./power_util/cpu_cap.sh 250
 # ./power_util/gpu_cap.sh 260
 
-python3 exp_power_motif.py --suite 1 --test 0  --dynamic_uncore_fs 0 --uncore 2.4 --benchmark busspeeddownload
+python3 exp_power_motif.py --suite 1 --test 0  --dynamic_uncore_fs 0 --uncore_0 2.4 --uncore_1 2.4 --benchmark nw
 
-./power_util/set_uncore_freq.sh 2.4
+./power_util/set_uncore_freq.sh 2.4 2.4
 
 # python3 exp_power_motif.py --suite 0 --benchmark CRADL --test 1
 
