@@ -27,6 +27,7 @@ read_memory = "/home/cc/power/tools/pcm/build/bin/pcm-memory"
 
 # gpu power threshold for trigger the dynamic uncore frequency scaling
 gpu_power_ts = 70
+pcm = 0
 
 # Define your benchmarks, for testing replace the list with just ['FT'] for example
 ecp_benchmarks = ['FT', 'CG', 'LULESH', 'Nekbone', 'AMG2013', 'miniFE']
@@ -90,29 +91,30 @@ def run_benchmark(benchmark_script_dir,benchmark, suite, test):
     monitor_command_cpu = f"echo 9900 | sudo -S {python_executable} {read_uncore_frequency}  --output_csv {output_uncore} --pid {benchmark_pid}"
     monitor_process = subprocess.Popen(monitor_command_cpu, shell=True, stdin=subprocess.PIPE, text=True)
 
-
-    # start pcm-memory
-    monitor_command_memory = f"echo 9900 | sudo -S {read_memory} 0.1"
-    monitor_process_memory = subprocess.Popen(monitor_command_memory, shell=True, stdin=subprocess.PIPE, text=True)
+    if pcm:
+        # start pcm-memory
+        monitor_command_memory = f"echo 9900 | sudo -S {read_memory} 0.1"
+        monitor_process_memory = subprocess.Popen(monitor_command_memory, shell=True, stdin=subprocess.PIPE, text=True)
 
 
     # Wait for the benchmark process to complete
     benchmark_exit_code = benchmark_process.wait()
 
 
-    # kill pcm-memory
-    if monitor_process_memory.poll() is None:  # Check if it's still running
-        parent_pid = monitor_process_memory.pid
-            # Get the parent process
-        parent = psutil.Process(parent_pid)
-        # Find and kill child processes
-        children = parent.children(recursive=True)
-        for child in children:
-            try:
-                child.terminate()  # Or child.kill() for a forceful kill
-            except:
-                pass
-        
+    if pcm:
+        # kill pcm-memory
+        if monitor_process_memory.poll() is None:  # Check if it's still running
+            parent_pid = monitor_process_memory.pid
+                # Get the parent process
+            parent = psutil.Process(parent_pid)
+            # Find and kill child processes
+            children = parent.children(recursive=True)
+            for child in children:
+                try:
+                    child.terminate()  # Or child.kill() for a forceful kill
+                except:
+                    pass
+            
 
     
 
@@ -138,6 +140,7 @@ if __name__ == "__main__":
     parser.add_argument('--uncore_0', type=float, default=2.4)
     parser.add_argument('--uncore_1', type=float, default=2.4)
     parser.add_argument('--dynamic_uncore_fs', type=int, help='0 for no, 1 for yes', default=0)
+     parser.add_argument('--pcm', type=int, help='0 for no, 1 for yes', default=0)
     
     
 
@@ -148,6 +151,7 @@ if __name__ == "__main__":
     suite = args.suite
     benchmark_size = args.benchmark_size
     dynamic_uncore_fs = args.dynamic_uncore_fs
+    pcm = args.pcm
 
     script_dir = "/home/cc/power/GPGPU/script/power_util/"
 
