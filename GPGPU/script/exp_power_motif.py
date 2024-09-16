@@ -3,21 +3,26 @@ import subprocess
 import time
 import signal
 import argparse
+import psutil
 
 
 # Define paths and executables
 home_dir = os.path.expanduser('~')
+home_dir = "/home/cc/"
 python_executable = subprocess.getoutput('which python3')  # Adjust based on your Python version
 
 # scripts for CPU, GPU power monitoring
 read_cpu_power = "./power_util/read_cpu_power.py"
 read_gpu_power = "./power_util/read_gpu_power.py"
 read_uncore_frequency = "./power_util/read_uncore_freq.py"
+# read_memory = "./power_util/read_memory_throughput.py"
 
 # scritps for running various benchmarks
 run_altis = "./run_benchmark/run_altis.py"
 run_ecp = "./run_benchmark/run_ecp.py"
 run_npb = "./run_benchmark/run_npb.py"
+
+read_memory = "/home/cc/power/tools/pcm/build/bin/pcm-memory"
 
 
 # gpu power threshold for trigger the dynamic uncore frequency scaling
@@ -85,8 +90,29 @@ def run_benchmark(benchmark_script_dir,benchmark, suite, test):
     monitor_command_cpu = f"echo 9900 | sudo -S {python_executable} {read_uncore_frequency}  --output_csv {output_uncore} --pid {benchmark_pid}"
     monitor_process = subprocess.Popen(monitor_command_cpu, shell=True, stdin=subprocess.PIPE, text=True)
 
+
+    # start pcm-memory
+    monitor_command_memory = f"echo 9900 | sudo -S {read_memory} 0.5"
+    monitor_process_memory = subprocess.Popen(monitor_command_memory, shell=True, stdin=subprocess.PIPE, text=True)
+
+
     # Wait for the benchmark process to complete
     benchmark_exit_code = benchmark_process.wait()
+
+    if monitor_process_memory.poll() is None:  # Check if it's still running
+        parent_pid = monitor_process_memory.pid
+            # Get the parent process
+        parent = psutil.Process(parent_pid)
+        # Find and kill child processes
+        children = parent.children(recursive=True)
+        for child in children:
+            try:
+                child.terminate()  # Or child.kill() for a forceful kill
+            except:
+                pass
+        
+
+    
 
     end = time.time()
     runtime = end - start
