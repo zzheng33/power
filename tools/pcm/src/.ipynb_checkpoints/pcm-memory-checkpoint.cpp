@@ -35,6 +35,9 @@
 
 #define DEFAULT_DISPLAY_COLUMNS 2
 
+void record_mem_throughput(double sysReadDRAM, double sysWriteDRAM);
+
+
 using namespace std;
 using namespace pcm;
 
@@ -546,55 +549,49 @@ void display_bandwidth(PCM *m, memdata_t *md, const uint32 no_columns, const boo
         }
     }
     {
-        // cout << "\
-        //     \r|---------------------------------------||---------------------------------------|\n";
-        // if (anyPmem(md->metrics))
-        // {
-        //     cout << "\
-        //     \r           System Memory Read Throughput(MB/s):" << setw(14) << sysReadDRAM <<                                     "                --|\n\
-        //     \r          System Memory Write Throughput(MB/s):" << setw(14) << sysWriteDRAM <<                                    "                --|\n";
-        // }
 
 
-        std::ofstream outfile("/home/cc/power/GPGPU/data/altis_power_res/throughput.csv", std::ios::app); // Open file in append mode
-        if (outfile.is_open()) {
-            double totalThroughput = sysReadDRAM + sysWriteDRAM;
-            static bool firstWrite = true;
-                if (firstWrite) {
-                    outfile << "Time, sys_mem_r(MB/s), sys_mem_w(MB/s), total(MB/s)\n";
-                    firstWrite = false;
-                }
-            
-                // Output the data in one row
-                std::string timestamp = getCurrentTime();
-            
-                // Output the timestamp and data in one row
-                outfile << timestamp << "," << sysReadDRAM << "," << sysWriteDRAM << "," << totalThroughput << "\n";
-            
-                outfile.close();
-            } else {
-                std::cerr << "Unable to open file for writing!" << std::endl;
-            }
+        
+        // record the memory throughput to csv 
+        record_mem_throughput(sysReadDRAM, sysWriteDRAM);
+        
 
-        // if (anyPmem(md->metrics))
-        // {
-        //     cout << "\
-        //     \r|--            System DRAM Read Throughput(MB/s):" << setw(14) << sysReadDRAM <<                                     "                --|\n\
-        //     \r|--           System DRAM Write Throughput(MB/s):" << setw(14) << sysWriteDRAM <<                                    "                --|\n\
-        //     \r|--             System PMM Read Throughput(MB/s):" << setw(14) << sysReadPMM <<                                      "                --|\n\
-        //     \r|--            System PMM Write Throughput(MB/s):" << setw(14) << sysWritePMM <<                                     "                --|\n";
-        // }
-
-        // cout << "\
-        //     \r|--                 System Read Throughput(MB/s):" << setw(14) << sysReadDRAM+sysReadPMM <<                          "                --|\n\
-        //     \r|--                System Write Throughput(MB/s):" << setw(14) << sysWriteDRAM+sysWritePMM <<                        "                --|\n\
-        //     \r|--               System Memory Throughput(MB/s):" << setw(14) << sysReadDRAM+sysReadPMM+sysWriteDRAM+sysWritePMM << "                --|\n\
-        //     \r|---------------------------------------||---------------------------------------|\n";
     
     
     }
     
 }
+
+void record_mem_throughput(double sysReadDRAM, double sysWriteDRAM)
+{
+    // Open file in append mode
+    std::ofstream outfile("/home/cc/power/GPGPU/data/altis_power_res/throughput.csv", std::ios::app);
+
+    // Check if file opened successfully
+    if (outfile.is_open()) {
+        double totalThroughput = sysReadDRAM + sysWriteDRAM;
+        static bool firstWrite = true;
+
+        // Write headers the first time
+        if (firstWrite) {
+            outfile << "Time, sys_mem_r(MB/s), sys_mem_w(MB/s), total(MB/s)\n";
+            firstWrite = false;
+        }
+
+        // Get the current timestamp
+        std::string timestamp = getCurrentTime();
+
+        // Write the timestamp and throughput values to the file
+        outfile << timestamp << "," << sysReadDRAM << "," << sysWriteDRAM << "," << totalThroughput << "\n";
+
+        // Close the file
+        outfile.close();
+    } else {
+        std::cerr << "Unable to open file for writing!" << std::endl;
+    }
+}
+
+
 
 constexpr float CXLBWWrScalingFactor = 0.5;
 
@@ -1274,10 +1271,7 @@ PCM_MAIN_NOTHROW;
 int mainThrows(int argc, char * argv[])
 {
     int result = system("sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh 0.8 0.8");
-    if (result != 0) {
-        std::cerr << "Error: Failed to set the uncore frequency using the script." << std::endl;
-        return 1; // Exit the program if setting the frequency fails
-    }
+
     
     // if(print_version(argc, argv))
     //     exit(EXIT_SUCCESS);
