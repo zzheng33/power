@@ -8,7 +8,6 @@ import psutil
 
 # Define paths and executables
 home_dir = os.path.expanduser('~')
-home_dir = "/home/cc/"
 python_executable = subprocess.getoutput('which python3')  # Adjust based on your Python version
 
 # scripts for CPU, GPU power monitoring
@@ -66,7 +65,7 @@ def run_benchmark(benchmark_script_dir,benchmark, suite, test):
     
     # Execute the benchmark and get its PID
     if suite == "altis":
-        run_benchmark_command = f"taskset -c 0 {python_executable} {run_altis} --benchmark {benchmark} --benchmark_script_dir {os.path.join(home_dir, benchmark_script_dir)}"
+        run_benchmark_command = f" taskset -c 0 {python_executable} {run_altis} --benchmark {benchmark} --benchmark_script_dir {os.path.join(home_dir, benchmark_script_dir)}"
 
     elif suite == "ecp":
         run_benchmark_command = f"{python_executable} {run_ecp} --benchmark {benchmark} --benchmark_script_dir {os.path.join(home_dir, benchmark_script_dir)}"
@@ -79,12 +78,12 @@ def run_benchmark(benchmark_script_dir,benchmark, suite, test):
     benchmark_pid = benchmark_process.pid
 
     # Start CPU power monitoring, passing the PID of the benchmark process
-    monitor_command_cpu = f"echo 9900 | sudo -S {python_executable} {read_cpu_power}  --output_csv {output_cpu} --pid {benchmark_pid}"
+    monitor_command_cpu = f"echo 9900 | sudo -S taskset -c 1 {python_executable} {read_cpu_power}  --output_csv {output_cpu} --pid {benchmark_pid}"
     monitor_process = subprocess.Popen(monitor_command_cpu, shell=True, stdin=subprocess.PIPE, text=True)
     
     if suite == "altis" or suite == "ecp": 
         # Start GPU power monitoring, passing the PID of the benchmark process
-        monitor_command_gpu = f"echo 9900 | sudo -S {python_executable} {read_gpu_power}  --output_csv {output_gpu} --pid {benchmark_pid} --dynamic_uncore {dynamic_uncore_fs} --gpu_power_ts {gpu_power_ts}"
+        monitor_command_gpu = f"echo 9900 | sudo -S taskset -c 3 {python_executable} {read_gpu_power}  --output_csv {output_gpu} --pid {benchmark_pid} --dynamic_uncore {dynamic_uncore_fs} --gpu_power_ts {gpu_power_ts}"
         monitor_process = subprocess.Popen(monitor_command_gpu, shell=True, stdin=subprocess.PIPE, text=True)
 
     # start CPU uncore frequency monitoring
@@ -93,7 +92,7 @@ def run_benchmark(benchmark_script_dir,benchmark, suite, test):
 
     if pcm:
         # start pcm-memory
-        monitor_command_memory = f"echo 9900 | sudo -S {read_memory} 0.1"
+        monitor_command_memory = f"echo 9900 | sudo -S taskset -c 5 {read_memory} 0.1"
         monitor_process_memory = subprocess.Popen(monitor_command_memory, shell=True, stdin=subprocess.PIPE, text=True)
 
 
@@ -155,9 +154,9 @@ if __name__ == "__main__":
 
     script_dir = "/home/cc/power/GPGPU/script/power_util/"
 
-    if not args.dynamic_uncore_fs:
-        subprocess.run([script_dir + "/set_uncore_freq.sh", str(args.uncore_0), str(args.uncore_1)]) 
-
+    # if not args.dynamic_uncore_fs:
+    # set initial uncore frequency
+    subprocess.run([script_dir + "/set_uncore_freq.sh", str(args.uncore_0), str(args.uncore_1)]) 
 
 
     if suite == 0 or suite ==3:
