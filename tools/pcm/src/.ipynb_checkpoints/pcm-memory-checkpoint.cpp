@@ -552,8 +552,9 @@ void display_bandwidth(PCM *m, memdata_t *md, const uint32 no_columns, const boo
     {
 
         // record the memory throughput to csv 
-        dynamic_ufs(sysReadDRAM, sysWriteDRAM);
         record_mem_throughput(sysReadDRAM, sysWriteDRAM);
+        // dynamic_ufs(sysReadDRAM, sysWriteDRAM);
+        
         
 
     
@@ -578,12 +579,12 @@ void dynamic_ufs(double sysReadDRAM, double sysWriteDRAM) {
     if (currentThroughput >= 5 * previousThroughput) {
         // Increase uncore frequency to 1.6 GHz if the current throughput is double or more
         newUncoreFreq_0 = 1.8;
-        int result = system("sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh 1.8 0.8");
+        int result = system("sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh 2.4 0.8");
     } 
     else if (currentThroughput * 5 <  previousThroughput) {
        
         newUncoreFreq_0 = 0.8;
-        int result = system("sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh 1 0.8");
+        int result = system("sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh 2.4 0.8");
     }
 
     // Execute the system command to set the uncore frequency
@@ -1308,7 +1309,7 @@ PCM_MAIN_NOTHROW;
 
 int mainThrows(int argc, char * argv[])
 {
-    int result = system("sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh 1 0.8");
+    int result = system("sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh 2.4 0.8");
 
     
     // if(print_version(argc, argv))
