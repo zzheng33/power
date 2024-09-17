@@ -36,6 +36,7 @@
 #define DEFAULT_DISPLAY_COLUMNS 2
 
 void record_mem_throughput(double sysReadDRAM, double sysWriteDRAM);
+void dynamic_ufs(double sysReadDRAM, double sysWriteDRAM);
 
 
 using namespace std;
@@ -550,9 +551,8 @@ void display_bandwidth(PCM *m, memdata_t *md, const uint32 no_columns, const boo
     }
     {
 
-
-        
         // record the memory throughput to csv 
+        dynamic_ufs(sysReadDRAM, sysWriteDRAM);
         record_mem_throughput(sysReadDRAM, sysWriteDRAM);
         
 
@@ -562,6 +562,44 @@ void display_bandwidth(PCM *m, memdata_t *md, const uint32 no_columns, const boo
     
 }
 
+
+void dynamic_ufs(double sysReadDRAM, double sysWriteDRAM) {
+    // Calculate the total current memory throughput
+    double currentThroughput = sysReadDRAM + sysWriteDRAM;
+    
+    // Static variable to store the previous throughput
+    static double previousThroughput = 600;
+
+    // The uncore frequency to be adjusted
+    double newUncoreFreq_0 = 0.8; // Default to the minimum uncore frequency
+    double newUncoreFreq_1 = 0.8;
+
+    // Check if the current throughput is more than double the previous throughput
+    if (currentThroughput >= 5 * previousThroughput) {
+        // Increase uncore frequency to 1.6 GHz if the current throughput is double or more
+        newUncoreFreq_0 = 1.8;
+        int result = system("sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh 1.8 0.8");
+    } 
+    else if (currentThroughput * 5 <  previousThroughput) {
+       
+        newUncoreFreq_0 = 0.8;
+        int result = system("sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh 1 0.8");
+    }
+
+    // Execute the system command to set the uncore frequency
+    // std::string command = "sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq " 
+    //                       + std::to_string(newUncoreFreq_0) + " " + std::to_string(newUncoreFreq_1);
+    
+    // int result = system(command.c_str());
+    
+    // Check if the script executed successfully
+
+
+    // Update the previous throughput for the next monitoring cycle
+    previousThroughput = currentThroughput;
+}
+
+    
 void record_mem_throughput(double sysReadDRAM, double sysWriteDRAM)
 {
     // Open file in append mode
@@ -1270,7 +1308,7 @@ PCM_MAIN_NOTHROW;
 
 int mainThrows(int argc, char * argv[])
 {
-    int result = system("sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh 0.8 0.8");
+    int result = system("sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh 1 0.8");
 
     
     // if(print_version(argc, argv))
