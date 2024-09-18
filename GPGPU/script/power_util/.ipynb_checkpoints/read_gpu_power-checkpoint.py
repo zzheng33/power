@@ -9,7 +9,7 @@ import pandas as pd
 
 
 high_uncore_freq = 1
-gpu_power_ts = 70
+gpu_power_ts = 50
 script_dir = "/home/cc/power/GPGPU/script/power_util/"
 dynamic_uncore = 0
 
