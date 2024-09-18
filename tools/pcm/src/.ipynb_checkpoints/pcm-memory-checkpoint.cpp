@@ -1649,10 +1649,10 @@ int mainThrows(int argc, char * argv[])
     signal(SIGINT, SIG_DFL);
 
 
-    std::string command = "sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh " 
-                      + std::to_string(uncore_0) + " " + std::to_string(uncore_1);
+    // std::string command = "sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh " 
+    //                   + std::to_string(uncore_0) + " " + std::to_string(uncore_1);
 
-    int result = system(command.c_str());
+    // int result = system(command.c_str());
     // set_signal_handlers();
     
     mainLoop([&]()
