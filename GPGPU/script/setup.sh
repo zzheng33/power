@@ -93,7 +93,7 @@ setup_CRADL() {
     deactivate
 }
 
-setup_CRADL() {
+setup_UNet() {
     cd "${home_dir}/benchmark/ECP/UNet/"
     python3 -m venv UNet_env
     source UNet_env/bin/activate
