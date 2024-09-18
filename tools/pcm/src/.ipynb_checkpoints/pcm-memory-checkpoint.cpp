@@ -38,8 +38,9 @@
 void record_mem_throughput(double sysReadDRAM, double sysWriteDRAM);
 void dynamic_ufs(double sysReadDRAM, double sysWriteDRAM);
 
-std::string benchmark = "default_benchmark";
+std::string benchmark = "default";
 
+std::string suite = "default";
 
 using namespace std;
 using namespace pcm;
@@ -606,7 +607,7 @@ void dynamic_ufs(double sysReadDRAM, double sysWriteDRAM) {
 void record_mem_throughput(double sysReadDRAM, double sysWriteDRAM)
 {
     // Open file in append mode
-    std::ofstream outfile("/home/cc/power/GPGPU/data/altis_power_res/mem_throughput/" + benchmark + "mem_throughput.csv", std::ios::app);
+    std::ofstream outfile("/home/cc/power/GPGPU/data/" + suite + "_power_res/mem_throughput/" + benchmark + "mem_throughput.csv", std::ios::app);
 
     // Check if file opened successfully
     if (outfile.is_open()) {
@@ -1312,16 +1313,6 @@ PCM_MAIN_NOTHROW;
 int mainThrows(int argc, char * argv[])
 {
 
-
-
-    // Loop through the arguments and capture the benchmark value if provided
-    for (int i = 1; i < argc; ++i) {
-        if (std::string(argv[i]) == "--benchmark" && i + 1 < argc) {
-            benchmark = argv[i + 1]; // Capture the next argument as the benchmark
-            i++; // Skip the next argument since it has been processed
-        }
-    }
-    
     int result = system("sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh 2.4 0.8");
 
     
@@ -1376,6 +1367,34 @@ int mainThrows(int argc, char * argv[])
         {
             print_help(program);
             exit(EXIT_FAILURE);
+        }
+        else if (check_argument_equals(*argv, {"--benchmark"}))
+        {
+        if (argc > 1)
+        {
+            benchmark = argv[1]; // Capture the next argument as the benchmark value
+            argv++;
+            argc--;
+        }
+        else
+        {
+            std::cerr << "Error: --benchmark option requires a value" << std::endl;
+            exit(EXIT_FAILURE);
+        }
+        }
+        else if (check_argument_equals(*argv, {"--suite"}))
+        {
+        if (argc > 1)
+        {
+            suite = argv[1]; 
+            argv++;
+            argc--;
+        }
+        else
+        {
+            std::cerr << "Error: --benchmark option requires a value" << std::endl;
+            exit(EXIT_FAILURE);
+        }
         }
         else if (check_argument_equals(*argv, {"-silent", "/silent"}))
         {

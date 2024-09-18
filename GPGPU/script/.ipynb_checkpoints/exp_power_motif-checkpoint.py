@@ -92,7 +92,7 @@ def run_benchmark(benchmark_script_dir,benchmark, suite, test):
 
     if pcm:
         # start pcm-memory
-        monitor_command_memory = f"echo 9900 | sudo -S taskset -c 5 {read_memory} 0.1"
+        monitor_command_memory = f"echo 9900 | sudo -S taskset -c 5 {read_memory} 0.1 --suite {suite} --benchmark {benchmark}"
         monitor_process_memory = subprocess.Popen(monitor_command_memory, shell=True, stdin=subprocess.PIPE, text=True)
 
 
