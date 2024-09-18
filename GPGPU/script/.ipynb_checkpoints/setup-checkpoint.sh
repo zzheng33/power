@@ -6,9 +6,10 @@ install_dependence() {
     sudo apt-get update
     sudo apt-get --assume-yes install gfortran
     sudo apt-get --assume-yes install libopenmpi-dev
+    sudo apt-get --assume-yes install libjpeg-dev
+
     # sudo apt install linux-intel-iotg-tools-common
     # sudo apt install --assume-yes linux-tools-5.15.0-92-generic
-    sudo apt --assume-yes install cpufrequtils
     sudo apt-get --assume-yes install mpich
     sudo apt --assume-yes install cmake
     sudo apt --assume-yes install python3-pip
@@ -37,8 +38,8 @@ setup_rapl() {
 
 
 setup_pcm() {
-    cd "${home_dir}/power/tools"
-    git clone --recursive https://github.com/zzheng33/pcm.git
+    # cd "${home_dir}/power/tools"
+    # git clone --recursive https://github.com/zzheng33/pcm.git
     cd "${home_dir}/power/tools/pcm"
     mkdir build
     cd build
@@ -76,7 +77,8 @@ generate_altis_data() {
 
 setup_miniGAN_env() {
     cd "${home_dir}/benchmark/ECP/miniGAN/data"
-    python3 generate_bird_images.py --dim-mode 3 --num-images 128 --image-dim 64 --num-channels 3
+    python3 generate_bird_images.py --dim-mode 3 --num-images 2048 --image-dim 64 --num-channels 3
+
 
     cd "${home_dir}/benchmark/ECP/miniGAN/"
 
@@ -172,6 +174,6 @@ setup_CRADL
 setup_Laghos
 setup_XSBench
 setup_RSBench
-setup_ecp_cpu
-setup_npb
+# setup_ecp_cpu
+# setup_npb
 setup_cpu_freq

@@ -146,6 +146,7 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
     benchmark = args.benchmark
+ 
     test = args.test
     suite = args.suite
     benchmark_size = args.benchmark_size
