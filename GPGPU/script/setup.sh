@@ -90,18 +90,19 @@ setup_CRADL() {
     cd "${home_dir}/benchmark/ECP/CRADL/"
     python3 -m venv CRADL_env
     source CRADL_env/bin/activate
-    pip install -r requirements.txt
+    bash INSTALL
     deactivate
+    cd ./data
+    bash ./filter.sh
+
 }
 
 setup_UNet() {
     cd "${home_dir}/benchmark/ECP/UNet/"
     python3 -m venv UNet_env
     source UNet_env/bin/activate
-    bash INSTALL
+    pip install -r requirements.txt
     deactivate
-    cd ./data
-    bash ./filter.sh
 }
 
 setup_XSBench() {
