@@ -27,6 +27,8 @@ read_memory = "/home/cc/power/tools/pcm/build/bin/pcm-memory"
 # gpu power threshold for trigger the dynamic uncore frequency scaling
 gpu_power_ts = 70
 pcm = 0
+uncore_0 = 0.8
+uncore_1 = 0.8
 
 # Define your benchmarks, for testing replace the list with just ['FT'] for example
 # ecp_benchmarks = ['FT', 'CG', 'LULESH', 'Nekbone', 'AMG2013', 'miniFE']
@@ -92,7 +94,7 @@ def run_benchmark(benchmark_script_dir,benchmark, suite, test):
 
     if pcm:
         # start pcm-memory
-        monitor_command_memory = f"echo 9900 | sudo -S taskset -c 5 {read_memory} 0.1 --suite {suite} --benchmark {benchmark}"
+        monitor_command_memory = f"echo 9900 | sudo -S taskset -c 5 {read_memory} 0.1 --suite {suite} --benchmark {benchmark} --uncore_0 {uncore_0} --uncore_1 {uncore_1}"
         monitor_process_memory = subprocess.Popen(monitor_command_memory, shell=True, stdin=subprocess.PIPE, text=True)
 
 
@@ -152,6 +154,8 @@ if __name__ == "__main__":
     benchmark_size = args.benchmark_size
     dynamic_uncore_fs = args.dynamic_uncore_fs
     pcm = args.pcm
+    uncore_0 = args.uncore_0
+    uncore_1 = args.uncore_1
 
     script_dir = "/home/cc/power/GPGPU/script/power_util/"
 

@@ -42,6 +42,9 @@ std::string benchmark = "default";
 
 std::string suite = "default";
 
+double uncore_0 = 0.8;
+double uncore_1 = 0.8;
+
 using namespace std;
 using namespace pcm;
 
@@ -1313,7 +1316,7 @@ PCM_MAIN_NOTHROW;
 int mainThrows(int argc, char * argv[])
 {
 
-    int result = system("sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh 2.4 0.8");
+    
 
     
     // if(print_version(argc, argv))
@@ -1373,6 +1376,34 @@ int mainThrows(int argc, char * argv[])
         if (argc > 1)
         {
             benchmark = argv[1]; // Capture the next argument as the benchmark value
+            argv++;
+            argc--;
+        }
+        else
+        {
+            std::cerr << "Error: --benchmark option requires a value" << std::endl;
+            exit(EXIT_FAILURE);
+        }
+        }
+        else if (check_argument_equals(*argv, {"--uncore_0"}))
+        {
+        if (argc > 1)
+        {
+            uncore_0 = std::stod(argv[1]); 
+            argv++;
+            argc--;
+        }
+        else
+        {
+            std::cerr << "Error: --benchmark option requires a value" << std::endl;
+            exit(EXIT_FAILURE);
+        }
+        }
+        else if (check_argument_equals(*argv, {"--uncore_1"}))
+        {
+        if (argc > 1)
+        {
+            uncore_1 = std::stod(argv[1]); // Capture the next argument as the benchmark value
             argv++;
             argc--;
         }
@@ -1521,6 +1552,11 @@ int mainThrows(int argc, char * argv[])
             continue;
         }
     } while (argc > 1); // end of command line parsing loop
+
+    std::string command = "sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh " 
+                      + std::to_string(uncore_0) + " " + std::to_string(uncore_1);
+
+    int result = system(command.c_str());
 
     m->disableJKTWorkaround();
     print_cpu_details();

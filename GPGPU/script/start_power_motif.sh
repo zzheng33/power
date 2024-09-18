@@ -11,7 +11,7 @@
 
 # python3 exp_power_motif.py --suite 1 --test 0  --dynamic_uncore_fs 0 --uncore_0 2.4 --uncore_1 0.8 --benchmark nw --pcm 1
 
-python3 exp_power_motif.py --suite 0 --test 0  --dynamic_uncore_fs 0 --uncore_0 2.4 --uncore_1 0.8 --pcm 1 
+python3 exp_power_motif.py --suite 0 --test 0  --dynamic_uncore_fs 0 --uncore_0 0.8 --uncore_1 0.8 --pcm 1 
 
 ./power_util/set_uncore_freq.sh 2.4 2.4
 
