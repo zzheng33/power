@@ -609,6 +609,7 @@ void dynamic_ufs(double sysReadDRAM, double sysWriteDRAM) {
     
 void record_mem_throughput(double sysReadDRAM, double sysWriteDRAM)
 {
+    // printf("hello");
     // Open file in append mode
     std::ofstream outfile("/home/cc/power/GPGPU/data/" + suite + "_power_res/mem_throughput/" + benchmark + ".csv", std::ios::app);
 
@@ -1316,9 +1317,7 @@ PCM_MAIN_NOTHROW;
 int mainThrows(int argc, char * argv[])
 {
 
-    
 
-    
     // if(print_version(argc, argv))
     //     exit(EXIT_SUCCESS);
 
@@ -1406,6 +1405,10 @@ int mainThrows(int argc, char * argv[])
             uncore_1 = std::stod(argv[1]); // Capture the next argument as the benchmark value
             argv++;
             argc--;
+            std::string command = "sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh " 
+                      + std::to_string(uncore_0) + " " + std::to_string(uncore_1);
+
+            int result = system(command.c_str());
         }
         else
         {
@@ -1553,10 +1556,9 @@ int mainThrows(int argc, char * argv[])
         }
     } while (argc > 1); // end of command line parsing loop
 
-    std::string command = "sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh " 
-                      + std::to_string(uncore_0) + " " + std::to_string(uncore_1);
 
-    int result = system(command.c_str());
+    
+ 
 
     m->disableJKTWorkaround();
     print_cpu_details();
