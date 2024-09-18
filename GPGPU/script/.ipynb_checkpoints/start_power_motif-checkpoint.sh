@@ -12,8 +12,18 @@
 # python3 exp_power_motif.py --suite 1 --test 0  --dynamic_uncore_fs 0 --uncore_0 2.4 --uncore_1 0.8 --benchmark nw --pcm 1
 
 python3 exp_power_motif.py --suite 0 --test 0  --dynamic_uncore_fs 1 --uncore_0 2.4 --uncore_1 0.8 --pcm 1 --benchmark Laghos
+
 ./power_util/set_uncore_freq.sh 2.4 2.4
+
+
 
 # python3 exp_power_motif.py --suite 0 --benchmark CRADL --test 1
 
 # python3 exp_power_motif.py --suite 1 --benchmark raytracing --test 1
+
+
+
+TARGET_DIR="../data/"
+
+# Find all .csv files under the target directory and make them writable
+sudo find "$TARGET_DIR" -type f -name "*.csv" -exec chmod +w {} \;
