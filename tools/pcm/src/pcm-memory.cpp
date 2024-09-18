@@ -559,6 +559,7 @@ void display_bandwidth(PCM *m, memdata_t *md, const uint32 no_columns, const boo
 
         // record the memory throughput to csv 
         record_mem_throughput(sysReadDRAM, sysWriteDRAM);
+        
         // dynamic_ufs(sysReadDRAM, sysWriteDRAM);
         
         
@@ -1316,7 +1317,7 @@ PCM_MAIN_NOTHROW;
 
 int mainThrows(int argc, char * argv[])
 {
-
+    // system("sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh 2.4 0.8");
 
     // if(print_version(argc, argv))
     //     exit(EXIT_SUCCESS);
@@ -1405,10 +1406,6 @@ int mainThrows(int argc, char * argv[])
             uncore_1 = std::stod(argv[1]); // Capture the next argument as the benchmark value
             argv++;
             argc--;
-            std::string command = "sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh " 
-                      + std::to_string(uncore_0) + " " + std::to_string(uncore_1);
-
-            int result = system(command.c_str());
         }
         else
         {
@@ -1646,6 +1643,18 @@ int mainThrows(int argc, char * argv[])
         MySystem(sysCmd, sysArgv);
     }
 
+    
+
+    signal(SIGCHLD, SIG_DFL);  // Restore default signal handler for child processes
+    signal(SIGINT, SIG_DFL);
+
+
+    std::string command = "sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh " 
+                      + std::to_string(uncore_0) + " " + std::to_string(uncore_1);
+
+    int result = system(command.c_str());
+    // set_signal_handlers();
+    
     mainLoop([&]()
     {
         if (enforceFlush || !csv) cout << flush;
