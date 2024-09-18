@@ -29,7 +29,7 @@ gpu_power_ts = 70
 pcm = 0
 
 # Define your benchmarks, for testing replace the list with just ['FT'] for example
-ecp_benchmarks = ['FT', 'CG', 'LULESH', 'Nekbone', 'AMG2013', 'miniFE']
+# ecp_benchmarks = ['FT', 'CG', 'LULESH', 'Nekbone', 'AMG2013', 'miniFE']
 
 npb_benchmarks = ['bt','cg','ep','ft','is','lu','mg','sp','ua','miniFE']
 
@@ -68,7 +68,7 @@ def run_benchmark(benchmark_script_dir,benchmark, suite, test):
         run_benchmark_command = f" taskset -c 0 {python_executable} {run_altis} --benchmark {benchmark} --benchmark_script_dir {os.path.join(home_dir, benchmark_script_dir)}"
 
     elif suite == "ecp":
-        run_benchmark_command = f"{python_executable} {run_ecp} --benchmark {benchmark} --benchmark_script_dir {os.path.join(home_dir, benchmark_script_dir)}"
+        run_benchmark_command = f"taskset -c 0 {python_executable} {run_ecp} --benchmark {benchmark} --benchmark_script_dir {os.path.join(home_dir, benchmark_script_dir)}"
 
     elif suite == "npb":
         run_benchmark_command = f"{python_executable} {run_npb} --benchmark {benchmark} --benchmark_script_dir {os.path.join(home_dir, benchmark_script_dir)}"
