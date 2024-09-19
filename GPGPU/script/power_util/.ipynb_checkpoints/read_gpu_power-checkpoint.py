@@ -9,7 +9,7 @@ import pandas as pd
 
 
 high_uncore_freq = 1
-gpu_power_ts = 50
+gpu_power_ts = 100
 script_dir = "/home/cc/power/GPGPU/script/power_util/"
 dynamic_uncore = 0
 
@@ -20,7 +20,7 @@ def scale_uncore_freq(gpu_powers):
         
         # Scale up: set uncore frequency to 2.4 GHz
         if p <= gpu_power_ts and high_uncore_freq == 0:
-            subprocess.run([script_dir + "/set_uncore_freq.sh", "2.4", "0.8"], check=True)
+            subprocess.run([script_dir + "/set_uncore_freq.sh", "2.4", "2.4"], check=True)
             high_uncore_freq = 1
         # Scale down: set uncore frequency to 0.8 GHz
         elif p > gpu_power_ts and high_uncore_freq == 1:

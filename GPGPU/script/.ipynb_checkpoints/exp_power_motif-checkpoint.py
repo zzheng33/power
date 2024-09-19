@@ -66,20 +66,38 @@ def run_benchmark(benchmark_script_dir,benchmark, suite, test):
         output_gpu = f"../data/{suite}_test/{benchmark}_power_gpu.csv"
         output_uncore = f"../data/{suite}_test/{benchmark}_uncore_freq.csv"
 
+    # if pcm:
+    #     # start pcm-memory
+    #     monitor_command_memory = f"echo 9900 | sudo -S taskset -c 5 {read_memory} 0.1 --suite {suite} --benchmark {benchmark} --uncore_0 {uncore_0} --uncore_1 {uncore_1}"
+    #     monitor_process_memory = subprocess.Popen(monitor_command_memory, shell=True, stdin=subprocess.PIPE, text=True)
+    
+    # # Execute the benchmark and get its PID
+    # if suite == "altis":
+    #     run_benchmark_command = f" taskset -c 0 {python_executable} {run_altis} --benchmark {benchmark} --benchmark_script_dir {os.path.join(home_dir, benchmark_script_dir)}"
+
+    # elif suite == "ecp":
+    #     if benchmark in set(ML):
+    #         run_benchmark_command = f" taskset -c $(seq 0 2 62 | paste -sd ',') {python_executable} {run_ecp} --benchmark {benchmark} --benchmark_script_dir {os.path.join(home_dir, benchmark_script_dir)}"
+    #     else:
+    #         run_benchmark_command = f"taskset -c 0 {python_executable} {run_ecp} --benchmark {benchmark} --benchmark_script_dir {os.path.join(home_dir, benchmark_script_dir)}"
+
+    # elif suite == "npb":
+    #     run_benchmark_command = f"{python_executable} {run_npb} --benchmark {benchmark} --benchmark_script_dir {os.path.join(home_dir, benchmark_script_dir)}"
+
     if pcm:
         # start pcm-memory
-        monitor_command_memory = f"echo 9900 | sudo -S taskset -c 5 {read_memory} 0.1 --suite {suite} --benchmark {benchmark} --uncore_0 {uncore_0} --uncore_1 {uncore_1}"
+        monitor_command_memory = f"echo 9900 | sudo -S {read_memory} 0.1 --suite {suite} --benchmark {benchmark} --uncore_0 {uncore_0} --uncore_1 {uncore_1}"
         monitor_process_memory = subprocess.Popen(monitor_command_memory, shell=True, stdin=subprocess.PIPE, text=True)
     
     # Execute the benchmark and get its PID
     if suite == "altis":
-        run_benchmark_command = f" taskset -c 0 {python_executable} {run_altis} --benchmark {benchmark} --benchmark_script_dir {os.path.join(home_dir, benchmark_script_dir)}"
+        run_benchmark_command = f" {python_executable} {run_altis} --benchmark {benchmark} --benchmark_script_dir {os.path.join(home_dir, benchmark_script_dir)}"
 
     elif suite == "ecp":
         if benchmark in set(ML):
-            run_benchmark_command = f" taskset -c $(seq 0 2 62 | paste -sd ',') {python_executable} {run_ecp} --benchmark {benchmark} --benchmark_script_dir {os.path.join(home_dir, benchmark_script_dir)}"
+            run_benchmark_command = f" {python_executable} {run_ecp} --benchmark {benchmark} --benchmark_script_dir {os.path.join(home_dir, benchmark_script_dir)}"
         else:
-            run_benchmark_command = f"taskset -c 0 {python_executable} {run_ecp} --benchmark {benchmark} --benchmark_script_dir {os.path.join(home_dir, benchmark_script_dir)}"
+            run_benchmark_command = f" {python_executable} {run_ecp} --benchmark {benchmark} --benchmark_script_dir {os.path.join(home_dir, benchmark_script_dir)}"
 
     elif suite == "npb":
         run_benchmark_command = f"{python_executable} {run_npb} --benchmark {benchmark} --benchmark_script_dir {os.path.join(home_dir, benchmark_script_dir)}"
