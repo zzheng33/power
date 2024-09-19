@@ -92,8 +92,8 @@ setup_CRADL() {
     source CRADL_env/bin/activate
     bash INSTALL
     deactivate
-    cd ./data
-    bash ./filter.sh
+    # cd ./data
+    # bash ./filter.sh
 
 }
 
