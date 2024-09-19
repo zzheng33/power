@@ -107,10 +107,10 @@ setup_UNet() {
 }
 
 setup_Resnet() {
-    cd "${home_dir}/benchmark/ECP/Resnet/"
-    source ${home_dir}/benchmark/ECP/UNet/UNet_env/bin/activate
-    python download_data.py
-    deactivate
+    pip install kaggle
+    export PATH=$PATH:/home/cc/.local/bin
+    kaggle datasets download -d ifigotin/imagenetmini-1000
+    unzip imagenetmini-1000.zip 
 }
 
 setup_XSBench() {
