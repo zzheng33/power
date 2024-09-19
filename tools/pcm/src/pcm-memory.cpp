@@ -566,13 +566,10 @@ void display_bandwidth(PCM *m, memdata_t *md, const uint32 no_columns, const boo
     {
 
         // record the memory throughput to csv 
-        // record_mem_throughput(sysReadDRAM, sysWriteDRAM);
+        record_mem_throughput(sysReadDRAM, sysWriteDRAM);
 
         if(dynamic_ufs_mem == 1) 
             dynamic_ufs(sysReadDRAM, sysWriteDRAM);
-        
-        
-
     
     
     }
@@ -580,83 +577,7 @@ void display_bandwidth(PCM *m, memdata_t *md, const uint32 no_columns, const boo
 }
 
 
-void dynamic_ufs(double sysReadDRAM, double sysWriteDRAM) {
-    // Calculate the total current memory throughput
-    double currentThroughput = sysReadDRAM + sysWriteDRAM;
 
-    // Static variables to store the last 5 throughput values and the time interval (0.5s)
-    static std::vector<double> throughputHistory;
-    const double timeInterval = 0.5; // time interval in seconds (0.5 seconds granularity)
-    
-    // The uncore frequency to be adjusted
-    double newUncoreFreq_0 = 2.4; 
-    double newUncoreFreq_1 = 2.4;
-
-    // Store the current throughput in history (keep the last 5 points)
-    throughputHistory.push_back(currentThroughput);
-    if (throughputHistory.size() > 5) {
-        throughputHistory.erase(throughputHistory.begin()); // Remove the oldest entry to keep only 5 points
-    }
-
-    // Only calculate the derivative after we have 5 data points
-    if (throughputHistory.size() == 5) {
-        // Calculate the derivative as (d4 - d0) / dt, where dt = 0.5 seconds
-        double derivative = (throughputHistory[1] - throughputHistory[0]) / timeInterval;
-
-        // Adjust the uncore frequency based on the derivative
-        if (derivative > inc_ts) {
-            // Increase uncore frequency to 2.4 GHz if derivative is greater than 10000
-            newUncoreFreq_0 = 2.4;
-            newUncoreFreq_1 = 2.4;
-            int result = system("sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh 2.4 2.4");
-        } 
-        else if (derivative < -dec_ts) {
-            // Decrease uncore frequency to 0.8 GHz if derivative is less than -10000
-            newUncoreFreq_0 = 0.8;
-            newUncoreFreq_1 = 0.8;
-            int result = system("sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh 0.8 0.8");
-        }
-    }
-
-
-}
-
-    
-void record_mem_throughput(double sysReadDRAM, double sysWriteDRAM)
-{
-    // Initialize start time on the first call
-    static bool firstWrite = true;
-    if (firstWrite) {
-        start_time = std::chrono::high_resolution_clock::now();
-    }
-
-    // Open file in append mode
-    std::ofstream outfile("/home/cc/power/GPGPU/data/" + suite + "_power_res/mem_throughput/" + benchmark + ".csv", std::ios::app);
-
-    // Check if file opened successfully
-    if (outfile.is_open()) {
-        double totalThroughput = sysReadDRAM + sysWriteDRAM;
-
-        // Write headers the first time
-        if (firstWrite) {
-            outfile << "Time Elapsed (s), sys_mem_r(MB/s), sys_mem_w(MB/s), total(MB/s)\n";
-            firstWrite = false;
-        }
-
-        // Calculate elapsed time in seconds
-        auto current_time = std::chrono::high_resolution_clock::now();
-        std::chrono::duration<double> elapsed_seconds = current_time - start_time;
-        double elapsed_time = elapsed_seconds.count();
-
-        // Write the elapsed time and throughput values to the file
-        outfile << elapsed_time << "," << sysReadDRAM << "," << sysWriteDRAM << "," << totalThroughput << "\n";
-
-        // Close the file
-        outfile.close();
-    } else {
-        std::cerr << "Unable to open file for writing!" << std::endl;
-    }
-}
 
 
 
@@ -1765,4 +1686,82 @@ int mainThrows(int argc, char * argv[])
     });
 
     exit(EXIT_SUCCESS);
+}
+
+void dynamic_ufs(double sysReadDRAM, double sysWriteDRAM) {
+    // Calculate the total current memory throughput
+    double currentThroughput = sysReadDRAM + sysWriteDRAM;
+
+    // Static variables to store the last 5 throughput values and the time interval (0.5s)
+    static std::vector<double> throughputHistory;
+    const double timeInterval = 0.5; // time interval in seconds (0.5 seconds granularity)
+    
+    // The uncore frequency to be adjusted
+    double newUncoreFreq_0 = 2.4; 
+    double newUncoreFreq_1 = 2.4;
+
+    // Store the current throughput in history (keep the last 5 points)
+    throughputHistory.push_back(currentThroughput);
+    if (throughputHistory.size() > 5) {
+        throughputHistory.erase(throughputHistory.begin()); // Remove the oldest entry to keep only 5 points
+    }
+
+    // Only calculate the derivative after we have 5 data points
+    if (throughputHistory.size() == 5) {
+        // Calculate the derivative as (d4 - d0) / dt, where dt = 0.5 seconds
+        double derivative = (throughputHistory[1] - throughputHistory[0]) / timeInterval;
+
+        // Adjust the uncore frequency based on the derivative
+        if (derivative > inc_ts) {
+            // Increase uncore frequency to 2.4 GHz if derivative is greater than 10000
+            newUncoreFreq_0 = 2.4;
+            newUncoreFreq_1 = 2.4;
+            int result = system("sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh 2.4 2.4");
+        } 
+        else if (derivative < -dec_ts) {
+            // Decrease uncore frequency to 0.8 GHz if derivative is less than -10000
+            newUncoreFreq_0 = 0.8;
+            newUncoreFreq_1 = 0.8;
+            int result = system("sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh 0.8 0.8");
+        }
+    }
+
+
+}
+
+    
+void record_mem_throughput(double sysReadDRAM, double sysWriteDRAM)
+{
+    // Initialize start time on the first call
+    static bool firstWrite = true;
+    if (firstWrite) {
+        start_time = std::chrono::high_resolution_clock::now();
+    }
+
+    // Open file in append mode
+    std::ofstream outfile("/home/cc/power/GPGPU/data/" + suite + "_power_res/mem_throughput/" + benchmark + ".csv", std::ios::app);
+
+    // Check if file opened successfully
+    if (outfile.is_open()) {
+        double totalThroughput = sysReadDRAM + sysWriteDRAM;
+
+        // Write headers the first time
+        if (firstWrite) {
+            outfile << "Time Elapsed (s), sys_mem_r(MB/s), sys_mem_w(MB/s), total(MB/s)\n";
+            firstWrite = false;
+        }
+
+        // Calculate elapsed time in seconds
+        auto current_time = std::chrono::high_resolution_clock::now();
+        std::chrono::duration<double> elapsed_seconds = current_time - start_time;
+        double elapsed_time = elapsed_seconds.count();
+
+        // Write the elapsed time and throughput values to the file
+        outfile << elapsed_time << "," << sysReadDRAM << "," << sysWriteDRAM << "," << totalThroughput << "\n";
+
+        // Close the file
+        outfile.close();
+    } else {
+        std::cerr << "Unable to open file for writing!" << std::endl;
+    }
 }
