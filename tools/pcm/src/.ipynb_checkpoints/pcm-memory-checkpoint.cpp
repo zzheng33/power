@@ -29,6 +29,7 @@
 #include <iomanip>
 #include <cstdlib> // For system() function
 #include <chrono> // For time measurements
+#include <vector>
 
 // Global variable to store the start time
 std::chrono::time_point<std::chrono::high_resolution_clock> start_time;
@@ -578,28 +579,42 @@ void display_bandwidth(PCM *m, memdata_t *md, const uint32 no_columns, const boo
 void dynamic_ufs(double sysReadDRAM, double sysWriteDRAM) {
     // Calculate the total current memory throughput
     double currentThroughput = sysReadDRAM + sysWriteDRAM;
-    
-    // Static variable to store the previous throughput
-    static double previousThroughput = 600;
 
+    // Static variables to store the last 5 throughput values and the time interval (0.5s)
+    static std::vector<double> throughputHistory;
+    const double timeInterval = 0.5; // time interval in seconds (0.5 seconds granularity)
+    
     // The uncore frequency to be adjusted
     double newUncoreFreq_0 = 2.4; 
     double newUncoreFreq_1 = 2.4;
 
-    // Check if the current throughput is more than double the previous throughput
-    if (currentThroughput >= 5 * previousThroughput) {
-        // Increase uncore frequency to 1.6 GHz if the current throughput is double or more
-        newUncoreFreq_0 = 1.8;
-        int result = system("sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh 2.4 2.4");
-    } 
-    else if (currentThroughput * 5 <  previousThroughput) {
-       
-        newUncoreFreq_0 = 0.8;
-        int result = system("sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh 0.8 0.8");
+    // Store the current throughput in history (keep the last 5 points)
+    throughputHistory.push_back(currentThroughput);
+    if (throughputHistory.size() > 5) {
+        throughputHistory.erase(throughputHistory.begin()); // Remove the oldest entry to keep only 5 points
     }
 
-    // Update the previous throughput for the next monitoring cycle
-    previousThroughput = currentThroughput;
+    // Only calculate the derivative after we have 5 data points
+    if (throughputHistory.size() == 5) {
+        // Calculate the derivative as (d4 - d0) / dt, where dt = 0.5 seconds
+        double derivative = (throughputHistory[4] - throughputHistory[0]) / timeInterval;
+
+        // Adjust the uncore frequency based on the derivative
+        if (derivative > 10000) {
+            // Increase uncore frequency to 2.4 GHz if derivative is greater than 10000
+            newUncoreFreq_0 = 2.4;
+            newUncoreFreq_1 = 2.4;
+            int result = system("sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh 2.4 2.4");
+        } 
+        else if (derivative < -10000) {
+            // Decrease uncore frequency to 0.8 GHz if derivative is less than -10000
+            newUncoreFreq_0 = 0.8;
+            newUncoreFreq_1 = 0.8;
+            int result = system("sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh 0.8 0.8");
+        }
+    }
+
+
 }
 
     
