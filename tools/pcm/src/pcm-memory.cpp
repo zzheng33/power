@@ -1634,7 +1634,7 @@ int mainThrows(int argc, char * argv[])
     signal(SIGCHLD, SIG_DFL);  // Restore default signal handler for child processes
     signal(SIGINT, SIG_DFL);
 
-
+    
     std::string command = "sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh " 
                       + std::to_string(uncore_0) + " " + std::to_string(uncore_1);
 
