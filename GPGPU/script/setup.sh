@@ -187,3 +187,4 @@ setup_RSBench
 # setup_ecp_cpu
 # setup_npb
 setup_cpu_freq
+setup_UNet
