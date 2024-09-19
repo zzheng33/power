@@ -7,6 +7,7 @@ install_dependence() {
     sudo apt-get --assume-yes install gfortran
     sudo apt-get --assume-yes install libopenmpi-dev
     sudo apt-get --assume-yes install libjpeg-dev
+    sudo apt-get install unzip
 
     # sudo apt install linux-intel-iotg-tools-common
     # sudo apt install --assume-yes linux-tools-5.15.0-92-generic
@@ -93,6 +94,15 @@ setup_CRADL() {
     deactivate
     cd ./data
     bash ./filter.sh
+
+}
+
+setup_UNet() {
+    cd "${home_dir}/benchmark/ECP/UNet/"
+    python3 -m venv UNet_env
+    source UNet_env/bin/activate
+    pip install -r requirements.txt
+    deactivate
 }
 
 setup_XSBench() {
