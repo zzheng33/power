@@ -52,6 +52,7 @@ double uncore_1 = 0.8;
 double inc_ts = 0;
 double dec_ts = 0;
 int dynamic_ufs_mem = 0;
+int history = 1;
 
 using namespace std;
 using namespace pcm;
@@ -1368,6 +1369,20 @@ int mainThrows(int argc, char * argv[])
             exit(EXIT_FAILURE);
         }
         }
+         else if (check_argument_equals(*argv, {"--history"}))
+        {
+        if (argc > 1)
+        {
+            history = std::stod(argv[1]); // Capture the next argument as the benchmark value
+            argv++;
+            argc--;
+        }
+        else
+        {
+            std::cerr << "Error: --benchmark option requires a value" << std::endl;
+            exit(EXIT_FAILURE);
+        }
+         }
         else if (check_argument_equals(*argv, {"--inc_ts"}))
         {
         if (argc > 1)
@@ -1694,7 +1709,8 @@ void dynamic_ufs(double sysReadDRAM, double sysWriteDRAM) {
 
     // Static variables to store the last 5 throughput values and the time interval (0.5s)
     static std::vector<double> throughputHistory;
-    const double timeInterval = 0.5; // time interval in seconds (0.5 seconds granularity)
+    const double timeInterval = 0.1 * history; // time interval in seconds (0.5 seconds granularity)
+   
     
     // The uncore frequency to be adjusted
     double newUncoreFreq_0 = 2.4; 
@@ -1702,14 +1718,14 @@ void dynamic_ufs(double sysReadDRAM, double sysWriteDRAM) {
 
     // Store the current throughput in history (keep the last 5 points)
     throughputHistory.push_back(currentThroughput);
-    if (throughputHistory.size() > 5) {
+    if (throughputHistory.size() > history) {
         throughputHistory.erase(throughputHistory.begin()); // Remove the oldest entry to keep only 5 points
     }
 
     // Only calculate the derivative after we have 5 data points
-    if (throughputHistory.size() == 5) {
+    if (throughputHistory.size() == history) {
         // Calculate the derivative as (d4 - d0) / dt, where dt = 0.5 seconds
-        double derivative = (throughputHistory[1] - throughputHistory[0]) / timeInterval;
+        double derivative = (throughputHistory[history-1] - throughputHistory[0]) / timeInterval;
 
         // Adjust the uncore frequency based on the derivative
         if (derivative > inc_ts) {

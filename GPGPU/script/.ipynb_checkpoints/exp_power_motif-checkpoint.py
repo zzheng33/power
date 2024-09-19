@@ -33,6 +33,7 @@ dynamic_ufs_mem = 0
 dynamic_ufs_gpuP = 1
 inc_ts = 0
 dec_ts = 0
+history=2
 
 # Define your benchmarks, for testing replace the list with just ['FT'] for example
 # ecp_benchmarks = ['FT', 'CG', 'LULESH', 'Nekbone', 'AMG2013', 'miniFE']
@@ -90,7 +91,7 @@ def run_benchmark(benchmark_script_dir,benchmark, suite, test):
 
     if pcm:
         # start pcm-memory
-        monitor_command_memory = f"echo 9900 | sudo -S {read_memory} 0.1 --suite {suite} --benchmark {benchmark} --uncore_0 {uncore_0} --uncore_1 {uncore_1} --dynamic_ufs_mem {dynamic_ufs_mem} --inc_ts {inc_ts} --dec_ts {dec_ts}"
+        monitor_command_memory = f"echo 9900 | sudo -S {read_memory} 0.1 --suite {suite} --benchmark {benchmark} --uncore_0 {uncore_0} --uncore_1 {uncore_1} --dynamic_ufs_mem {dynamic_ufs_mem} --inc_ts {inc_ts} --dec_ts {dec_ts} --history {history}"
         monitor_process_memory = subprocess.Popen(monitor_command_memory, shell=True, stdin=subprocess.PIPE, text=True)
     
     # Execute the benchmark and get its PID
@@ -176,6 +177,7 @@ if __name__ == "__main__":
     parser.add_argument('--dynamic_ufs_mem', type=int, help='0 for no, 1 for yes', default=0)
     parser.add_argument('--inc_ts', type=int, default=0)
     parser.add_argument('--dec_ts', type=int, default=0)
+    parser.add_argument('--history', type=int, default=2)
     
 
 
@@ -192,6 +194,7 @@ if __name__ == "__main__":
     uncore_1 = args.uncore_1
     inc_ts = args.inc_ts
     dec_ts = args.dec_ts
+    history = args.history
 
     script_dir = "/home/cc/power/GPGPU/script/power_util/"
 
