@@ -106,6 +106,13 @@ setup_UNet() {
     bash scripts/download_data.sh
 }
 
+setup_Resnet() {
+    cd "${home_dir}/benchmark/ECP/Resnet/"
+    source ${home_dir}/benchmark/ECP/UNet/UNet_env/bin/activate
+    python download_data.py
+    deactivate
+}
+
 setup_XSBench() {
      cd "${home_dir}/benchmark/ECP/XSBench/cuda"
      make
