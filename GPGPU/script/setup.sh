@@ -103,6 +103,7 @@ setup_UNet() {
     source UNet_env/bin/activate
     pip install -r requirements.txt
     deactivate
+    bash scripts/download_data.sh
 }
 
 setup_XSBench() {
@@ -176,9 +177,9 @@ setup_cpu_freq() {
 
 install_dependence
 load_benchmark
-setup_altis
+# setup_altis
 setup_pcm
-generate_altis_data
+# generate_altis_data
 setup_miniGAN_env
 setup_CRADL
 setup_Laghos
