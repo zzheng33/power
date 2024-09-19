@@ -28,6 +28,10 @@
 #include <fstream>
 #include <iomanip>
 #include <cstdlib> // For system() function
+#include <chrono> // For time measurements
+
+// Global variable to store the start time
+std::chrono::time_point<std::chrono::high_resolution_clock> start_time;
 
 
 #define PCM_DELAY_DEFAULT 1 // in seconds
@@ -579,29 +583,20 @@ void dynamic_ufs(double sysReadDRAM, double sysWriteDRAM) {
     static double previousThroughput = 600;
 
     // The uncore frequency to be adjusted
-    double newUncoreFreq_0 = 0.8; // Default to the minimum uncore frequency
-    double newUncoreFreq_1 = 0.8;
+    double newUncoreFreq_0 = 2.4; 
+    double newUncoreFreq_1 = 2.4;
 
     // Check if the current throughput is more than double the previous throughput
     if (currentThroughput >= 5 * previousThroughput) {
         // Increase uncore frequency to 1.6 GHz if the current throughput is double or more
         newUncoreFreq_0 = 1.8;
-        int result = system("sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh 2.4 0.8");
+        int result = system("sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh 2.4 2.4");
     } 
     else if (currentThroughput * 5 <  previousThroughput) {
        
         newUncoreFreq_0 = 0.8;
-        int result = system("sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh 2.4 0.8");
+        int result = system("sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh 0.8 0.8");
     }
-
-    // Execute the system command to set the uncore frequency
-    // std::string command = "sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq " 
-    //                       + std::to_string(newUncoreFreq_0) + " " + std::to_string(newUncoreFreq_1);
-    
-    // int result = system(command.c_str());
-    
-    // Check if the script executed successfully
-
 
     // Update the previous throughput for the next monitoring cycle
     previousThroughput = currentThroughput;
@@ -610,26 +605,32 @@ void dynamic_ufs(double sysReadDRAM, double sysWriteDRAM) {
     
 void record_mem_throughput(double sysReadDRAM, double sysWriteDRAM)
 {
-    // printf("hello");
+    // Initialize start time on the first call
+    static bool firstWrite = true;
+    if (firstWrite) {
+        start_time = std::chrono::high_resolution_clock::now();
+    }
+
     // Open file in append mode
     std::ofstream outfile("/home/cc/power/GPGPU/data/" + suite + "_power_res/mem_throughput/" + benchmark + ".csv", std::ios::app);
 
     // Check if file opened successfully
     if (outfile.is_open()) {
         double totalThroughput = sysReadDRAM + sysWriteDRAM;
-        static bool firstWrite = true;
 
         // Write headers the first time
         if (firstWrite) {
-            outfile << "Time, sys_mem_r(MB/s), sys_mem_w(MB/s), total(MB/s)\n";
+            outfile << "Time Elapsed (s), sys_mem_r(MB/s), sys_mem_w(MB/s), total(MB/s)\n";
             firstWrite = false;
         }
 
-        // Get the current timestamp
-        std::string timestamp = getCurrentTime();
+        // Calculate elapsed time in seconds
+        auto current_time = std::chrono::high_resolution_clock::now();
+        std::chrono::duration<double> elapsed_seconds = current_time - start_time;
+        double elapsed_time = elapsed_seconds.count();
 
-        // Write the timestamp and throughput values to the file
-        outfile << timestamp << "," << sysReadDRAM << "," << sysWriteDRAM << "," << totalThroughput << "\n";
+        // Write the elapsed time and throughput values to the file
+        outfile << elapsed_time << "," << sysReadDRAM << "," << sysWriteDRAM << "," << totalThroughput << "\n";
 
         // Close the file
         outfile.close();
@@ -1649,10 +1650,10 @@ int mainThrows(int argc, char * argv[])
     signal(SIGINT, SIG_DFL);
 
 
-    // std::string command = "sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh " 
-    //                   + std::to_string(uncore_0) + " " + std::to_string(uncore_1);
+    std::string command = "sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh " 
+                      + std::to_string(uncore_0) + " " + std::to_string(uncore_1);
 
-    // int result = system(command.c_str());
+    int result = system(command.c_str());
     // set_signal_handlers();
     
     mainLoop([&]()

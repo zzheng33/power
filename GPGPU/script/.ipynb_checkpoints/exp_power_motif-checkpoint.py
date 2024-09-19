@@ -109,14 +109,15 @@ def run_benchmark(benchmark_script_dir,benchmark, suite, test):
 
 
     # Start CPU power monitoring, passing the PID of the benchmark process
-    monitor_command_cpu = f"echo 9900 | sudo -S taskset -c 1 {python_executable} {read_cpu_power}  --output_csv {output_cpu} --pid {benchmark_pid}"
+    monitor_command_cpu = f"echo 9900 | sudo -S  {python_executable} {read_cpu_power}  --output_csv {output_cpu} --pid {benchmark_pid}"
     monitor_process = subprocess.Popen(monitor_command_cpu, shell=True, stdin=subprocess.PIPE, text=True)
     
     if suite == "altis" or suite == "ecp": 
         # Start GPU power monitoring, passing the PID of the benchmark process
-        monitor_command_gpu = f"echo 9900 | sudo -S taskset -c 3 {python_executable} {read_gpu_power}  --output_csv {output_gpu} --pid {benchmark_pid} --dynamic_uncore {dynamic_uncore_fs} --gpu_power_ts {gpu_power_ts}"
+        monitor_command_gpu = f"echo 9900 | sudo -S  {python_executable} {read_gpu_power}  --output_csv {output_gpu} --pid {benchmark_pid} --dynamic_uncore {dynamic_uncore_fs} --gpu_power_ts {gpu_power_ts}"
         monitor_process = subprocess.Popen(monitor_command_gpu, shell=True, stdin=subprocess.PIPE, text=True)
 
+    
     # start CPU uncore frequency monitoring
     monitor_command_cpu = f"echo 9900 | sudo -S {python_executable} {read_uncore_frequency}  --output_csv {output_uncore} --pid {benchmark_pid}"
     monitor_process = subprocess.Popen(monitor_command_cpu, shell=True, stdin=subprocess.PIPE, text=True)
