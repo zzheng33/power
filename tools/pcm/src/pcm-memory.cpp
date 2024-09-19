@@ -1709,7 +1709,7 @@ void dynamic_ufs(double sysReadDRAM, double sysWriteDRAM) {
 
     // Static variables to store the last 5 throughput values and the time interval (0.5s)
     static std::vector<double> throughputHistory;
-    const double timeInterval = 0.1 * history; // time interval in seconds (0.5 seconds granularity)
+    const double timeInterval = 0.1 * (history-1); 
    
     
     // The uncore frequency to be adjusted
@@ -1728,13 +1728,14 @@ void dynamic_ufs(double sysReadDRAM, double sysWriteDRAM) {
         double derivative = (throughputHistory[history-1] - throughputHistory[0]) / timeInterval;
 
         // Adjust the uncore frequency based on the derivative
-        if (derivative > inc_ts) {
+        // covnert to mb/0.1s
+        if (derivative/10 > inc_ts) {
             // Increase uncore frequency to 2.4 GHz if derivative is greater than 10000
             newUncoreFreq_0 = 2.4;
             newUncoreFreq_1 = 2.4;
             int result = system("sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh 2.4 2.4");
         } 
-        else if (derivative < -dec_ts) {
+        else if (derivative/10 < -dec_ts) {
             // Decrease uncore frequency to 0.8 GHz if derivative is less than -10000
             newUncoreFreq_0 = 0.8;
             newUncoreFreq_1 = 0.8;
