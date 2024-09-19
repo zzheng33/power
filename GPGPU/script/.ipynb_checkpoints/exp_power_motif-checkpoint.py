@@ -41,7 +41,8 @@ altis_benchmarks_2 = ['cfd','cfd_double','fdtd2d','kmeans','lavamd',
                       'nw','particlefilter_float','particlefilter_naive','raytracing',
                       'srad','where']
 
-ecp_benchmarks = ['XSBench','miniGAN','CRADL','sw4lite','Laghos', 'UNet']
+ecp_benchmarks = ['XSBench','miniGAN','CRADL','sw4lite','Laghos', 'UNet', 'Resnet50']
+ML = ['UNet', 'Resnet50']
 
 # Setup environment
 modprobe_command = "sudo modprobe msr"
@@ -75,7 +76,10 @@ def run_benchmark(benchmark_script_dir,benchmark, suite, test):
         run_benchmark_command = f" taskset -c 0 {python_executable} {run_altis} --benchmark {benchmark} --benchmark_script_dir {os.path.join(home_dir, benchmark_script_dir)}"
 
     elif suite == "ecp":
-        run_benchmark_command = f"taskset -c 0 {python_executable} {run_ecp} --benchmark {benchmark} --benchmark_script_dir {os.path.join(home_dir, benchmark_script_dir)}"
+        if benchmark in set(ML):
+            run_benchmark_command = f" taskset -c $(seq 0 2 62 | paste -sd ',') {python_executable} {run_ecp} --benchmark {benchmark} --benchmark_script_dir {os.path.join(home_dir, benchmark_script_dir)}"
+        else:
+            run_benchmark_command = f"taskset -c 0 {python_executable} {run_ecp} --benchmark {benchmark} --benchmark_script_dir {os.path.join(home_dir, benchmark_script_dir)}"
 
     elif suite == "npb":
         run_benchmark_command = f"{python_executable} {run_npb} --benchmark {benchmark} --benchmark_script_dir {os.path.join(home_dir, benchmark_script_dir)}"
