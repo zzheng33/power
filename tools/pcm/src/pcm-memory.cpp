@@ -49,6 +49,7 @@ std::string suite = "default";
 
 double uncore_0 = 0.8;
 double uncore_1 = 0.8;
+unit32 dynamic_ufs = 0;
 
 using namespace std;
 using namespace pcm;

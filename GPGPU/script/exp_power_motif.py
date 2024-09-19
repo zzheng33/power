@@ -29,6 +29,8 @@ gpu_power_ts = 70
 pcm = 0
 uncore_0 = 0.8
 uncore_1 = 0.8
+dynamic_ufs_mem = 0
+dynamic_ufs_gpuP = 1
 
 # Define your benchmarks, for testing replace the list with just ['FT'] for example
 # ecp_benchmarks = ['FT', 'CG', 'LULESH', 'Nekbone', 'AMG2013', 'miniFE']
@@ -53,7 +55,7 @@ subprocess.run(modprobe_command, shell=True)
 subprocess.run(sysctl_command, shell=True)
 subprocess.run(pm_command, shell=True)
 
-dynamic_uncore_fs = 1
+
 
 
 def run_benchmark(benchmark_script_dir,benchmark, suite, test):
@@ -86,7 +88,7 @@ def run_benchmark(benchmark_script_dir,benchmark, suite, test):
 
     if pcm:
         # start pcm-memory
-        monitor_command_memory = f"echo 9900 | sudo -S {read_memory} 0.1 --suite {suite} --benchmark {benchmark} --uncore_0 {uncore_0} --uncore_1 {uncore_1}"
+        monitor_command_memory = f"echo 9900 | sudo -S {read_memory} 0.1 --suite {suite} --benchmark {benchmark} --uncore_0 {uncore_0} --uncore_1 {uncore_1} --dynamic_ufs_mem {dynamic_ufs_mem}"
         monitor_process_memory = subprocess.Popen(monitor_command_memory, shell=True, stdin=subprocess.PIPE, text=True)
     
     # Execute the benchmark and get its PID
@@ -114,7 +116,7 @@ def run_benchmark(benchmark_script_dir,benchmark, suite, test):
     
     if suite == "altis" or suite == "ecp": 
         # Start GPU power monitoring, passing the PID of the benchmark process
-        monitor_command_gpu = f"echo 9900 | sudo -S  {python_executable} {read_gpu_power}  --output_csv {output_gpu} --pid {benchmark_pid} --dynamic_uncore {dynamic_uncore_fs} --gpu_power_ts {gpu_power_ts}"
+        monitor_command_gpu = f"echo 9900 | sudo -S  {python_executable} {read_gpu_power}  --output_csv {output_gpu} --pid {benchmark_pid} --dynamic_uncore {dynamic_ufs_gpuP} --gpu_power_ts {gpu_power_ts}"
         monitor_process = subprocess.Popen(monitor_command_gpu, shell=True, stdin=subprocess.PIPE, text=True)
 
     
@@ -167,8 +169,9 @@ if __name__ == "__main__":
     parser.add_argument('--benchmark_size', type=int, help='0 for big, 1 for small', default=0)
     parser.add_argument('--uncore_0', type=float, default=2.4)
     parser.add_argument('--uncore_1', type=float, default=2.4)
-    parser.add_argument('--dynamic_uncore_fs', type=int, help='0 for no, 1 for yes', default=0)
+    parser.add_argument('--dynamic_ufs_gpuP', type=int, help='0 for no, 1 for yes', default=0)
     parser.add_argument('--pcm', type=int, help='0 for no, 1 for yes', default=0)
+    parser.add_argument('--dynamic_ufs_mem', type=int, help='0 for no, 1 for yes', default=0)
     
     
 
@@ -179,7 +182,8 @@ if __name__ == "__main__":
     test = args.test
     suite = args.suite
     benchmark_size = args.benchmark_size
-    dynamic_uncore_fs = args.dynamic_uncore_fs
+    dynamic_ufs_gpuP = args.dynamic_ufs_gpuP
+    dynamic_ufs_mem = args.dynamic_ufs_mem
     pcm = args.pcm
     uncore_0 = args.uncore_0
     uncore_1 = args.uncore_1
