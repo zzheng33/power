@@ -49,7 +49,9 @@ std::string suite = "default";
 
 double uncore_0 = 0.8;
 double uncore_1 = 0.8;
-unit32 dynamic_ufs = 0;
+double inc_ts = 0;
+double dec_ts = 0;
+int dynamic_ufs_mem = 0;
 
 using namespace std;
 using namespace pcm;
@@ -564,9 +566,10 @@ void display_bandwidth(PCM *m, memdata_t *md, const uint32 no_columns, const boo
     {
 
         // record the memory throughput to csv 
-        record_mem_throughput(sysReadDRAM, sysWriteDRAM);
-        
-        // dynamic_ufs(sysReadDRAM, sysWriteDRAM);
+        // record_mem_throughput(sysReadDRAM, sysWriteDRAM);
+
+        if(dynamic_ufs_mem == 1) 
+            dynamic_ufs(sysReadDRAM, sysWriteDRAM);
         
         
 
@@ -598,16 +601,16 @@ void dynamic_ufs(double sysReadDRAM, double sysWriteDRAM) {
     // Only calculate the derivative after we have 5 data points
     if (throughputHistory.size() == 5) {
         // Calculate the derivative as (d4 - d0) / dt, where dt = 0.5 seconds
-        double derivative = (throughputHistory[4] - throughputHistory[0]) / timeInterval;
+        double derivative = (throughputHistory[1] - throughputHistory[0]) / timeInterval;
 
         // Adjust the uncore frequency based on the derivative
-        if (derivative > 10000) {
+        if (derivative > inc_ts) {
             // Increase uncore frequency to 2.4 GHz if derivative is greater than 10000
             newUncoreFreq_0 = 2.4;
             newUncoreFreq_1 = 2.4;
             int result = system("sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh 2.4 2.4");
         } 
-        else if (derivative < -10000) {
+        else if (derivative < -dec_ts) {
             // Decrease uncore frequency to 0.8 GHz if derivative is less than -10000
             newUncoreFreq_0 = 0.8;
             newUncoreFreq_1 = 0.8;
@@ -1430,6 +1433,51 @@ int mainThrows(int argc, char * argv[])
             exit(EXIT_FAILURE);
         }
         }
+        else if (check_argument_equals(*argv, {"--dynamic_ufs_mem"}))
+        {
+        if (argc > 1)
+        {
+            dynamic_ufs_mem = std::stod(argv[1]); // Capture the next argument as the benchmark value
+            argv++;
+            argc--;
+        }
+        else
+        {
+            std::cerr << "Error: --benchmark option requires a value" << std::endl;
+            exit(EXIT_FAILURE);
+        }
+        }
+        else if (check_argument_equals(*argv, {"--inc_ts"}))
+        {
+        if (argc > 1)
+        {
+            inc_ts = std::stod(argv[1]); // Capture the next argument as the benchmark value
+            argv++;
+            argc--;
+        }
+        else
+        {
+            std::cerr << "Error: --benchmark option requires a value" << std::endl;
+            exit(EXIT_FAILURE);
+        }
+         }
+        else if (check_argument_equals(*argv, {"--dec_ts"}))
+        {
+        if (argc > 1)
+        {
+            dec_ts = std::stod(argv[1]); // Capture the next argument as the benchmark value
+            argv++;
+            argc--;
+        }
+        else
+        {
+            std::cerr << "Error: --benchmark option requires a value" << std::endl;
+            exit(EXIT_FAILURE);
+        }
+         }
+
+        
+        
         else if (check_argument_equals(*argv, {"--suite"}))
         {
         if (argc > 1)
