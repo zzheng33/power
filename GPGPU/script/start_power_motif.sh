@@ -13,7 +13,7 @@
 # this is for altis, gpu-power based ufs. also need to use taskset
 # python3 exp_power_motif.py --suite 1 --test 0  --dynamic_ufs_gpuP 1 --dynamic_ufs_mem 0 --uncore_0 2.4 --uncore_1 0.8 --pcm 1
 
-# CARDL: 3000,3000, 3
+# CARDL: 200, 500, 3
 # UNet:  200, 500, 5
 # miniGAN 200, 500, 5
 # sw4lite 200, 500, 5
