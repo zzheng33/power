@@ -7,4 +7,6 @@ gups: 0.8, 0.8, non-dual UFS
 pathfinder: 0.8, 0.8, non-dual UFS
 sort: 0.8, 0.8, non-dual UFS
 cfd 0.8, 0.8, non-dual UFS
+cfd_double 0.8,0.8, non-dual UFS
+
 
