@@ -16,6 +16,10 @@
 # CARDL: 3000,3000, 3
 # UNet:  200, 500, 5
 # miniGAN 200, 500, 5
+# sw4lite 200, 500, 5
+# Laghos 200, 500, 5
+# XSBench 200, 500, 5
+
 python3 exp_power_motif.py --suite 0 --test 0  --dynamic_ufs_gpuP 0 --dynamic_ufs_mem 0 --uncore_0 2.4 --uncore_1 2.4 --pcm 1 --inc_ts 200 --dec_ts 500 --history 5 --benchmark Laghos
 
 ./power_util/set_uncore_freq.sh 2.4 2.4
