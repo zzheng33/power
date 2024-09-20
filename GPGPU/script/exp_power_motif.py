@@ -34,6 +34,7 @@ dynamic_ufs_gpuP = 1
 inc_ts = 0
 dec_ts = 0
 history=2
+dual_cap = 1
 
 # Define your benchmarks, for testing replace the list with just ['FT'] for example
 # ecp_benchmarks = ['FT', 'CG', 'LULESH', 'Nekbone', 'AMG2013', 'miniFE']
@@ -71,38 +72,27 @@ def run_benchmark(benchmark_script_dir,benchmark, suite, test):
         output_gpu = f"../data/{suite}_test/{benchmark}_power_gpu.csv"
         output_uncore = f"../data/{suite}_test/{benchmark}_uncore_freq.csv"
 
-    # if pcm:
-    #     # start pcm-memory
-    #     monitor_command_memory = f"echo 9900 | sudo -S taskset -c 5 {read_memory} 0.1 --suite {suite} --benchmark {benchmark} --uncore_0 {uncore_0} --uncore_1 {uncore_1}"
-    #     monitor_process_memory = subprocess.Popen(monitor_command_memory, shell=True, stdin=subprocess.PIPE, text=True)
     
-    # # Execute the benchmark and get its PID
-    # if suite == "altis":
-    #     run_benchmark_command = f" taskset -c 0 {python_executable} {run_altis} --benchmark {benchmark} --benchmark_script_dir {os.path.join(home_dir, benchmark_script_dir)}"
-
-    # elif suite == "ecp":
-    #     if benchmark in set(ML):
-    #         run_benchmark_command = f" taskset -c $(seq 0 2 62 | paste -sd ',') {python_executable} {run_ecp} --benchmark {benchmark} --benchmark_script_dir {os.path.join(home_dir, benchmark_script_dir)}"
-    #     else:
-    #         run_benchmark_command = f"taskset -c 0 {python_executable} {run_ecp} --benchmark {benchmark} --benchmark_script_dir {os.path.join(home_dir, benchmark_script_dir)}"
-
-    # elif suite == "npb":
-    #     run_benchmark_command = f"{python_executable} {run_npb} --benchmark {benchmark} --benchmark_script_dir {os.path.join(home_dir, benchmark_script_dir)}"
+################################## PCM Memory Monitoring Starts ##############################
 
     if pcm:
         # start pcm-memory
-        monitor_command_memory = f"echo 9900 | sudo -S {read_memory} 0.1 --suite {suite} --benchmark {benchmark} --uncore_0 {uncore_0} --uncore_1 {uncore_1} --dynamic_ufs_mem {dynamic_ufs_mem} --inc_ts {inc_ts} --dec_ts {dec_ts} --history {history}"
+        monitor_command_memory = f"echo 9900 | sudo -S {read_memory} 0.1 --suite {suite} --benchmark {benchmark} --uncore_0 {uncore_0} --uncore_1 {uncore_1} --dynamic_ufs_mem {dynamic_ufs_mem} --inc_ts {inc_ts} --dec_ts {dec_ts} --history {history} --dual_cap {dual_cap}"
         monitor_process_memory = subprocess.Popen(monitor_command_memory, shell=True, stdin=subprocess.PIPE, text=True)
+
+
+################################## PCM Memory Monitoring Ends ##############################
+
+    
+
+################################## Benchmarking Starts ##############################
     
     # Execute the benchmark and get its PID
     if suite == "altis":
-        run_benchmark_command = f" {python_executable} {run_altis} --benchmark {benchmark} --benchmark_script_dir {os.path.join(home_dir, benchmark_script_dir)}"
+        run_benchmark_command = f" taskset -c 0 {python_executable} {run_altis} --benchmark {benchmark} --benchmark_script_dir {os.path.join(home_dir, benchmark_script_dir)}"
 
     elif suite == "ecp":
-        if benchmark in set(ML):
-            run_benchmark_command = f" {python_executable} {run_ecp} --benchmark {benchmark} --benchmark_script_dir {os.path.join(home_dir, benchmark_script_dir)}"
-        else:
-            run_benchmark_command = f" {python_executable} {run_ecp} --benchmark {benchmark} --benchmark_script_dir {os.path.join(home_dir, benchmark_script_dir)}"
+        run_benchmark_command = f" {python_executable} {run_ecp} --benchmark {benchmark} --benchmark_script_dir {os.path.join(home_dir, benchmark_script_dir)}"
 
     elif suite == "npb":
         run_benchmark_command = f"{python_executable} {run_npb} --benchmark {benchmark} --benchmark_script_dir {os.path.join(home_dir, benchmark_script_dir)}"
@@ -112,6 +102,11 @@ def run_benchmark(benchmark_script_dir,benchmark, suite, test):
     benchmark_pid = benchmark_process.pid
 
 
+################################## Benchmarking Ends ##############################
+
+
+
+################################## CPU & GPU Power and Frequency Monitoring Starts ##############################
 
     # Start CPU power monitoring, passing the PID of the benchmark process
     monitor_command_cpu = f"echo 9900 | sudo -S  {python_executable} {read_cpu_power}  --output_csv {output_cpu} --pid {benchmark_pid}"
@@ -129,6 +124,12 @@ def run_benchmark(benchmark_script_dir,benchmark, suite, test):
 
 
 
+################################## CPU & GPU Power and Frequency Monitoring Ends ##############################
+
+
+
+
+################################## Finalization Starts ##############################
 
     # Wait for the benchmark process to complete
     benchmark_exit_code = benchmark_process.wait()
@@ -147,9 +148,7 @@ def run_benchmark(benchmark_script_dir,benchmark, suite, test):
                     child.terminate()  # Or child.kill() for a forceful kill
                 except:
                     pass
-            
 
-    
 
     end = time.time()
     runtime = end - start
@@ -160,10 +159,15 @@ def run_benchmark(benchmark_script_dir,benchmark, suite, test):
         print(f"Completed benchmark: {benchmark}")
 
 
-
+            
+################################## Finalization Ends ##############################
+    
 
 
 if __name__ == "__main__":
+
+################################## Parsing Args Starts ##############################
+    
    # Set up command line argument parsing
     parser = argparse.ArgumentParser(description='Run benchmarks and monitor power consumption.')
     parser.add_argument('--benchmark', type=str, help='Optional name of the benchmark to run', default=None)
@@ -178,6 +182,7 @@ if __name__ == "__main__":
     parser.add_argument('--inc_ts', type=int, default=0)
     parser.add_argument('--dec_ts', type=int, default=0)
     parser.add_argument('--history', type=int, default=2)
+    parser.add_argument('--dual_cap', type=int, default=1)
     
 
 
@@ -195,6 +200,15 @@ if __name__ == "__main__":
     inc_ts = args.inc_ts
     dec_ts = args.dec_ts
     history = args.history
+    dual_cap = args.dual_cap
+
+################################## Parsing Args Ends ##############################
+
+
+
+    
+################################## Initialization Starts ##############################
+    
 
     script_dir = "/home/cc/power/GPGPU/script/power_util/"
 
@@ -202,7 +216,13 @@ if __name__ == "__main__":
     # set initial uncore frequency
     subprocess.run([script_dir + "/set_uncore_freq.sh", str(args.uncore_0), str(args.uncore_1)]) 
 
+################################## Initialization Ends ##############################
 
+
+
+
+################################## Run Benchmark Starts ##############################
+    
     if suite == 0 or suite ==3:
         benchmark_script_dir = f"power/GPGPU/script/run_benchmark/ecp_script"
         # single test
@@ -260,5 +280,6 @@ if __name__ == "__main__":
         else:
             for benchmark in npb_benchmarks:
                 run_benchmark(benchmark_script_dir, benchmark,"npb",test)
-    
+                
+################################## Run Benchmark Ends ##############################
 
