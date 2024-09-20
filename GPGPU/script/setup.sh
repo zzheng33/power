@@ -80,7 +80,6 @@ setup_miniGAN_env() {
     cd "${home_dir}/benchmark/ECP/miniGAN/data"
     python3 generate_bird_images.py --dim-mode 3 --num-images 2048 --image-dim 64 --num-channels 3
 
-
     cd "${home_dir}/benchmark/ECP/miniGAN/"
 
     bash ./setup_python_env.sh
