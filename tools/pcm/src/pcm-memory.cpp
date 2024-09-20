@@ -53,6 +53,7 @@ double inc_ts = 0;
 double dec_ts = 0;
 int dynamic_ufs_mem = 0;
 int history = 1;
+int dual_cap = 1;
 
 using namespace std;
 using namespace pcm;
@@ -1383,6 +1384,20 @@ int mainThrows(int argc, char * argv[])
             exit(EXIT_FAILURE);
         }
          }
+        else if (check_argument_equals(*argv, {"--dual_cap"}))
+        {
+        if (argc > 1)
+        {
+            dual_cap = std::stod(argv[1]); // Capture the next argument as the benchmark value
+            argv++;
+            argc--;
+        }
+        else
+        {
+            std::cerr << "Error: --benchmark option requires a value" << std::endl;
+            exit(EXIT_FAILURE);
+        }
+         }
         else if (check_argument_equals(*argv, {"--inc_ts"}))
         {
         if (argc > 1)
@@ -1397,6 +1412,7 @@ int mainThrows(int argc, char * argv[])
             exit(EXIT_FAILURE);
         }
          }
+        
         else if (check_argument_equals(*argv, {"--dec_ts"}))
         {
         if (argc > 1)
@@ -1734,7 +1750,10 @@ void dynamic_ufs(double sysReadDRAM, double sysWriteDRAM) {
             newUncoreFreq_0 = 2.4;
             newUncoreFreq_1 = 2.4;
             // scale 
-            int result = system("sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh 2.4 2.4");
+            if (dual_cap==1)
+                int result = system("sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh 2.4 2.4");
+            else 
+                int result = system("sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh 2.4 0.8");
         } 
         else if (derivative/10 < -dec_ts) {
             // Decrease uncore frequency to 0.8 GHz if derivative is less than -10000
