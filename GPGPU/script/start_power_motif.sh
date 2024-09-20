@@ -13,10 +13,10 @@
 # this is for altis, gpu-power based ufs. also need to use taskset
 # python3 exp_power_motif.py --suite 1 --test 0  --dynamic_ufs_gpuP 1 --dynamic_ufs_mem 0 --uncore_0 2.4 --uncore_1 0.8 --pcm 1
 
-#CARDL: 3000,3000, 3
-#UNet:  200, 500, 5
-
-python3 exp_power_motif.py --suite 0 --test 0  --dynamic_ufs_gpuP 0 --dynamic_ufs_mem 0 --uncore_0 2.4 --uncore_1 2.4 --pcm 1 --inc_ts 200 --dec_ts 500 --history 5 --benchmark miniGAN
+# CARDL: 3000,3000, 3
+# UNet:  200, 500, 5
+# miniGAN 200, 500, 5
+python3 exp_power_motif.py --suite 0 --test 0  --dynamic_ufs_gpuP 0 --dynamic_ufs_mem 1 --uncore_0 0.8 --uncore_1 0.8 --pcm 1 --inc_ts 200 --dec_ts 500 --history 5 --benchmark miniGAN
 
 ./power_util/set_uncore_freq.sh 2.4 2.4
 
