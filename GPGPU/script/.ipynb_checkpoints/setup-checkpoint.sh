@@ -20,6 +20,7 @@ install_dependence() {
     sudo pip install numpy matplotlib pandas
     sudo pip install scipy
     sudo pip install plotly
+    sudo pip install kaggle
 }
 
 setup_rapl() {
@@ -106,8 +107,9 @@ setup_UNet() {
 }
 
 setup_Resnet() {
-    pip install kaggle
-    export PATH=$PATH:/home/cc/.local/bin
+    # pip install kaggle
+    # export PATH=$PATH:/home/cc/.local/bin
+    cd "${home_dir}/benchmark/ECP/Resnet50/"
     kaggle datasets download -d ifigotin/imagenetmini-1000
     unzip imagenetmini-1000.zip 
 }
@@ -195,3 +197,4 @@ setup_RSBench
 # setup_npb
 setup_cpu_freq
 setup_UNet
+setup_Resnet
