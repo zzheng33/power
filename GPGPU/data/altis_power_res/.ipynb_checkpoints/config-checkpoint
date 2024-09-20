@@ -9,4 +9,5 @@ sort: 0.8, 0.8, non-dual UFS
 cfd 0.8, 0.8, non-dual UFS
 cfd_double 0.8,0.8, non-dual UFS
 fdtd2d 2.4, 2.4, non-dual UFS
-
+lavamd 0.8, 0.8, non-dual UFS
+nw 0.8, 0.8, dual UFS
