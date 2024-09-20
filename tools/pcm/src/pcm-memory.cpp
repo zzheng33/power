@@ -1733,7 +1733,8 @@ void dynamic_ufs(double sysReadDRAM, double sysWriteDRAM) {
             // Increase uncore frequency to 2.4 GHz if derivative is greater than 10000
             newUncoreFreq_0 = 2.4;
             newUncoreFreq_1 = 2.4;
-            int result = system("sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh 2.4 2.4");
+            // scale 
+            int result = system("sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh 2.4 0.8");
         } 
         else if (derivative/10 < -dec_ts) {
             // Decrease uncore frequency to 0.8 GHz if derivative is less than -10000
