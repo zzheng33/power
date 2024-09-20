@@ -183,9 +183,9 @@ setup_cpu_freq() {
 
 install_dependence
 load_benchmark
-# setup_altis
+setup_altis
 setup_pcm
-# generate_altis_data
+generate_altis_data
 setup_miniGAN_env
 setup_CRADL
 setup_Laghos
