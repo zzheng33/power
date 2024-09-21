@@ -2,7 +2,7 @@ mem-based UFS:
 
      init
 bfs: 0.8, 0.8, non-dual UFS
-gemm: 2.4, 2.4, dual UFS
+gemm: 0.8, 0.8, non-dual UFS
 gups: 0.8, 0.8, non-dual UFS
 pathfinder: 0.8, 0.8, non-dual UFS
 sort: 0.8, 0.8, non-dual UFS
