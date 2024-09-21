@@ -7,6 +7,9 @@ install_dependence() {
     sudo apt-get --assume-yes install gfortran
     sudo apt-get --assume-yes install openmpi-bin openmpi-common libopenmpi-dev
     sudo apt-get --assume-yes install libjpeg-dev
+    sudo apt-get install -y libnccl2 libnccl-dev
+    sudo apt-get install -y openmpi-bin openmpi-common libopenmpi-dev
+
     sudo apt-get install unzip
 
     # sudo apt install linux-intel-iotg-tools-common
