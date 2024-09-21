@@ -24,7 +24,7 @@ run_npb = "./run_benchmark/run_npb.py"
 read_memory = "/home/cc/power/tools/pcm/build/bin/pcm-memory"
 
 
-# gpu power threshold for trigger the dynamic uncore frequency scaling
+## parameters passed into pcm-memory
 gpu_power_ts = 70
 pcm = 0
 uncore_0 = 0.8
@@ -35,6 +35,10 @@ inc_ts = 0
 dec_ts = 0
 history=2
 dual_cap = 1
+burst_up=0.4
+burst_low=0.2
+
+
 
 # Define your benchmarks, for testing replace the list with just ['FT'] for example
 # ecp_benchmarks = ['FT', 'CG', 'LULESH', 'Nekbone', 'AMG2013', 'miniFE']
@@ -77,7 +81,7 @@ def run_benchmark(benchmark_script_dir,benchmark, suite, test):
 
     if pcm:
         # start pcm-memory
-        monitor_command_memory = f"echo 9900 | sudo -S {read_memory} 0.1 --suite {suite} --benchmark {benchmark} --uncore_0 {uncore_0} --uncore_1 {uncore_1} --dynamic_ufs_mem {dynamic_ufs_mem} --inc_ts {inc_ts} --dec_ts {dec_ts} --history {history} --dual_cap {dual_cap}"
+        monitor_command_memory = f"echo 9900 | sudo -S {read_memory} 0.1 --suite {suite} --benchmark {benchmark} --uncore_0 {uncore_0} --uncore_1 {uncore_1} --dynamic_ufs_mem {dynamic_ufs_mem} --inc_ts {inc_ts} --dec_ts {dec_ts} --history {history} --dual_cap {dual_cap} --burst_up {burst_up} --burst_low {burst_low}"
         monitor_process_memory = subprocess.Popen(monitor_command_memory, shell=True, stdin=subprocess.PIPE, text=True)
 
 
@@ -183,6 +187,8 @@ if __name__ == "__main__":
     parser.add_argument('--dec_ts', type=int, default=0)
     parser.add_argument('--history', type=int, default=2)
     parser.add_argument('--dual_cap', type=int, default=1)
+    parser.add_argument('--burst_up', type=float, default=0.4)
+    parser.add_argument('--burst_low', type=float, default=0.2)
     
 
 

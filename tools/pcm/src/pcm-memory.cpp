@@ -30,6 +30,7 @@
 #include <cstdlib> // For system() function
 #include <chrono> // For time measurements
 #include <vector>
+#include <numeric>  // For accumulate
 
 // Global variable to store the start time
 std::chrono::time_point<std::chrono::high_resolution_clock> start_time;
@@ -54,6 +55,13 @@ double dec_ts = 0;
 int dynamic_ufs_mem = 0;
 int history = 1;
 int dual_cap = 1;
+// the max_uncore is not the real status of the uncore frequency
+// when it enters the burstiness status, instead it represents the expected uncore, 
+// but it is still used to indicate the burstiness of expected uncore frequency changes) max <=> min
+int expect_current_max_uncore = 0;
+int burstiness = 0;
+double burst_up = 0.4;
+double burst_low = 0.2;
 
 using namespace std;
 using namespace pcm;
@@ -1427,6 +1435,34 @@ int mainThrows(int argc, char * argv[])
             exit(EXIT_FAILURE);
         }
          }
+                else if (check_argument_equals(*argv, {"--burst_up"}))
+        {
+        if (argc > 1)
+        {
+            burst_up = std::stod(argv[1]); // Capture the next argument as the benchmark value
+            argv++;
+            argc--;
+        }
+        else
+        {
+            std::cerr << "Error: --benchmark option requires a value" << std::endl;
+            exit(EXIT_FAILURE);
+        }
+        }
+        else if (check_argument_equals(*argv, {"--burst_low"}))
+        {
+        if (argc > 1)
+        {
+            burst_low = std::stod(argv[1]); // Capture the next argument as the benchmark value
+            argv++;
+            argc--;
+        }
+        else
+        {
+            std::cerr << "Error: --benchmark option requires a value" << std::endl;
+            exit(EXIT_FAILURE);
+        }
+        }
 
         
         
@@ -1670,6 +1706,10 @@ int mainThrows(int argc, char * argv[])
                       + std::to_string(uncore_0) + " " + std::to_string(uncore_1);
 
     int result = system(command.c_str());
+
+    if (uncore_0>=2 || uncore_1>=2)
+        expect_current_max_uncore = 1;
+    
     // set_signal_handlers();
     
     mainLoop([&]()
@@ -1726,6 +1766,11 @@ void dynamic_ufs(double sysReadDRAM, double sysWriteDRAM) {
     // Static variables to store the last 5 throughput values and the time interval (0.5s)
     static std::vector<double> throughputHistory;
     const double timeInterval = 0.1 * (history-1); 
+
+    static std::vector<int> uncoreChangeWindow;
+    const int windowSize = 10;
+
+    int burst_status = 0;
    
     
     // The uncore frequency to be adjusted
@@ -1740,27 +1785,66 @@ void dynamic_ufs(double sysReadDRAM, double sysWriteDRAM) {
 
     // Only calculate the derivative after we have 5 data points
     if (throughputHistory.size() == history) {
+
+        if(uncoreChangeWindow.size()>=windowSize) {
+            double avgChange = std::accumulate(uncoreChangeWindow.begin(), uncoreChangeWindow.end(), 0.0) / uncoreChangeWindow.size();
+            if (avgChange >= burst_up) {
+                newUncoreFreq_0 = 2.4;
+                newUncoreFreq_1 = 2.4;
+                burst_status = 1; // yield the UFS control to the burstiness-based logic
+                // scale 
+                if (dual_cap==1)
+                    int result = system("sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh 2.4 2.4");
+                else 
+                    int result = system("sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh 2.4 0.8");
+            }
+         
+            else if (avgChange <= burst_low)
+                burst_status = 0; // return the UFS control to memory_throughput-based logic
+           
+        }
+        
+
+        
         // Calculate the derivative as (d4 - d0) / dt, where dt = 0.5 seconds
         double derivative = (throughputHistory[history-1] - throughputHistory[0]) / timeInterval;
+        
+        if (derivative/10 > inc_ts & expect_current_max_uncore == 0) {
 
-        // Adjust the uncore frequency based on the derivative
-        // covnert to mb/0.1s
-        if (derivative/10 > inc_ts) {
-            // Increase uncore frequency to 2.4 GHz if derivative is greater than 10000
             newUncoreFreq_0 = 2.4;
             newUncoreFreq_1 = 2.4;
-            // scale 
-            if (dual_cap==1)
-                int result = system("sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh 2.4 2.4");
-            else 
-                int result = system("sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh 2.4 0.8");
+            uncoreChangeWindow.push_back(1);
+            expect_current_max_uncore = 1;
+            
+            if (burst_status==0) {
+                if (dual_cap==1)
+                    int result = system("sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh 2.4 2.4");
+                else 
+                    int result = system("sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh 2.4 0.8");
+            }
+
+            
         } 
-        else if (derivative/10 < -dec_ts) {
-            // Decrease uncore frequency to 0.8 GHz if derivative is less than -10000
+        else if (derivative / 10 < -dec_ts & expect_current_max_uncore == 1) {
             newUncoreFreq_0 = 0.8;
             newUncoreFreq_1 = 0.8;
-            int result = system("sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh 0.8 0.8");
+            uncoreChangeWindow.push_back(1);
+            expect_current_max_uncore = 0;
+            
+            if (burst_status==0) {
+                int result = system("sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh 0.8 0.8");
+               
+            }
+            
         }
+        else
+        {
+            uncoreChangeWindow.push_back(0);
+        }
+        if (uncoreChangeWindow.size() > windowSize) {
+            uncoreChangeWindow.erase(uncoreChangeWindow.begin());  
+        }
+        
     }
 
 
