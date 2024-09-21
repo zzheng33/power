@@ -5,7 +5,7 @@ home_dir="/home/cc"
 install_dependence() {
     sudo apt-get update
     sudo apt-get --assume-yes install gfortran
-    sudo apt-get --assume-yes install libopenmpi-dev
+    sudo apt-get --assume-yes install openmpi-bin openmpi-common libopenmpi-dev
     sudo apt-get --assume-yes install libjpeg-dev
     sudo apt-get install unzip
 
