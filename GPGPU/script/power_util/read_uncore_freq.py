@@ -23,7 +23,7 @@ def read_uncore_frequency(core):
         return 0.0
 
 # Function to monitor uncore frequency
-def monitor_uncore_frequency(benchmark_pid, output_csv, interval=0.3):
+def monitor_uncore_frequency(benchmark_pid, output_csv, interval=0.1):
     start_time = time.time()
     frequency_data = []
 
