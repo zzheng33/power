@@ -5,8 +5,11 @@ home_dir="/home/cc"
 install_dependence() {
     sudo apt-get update
     sudo apt-get --assume-yes install gfortran
-    sudo apt-get --assume-yes install libopenmpi-dev
+    sudo apt-get --assume-yes install openmpi-bin openmpi-common libopenmpi-dev
     sudo apt-get --assume-yes install libjpeg-dev
+    sudo apt-get install -y libnccl2 libnccl-dev
+    sudo apt-get install -y openmpi-bin openmpi-common libopenmpi-dev
+
     sudo apt-get install unzip
 
     # sudo apt install linux-intel-iotg-tools-common
@@ -188,7 +191,6 @@ load_benchmark
 setup_altis
 setup_pcm
 generate_altis_data
-setup_miniGAN_env
 setup_CRADL
 setup_Laghos
 setup_XSBench
@@ -198,3 +200,4 @@ setup_RSBench
 setup_cpu_freq
 setup_UNet
 setup_Resnet
+setup_miniGAN_env

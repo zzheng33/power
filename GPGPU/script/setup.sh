@@ -191,7 +191,6 @@ load_benchmark
 setup_altis
 setup_pcm
 generate_altis_data
-setup_miniGAN_env
 setup_CRADL
 setup_Laghos
 setup_XSBench
@@ -201,3 +200,4 @@ setup_RSBench
 setup_cpu_freq
 setup_UNet
 setup_Resnet
+setup_miniGAN_env
