@@ -117,6 +117,14 @@ setup_Resnet() {
     unzip imagenetmini-1000.zip 
 }
 
+setup_bert() {
+    cd "${home_dir}/benchmark/ECP/bert/"
+    source /home/cc/benchmark/ECP/UNet/UNet_env/bin/activate
+    ./download_data.sh
+    deactivate
+}
+
+
 setup_XSBench() {
      cd "${home_dir}/benchmark/ECP/XSBench/cuda"
      make
