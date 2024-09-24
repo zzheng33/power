@@ -55,6 +55,7 @@ setup_pcm() {
 
 load_benchmark() {
     cd "${home_dir}"
+    git lfs install
     git clone https://github.com/zzheng33/benchmark.git
 }
 
