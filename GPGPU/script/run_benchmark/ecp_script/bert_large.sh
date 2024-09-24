@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# 194,052 samples for 1st tf record
+
 # Function to start Docker training
 start_docker_training() {
     # Docker image details
