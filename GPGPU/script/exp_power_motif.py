@@ -51,7 +51,7 @@ altis_benchmarks_2 = ['cfd','cfd_double','fdtd2d','kmeans','lavamd',
                       'nw','particlefilter_float','particlefilter_naive','raytracing',
                       'srad','where']
 
-ecp_benchmarks = ['XSBench','miniGAN','CRADL','sw4lite','Laghos', 'UNet', 'Resnet50','bert']
+ecp_benchmarks = ['XSBench','miniGAN','CRADL','sw4lite','Laghos', 'UNet', 'Resnet50','bert','bert_large']
 ML = ['UNet', 'Resnet50']
 
 # Setup environment
