@@ -26,11 +26,32 @@
 # Laghos 200, 500, 5
 # XSBench 200, 500, 5
 
+python3 exp_power_motif.py --suite 0 --test 0  --dynamic_ufs_gpuP 0 --dynamic_ufs_mem 0 --uncore_0 2.4 --uncore_1 2.4 --pcm 1 --inc_ts 200 --dec_ts 500 --history 5 --dual_cap 0 --burst_up 0.4 --burst_low 0.2 --benchmark bert_large
+
+
+cd /home/cc/power/GPGPU/data/ecp_power_res
+sudo mv *.csv ./max_uncore
+cd /mem_throughput 
+sudo mv *.csv ./max_uncore
+cd /home/cc/power/GPGPU/script
+
+python3 exp_power_motif.py --suite 0 --test 0  --dynamic_ufs_gpuP 0 --dynamic_ufs_mem 0 --uncore_0 0.8 --uncore_1 0.8 --pcm 1 --inc_ts 200 --dec_ts 500 --history 5 --dual_cap 0 --burst_up 0.4 --burst_low 0.2 --benchmark bert_large
+
+cd /home/cc/power/GPGPU/data/ecp_power_res
+sudo mv *.csv ./min_uncore
+cd /mem_throughput 
+sudo mv *.csv ./min_uncore
+cd /home/cc/power/GPGPU/script
+
+
 python3 exp_power_motif.py --suite 0 --test 0  --dynamic_ufs_gpuP 0 --dynamic_ufs_mem 1 --uncore_0 0.8 --uncore_1 0.8 --pcm 1 --inc_ts 200 --dec_ts 500 --history 5 --dual_cap 0 --burst_up 0.4 --burst_low 0.2 --benchmark bert_large
 
 
-
-
+cd /home/cc/power/GPGPU/data/ecp_power_res
+sudo mv *.csv ./dynamic_uncore
+cd /mem_throughput 
+sudo mv *.csv ./dynamic_uncore
+cd /home/cc/power/GPGPU/script
 
 
 ./power_util/set_uncore_freq.sh 2.4 2.4
