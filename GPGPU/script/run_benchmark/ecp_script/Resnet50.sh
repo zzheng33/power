@@ -43,7 +43,7 @@ start_docker_training() {
                     --nouse_synthetic_data \
                     --warmup_epochs=0 \
                     --weight_decay=0.0002 \
-                    --train_steps=100"
+                    --train_steps=500"
 
     # Docker command to run the training without an interactive or bash session
     sudo docker run --gpus all --rm -v /home/cc/benchmark/ECP/Resnet50:/workspace tensorflow/tensorflow:2.4.0-gpu bash -c "$training_command"
