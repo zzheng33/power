@@ -47,7 +47,7 @@ sudo mv /home/cc/power/GPGPU/data/ecp_power_res/mem_throughput/*.csv /home/cc/po
 
 python3 exp_power_motif.py --suite 0 --test 0  --dynamic_ufs_gpuP 0 --dynamic_ufs_mem 1 --uncore_0 0.8 --uncore_1 0.8 --pcm 1 --inc_ts 200 --dec_ts 500 --history 5 --dual_cap 0 --burst_up 0.4 --burst_low 0.2 --benchmark Resnet50
 
-# sleep 60
+sleep 60
 
 sudo mv /home/cc/power/GPGPU/data/ecp_power_res/*.csv /home/cc/power/GPGPU/data/ecp_power_res/dynamic_uncore 
 sudo mv /home/cc/power/GPGPU/data/ecp_power_res/mem_throughput/*.csv /home/cc/power/GPGPU/data/ecp_power_res/mem_throughput/dynamic_uncore
