@@ -24,6 +24,7 @@ install_dependence() {
     sudo pip install scipy
     sudo pip install plotly
     sudo pip install kaggle
+    sudo pip install tensorflow
 }
 
 setup_rapl() {
@@ -114,8 +115,16 @@ setup_Resnet() {
     # pip install kaggle
     # export PATH=$PATH:/home/cc/.local/bin
     cd "${home_dir}/benchmark/ECP/Resnet50/"
-    kaggle datasets download -d ifigotin/imagenetmini-1000
-    unzip imagenetmini-1000.zip 
+    kaggle datasets download -d deeptrial/miniimagenet
+    unzip miniimagenet.zip
+    wget -O ./ImageNet-Mini/synset_labels.txt \
+https://raw.githubusercontent.com/tensorflow/models/master/research/slim/datasets/imagenet_2012_validation_synset_labels.txt
+    
+    python3 imagenet_to_gcs.py \
+  --raw_data_dir=./ImageNet-Mini/ \
+  --local_scratch_dir=./tf_records \
+  --nogcs_upload
+    
 }
 
 setup_bert() {
@@ -214,6 +223,8 @@ setup_docker() {
 
     sudo docker pull tensorflow/tensorflow:2.4.0-gpu
 }
+
+setup_resnet_data
 
 install_dependence
 load_benchmark
