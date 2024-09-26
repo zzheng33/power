@@ -112,18 +112,8 @@ setup_UNet() {
 }
 
 setup_Resnet() {
-    # pip install kaggle
-    # export PATH=$PATH:/home/cc/.local/bin
     cd "${home_dir}/benchmark/ECP/Resnet50/"
-    kaggle datasets download -d deeptrial/miniimagenet
-    unzip miniimagenet.zip
-    wget -O ./ImageNet-Mini/synset_labels.txt \
-https://raw.githubusercontent.com/tensorflow/models/master/research/slim/datasets/imagenet_2012_validation_synset_labels.txt
-    
-    python3 imagenet_to_gcs.py \
-  --raw_data_dir=./ImageNet-Mini/ \
-  --local_scratch_dir=./tf_records \
-  --nogcs_upload
+    ./setup.sh
     
 }
 
@@ -220,7 +210,7 @@ setup_docker() {
     sudo apt-get update
     sudo apt-get install -y nvidia-docker2
     sudo systemctl restart docker
-
+    
     sudo docker pull tensorflow/tensorflow:2.4.0-gpu
 }
 
