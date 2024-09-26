@@ -137,7 +137,6 @@ setup_RSBench() {
      cd "${home_dir}/benchmark/ECP/RSBench/cuda"
      make
      cd "${home_dir}/benchmark/ECP/RSBench/openmp-threading"
-    
      make
 }
 
@@ -214,7 +213,6 @@ setup_docker() {
     sudo docker pull tensorflow/tensorflow:2.4.0-gpu
 }
 
-setup_resnet_data
 
 install_dependence
 load_benchmark
