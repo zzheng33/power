@@ -1,10 +1,5 @@
 #!/bin/bash
 
-sudo docker run --gpus all -it --rm -v /home/cc/benchmark/ECP/Resnet50:/workspace tensorflow/tensorflow:2.4.0-gpu bash
-
-
-
-
 start_docker_training() {
     # Docker image details
  
