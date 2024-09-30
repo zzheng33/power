@@ -17,11 +17,15 @@ Goal:
 
 
 Prelinary Experiment Plan:
-1. 
 
-
-Approach Steps:
-1. 
+Cap the GPU power budget at for example 150W,
+When the uncore frequency is set at min, shift the power budget contributed to 
+decreasing uncore frequency to GPU, hence improve the GPU application with GPU-power hungry 
+The challenge here is how to quantify the "reduced uncore frequency" into power in watts. 
+Solution:
+CPU power under steady state and max uncore frequency without any tasks: 176 W
+CPU power under steady state and min uncore frequency without any tasks: 93 W
+Hence, translate 1.4 GHz uncore frquency to watts: 83 W. 
 
 
 
