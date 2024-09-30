@@ -1,0 +1,40 @@
+Idea: 
+shift power budge from CPU to GPU, and vice versa, based on their power demands. 
+
+
+Conditions and Constraints:
+1. Each compute node has a fixed power budget. 
+2. Assume that CPU and GPU share the fixed power budget evenly across the execution by default. 
+
+
+Previous research results:
+1. Scaling the uncore frequency dynamically can save CPU power while maintain the lower performance loss. 
+
+
+Goal: 
+1. shift the power budget saved by the uncore frequency scaling to GPU to improve the performance. 
+
+
+
+Prelinary Experiment Plan:
+1. 
+
+
+Approach Steps:
+1. 
+
+
+
+
+
+
+
+
+########################
+
+TDP for 2 sockets: 540 W
+TDP for A100-40GB: 250 W
+
+Suppose 60% Power cap for one node. 
+2-sockets: 324 W
+GPU: 150 W
