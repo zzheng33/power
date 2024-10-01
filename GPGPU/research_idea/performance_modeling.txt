@@ -1,3 +1,5 @@
+
+## Scaling Up Modeling
 performance modeling for distributed deep learning training
 
 training samples in orignal dataset: M
@@ -11,4 +13,20 @@ Suppose we train the m samples for e epoches on 1 Nvidia A100-40GB, the training
 Since the DL traning epoch is iterative and predictive, we can use the following analytic model to 
 predict the total training time T, for the orignal dataset for E epoches. 
 
-T = 
+T = t * (M/m) * (E/e)
+
+
+## Scaling Out Modeling
+Now, we train the model in data parallel across multiple GPUs on the same node, 
+and multiple GPUs on multiple nodes. 
+
+
+GPU = 4
+speedup = (T_1GPU)/(T_4gpu)
+ideal_T = 2 
+T_4gpu = 3
+speedup = 8 / 3
+
+efficiency = speedup / G = (8/3) / 4 = 2/3
+
+
