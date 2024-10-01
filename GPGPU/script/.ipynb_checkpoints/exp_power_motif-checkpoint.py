@@ -37,6 +37,7 @@ history=2
 dual_cap = 1
 burst_up=0.4
 burst_low=0.2
+power_shift=0
 
 
 
@@ -67,10 +68,15 @@ subprocess.run(pm_command, shell=True)
 
 
 def run_benchmark(benchmark_script_dir,benchmark, suite, test):
+    
+    if power_shift==0:
+        tmp="/no_power_shift/"
+    else:
+        tmp="/power_shift/"
     if not test:
-        output_cpu = f"../data/{suite}_power_res/{benchmark}_power_cpu.csv"
-        output_gpu = f"../data/{suite}_power_res/{benchmark}_power_gpu.csv"
-        output_uncore = f"../data/{suite}_power_res/uncore_freq/{benchmark}_uncore_freq.csv"
+        output_cpu = f"../data/{suite}_power_res/{tmp}{benchmark}_power_cpu.csv"
+        output_gpu = f"../data/{suite}_power_res/{tmp}{benchmark}_power_gpu.csv"
+        output_uncore = f"../data/{suite}_power_res/{tmp}uncore_freq/{benchmark}_uncore_freq.csv"
     else:
         output_cpu = f"../data/{suite}_test/{benchmark}_power_cpu.csv"
         output_gpu = f"../data/{suite}_test/{benchmark}_power_gpu.csv"
@@ -81,7 +87,7 @@ def run_benchmark(benchmark_script_dir,benchmark, suite, test):
 
     if pcm:
         # start pcm-memory
-        monitor_command_memory = f"echo 9900 | sudo -S {read_memory} 0.1 --suite {suite} --benchmark {benchmark} --uncore_0 {uncore_0} --uncore_1 {uncore_1} --dynamic_ufs_mem {dynamic_ufs_mem} --inc_ts {inc_ts} --dec_ts {dec_ts} --history {history} --dual_cap {dual_cap} --burst_up {burst_up} --burst_low {burst_low}"
+        monitor_command_memory = f"echo 9900 | sudo -S {read_memory} 0.1 --suite {suite} --benchmark {benchmark} --uncore_0 {uncore_0} --uncore_1 {uncore_1} --dynamic_ufs_mem {dynamic_ufs_mem} --inc_ts {inc_ts} --dec_ts {dec_ts} --history {history} --dual_cap {dual_cap} --burst_up {burst_up} --burst_low {burst_low} --power_shift {power_shift}"
         monitor_process_memory = subprocess.Popen(monitor_command_memory, shell=True, stdin=subprocess.PIPE, text=True)
 
 
@@ -189,6 +195,7 @@ if __name__ == "__main__":
     parser.add_argument('--dual_cap', type=int, default=1)
     parser.add_argument('--burst_up', type=float, default=0.4)
     parser.add_argument('--burst_low', type=float, default=0.2)
+    parser.add_argument('--power_shift', type=int, default=0)
     
 
 
@@ -207,6 +214,7 @@ if __name__ == "__main__":
     dec_ts = args.dec_ts
     history = args.history
     dual_cap = args.dual_cap
+    power_shift=args.power_shift
 
 ################################## Parsing Args Ends ##############################
 

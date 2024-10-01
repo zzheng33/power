@@ -62,6 +62,8 @@ int expect_current_max_uncore = 0;
 int burstiness = 0;
 double burst_up = 0.4;
 double burst_low = 0.2;
+int power_shift=0;
+std::string power_shift_dir="";
 
 using namespace std;
 using namespace pcm;
@@ -1480,6 +1482,20 @@ int mainThrows(int argc, char * argv[])
             exit(EXIT_FAILURE);
         }
         }
+        else if (check_argument_equals(*argv, {"--power_shift"}))
+        {
+        if (argc > 1)
+        {
+            power_shift = std::stod(argv[1]); 
+            argv++;
+            argc--;
+        }
+        else
+        {
+            std::cerr << "Error: --benchmark option requires a value" << std::endl;
+            exit(EXIT_FAILURE);
+        }
+        }
         else if (check_argument_equals(*argv, {"-silent", "/silent"}))
         {
             // handled in check_and_set_silent
@@ -1707,6 +1723,15 @@ int mainThrows(int argc, char * argv[])
 
     int result = system(command.c_str());
 
+    // store the data in the respective data dir
+    if (power_shift==0) {
+        power_shift_dir="/no_power_shift/";
+    }
+    else{
+        power_shift_dir="/power_shift/";
+    }
+        
+
     if (uncore_0>=2 || uncore_1>=2)
         expect_current_max_uncore = 1;
     
@@ -1860,7 +1885,7 @@ void record_mem_throughput(double sysReadDRAM, double sysWriteDRAM)
     }
 
     // Open file in append mode
-    std::ofstream outfile("/home/cc/power/GPGPU/data/" + suite + "_power_res/mem_throughput/" + benchmark + ".csv", std::ios::app);
+    std::ofstream outfile("/home/cc/power/GPGPU/data/" + suite + "_power_res/" + power_shift_dir + "mem_throughput/" + benchmark + ".csv", std::ios::app);
 
     // Check if file opened successfully
     if (outfile.is_open()) {
