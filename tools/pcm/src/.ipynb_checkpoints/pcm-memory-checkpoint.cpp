@@ -1903,7 +1903,7 @@ void dynamic_ufs(double sysReadDRAM, double sysWriteDRAM) {
         }
 
         // shift power from CPU to GPU
-        if (power_shift==1) {
+        if (power_shift==1 & g_cap==1) {
             if (can_shift == 1 & high_gpu_power==0) {
                 system("sudo nvidia-smi -pl 233");
                 high_gpu_power = 1;

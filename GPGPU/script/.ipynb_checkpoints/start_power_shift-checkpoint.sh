@@ -7,7 +7,7 @@
 
 suite=1 
 g_cap=1
-power_shift=0
+power_shift=1
 
 
 # Set suite_dir based on suite value
@@ -23,9 +23,9 @@ else
 fi
 
 if [ $shift -eq 0 ]; then
-    shift_dir="shift"
-else
     shift_dir="noShift"
+else
+    shift_dir="shift"
 fi
 
 
