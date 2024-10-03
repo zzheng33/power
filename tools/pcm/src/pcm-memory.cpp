@@ -66,9 +66,11 @@ int high_uncore = 0;
 int power_shift=0;
 int g_cap = 0;
 // determine whether can shift the power budget from CPU to GPU
-int can_shift=0;
 int high_gpu_power=0;
 std::string power_shift_dir="";
+// The uncore frequency to be adjusted
+double newUncoreFreq_0 = 0.8; 
+double newUncoreFreq_1 = 0.8;
 
 using namespace std;
 using namespace pcm;
@@ -1818,13 +1820,7 @@ void dynamic_ufs(double sysReadDRAM, double sysWriteDRAM) {
     const int windowSize = 10;
 
     int burst_status = 0;
-    //can shift power from CPU to GPU
     
-   
-    
-    // The uncore frequency to be adjusted
-    double newUncoreFreq_0 = 2.4; 
-    double newUncoreFreq_1 = 2.4;
 
     // Store the current throughput in history (keep the last 5 points)
     throughputHistory.push_back(currentThroughput);
@@ -1841,15 +1837,16 @@ void dynamic_ufs(double sysReadDRAM, double sysWriteDRAM) {
                 newUncoreFreq_0 = 2.4;
                 newUncoreFreq_1 = 2.4;
                 burst_status = 1; // yield the UFS control to the burstiness-based logic
-                can_shift = 0;
+            
 
-                if(high_uncore==0) {
+                // if(high_uncore==0) {
                     if (dual_cap==1)
                         int result = system("sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh 2.4 2.4");
                     else 
                         int result = system("sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh 2.4 0.8");
+                    // system("sudo nvidia-smi -pl 150");
                     high_uncore = 1;
-                }
+                // }
                 
             }
          
@@ -1864,31 +1861,31 @@ void dynamic_ufs(double sysReadDRAM, double sysWriteDRAM) {
         double derivative = (throughputHistory[history-1] - throughputHistory[0]) / timeInterval;
         
         if (derivative/10 > inc_ts & expect_current_max_uncore == 0) {
-            can_shift = 0;
             newUncoreFreq_0 = 2.4;
             newUncoreFreq_1 = 2.4;
             uncoreChangeWindow.push_back(1);
             expect_current_max_uncore = 1;
             
-            if (burst_status==0 & high_uncore==0) {
+            if (burst_status==0 ) {
                 if (dual_cap==1)
                     int result = system("sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh 2.4 2.4");
                 else 
                     int result = system("sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh 2.4 0.8");
+                // system("sudo nvidia-smi -pl 150");
                 high_uncore=1;
             }
 
             
         } 
         else if (derivative / 10 < -dec_ts & expect_current_max_uncore == 1) {
-            can_shift = 1;
             newUncoreFreq_0 = 0.8;
             newUncoreFreq_1 = 0.8;
             uncoreChangeWindow.push_back(1);
             expect_current_max_uncore = 0;
             
-            if (burst_status==0 & high_uncore==1) {
+            if (burst_status==0 ) {
                 int result = system("sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh 0.8 0.8");
+                // system("sudo nvidia-smi -pl 233");
                 high_uncore=0;
                 
             }
@@ -1904,16 +1901,14 @@ void dynamic_ufs(double sysReadDRAM, double sysWriteDRAM) {
 
         // shift power from CPU to GPU
         if (power_shift==1 & g_cap==1) {
-            if (can_shift == 1 & high_gpu_power==0) {
-                system("sudo nvidia-smi -pl 233");
-                high_gpu_power = 1;
+            if ((newUncoreFreq_0 ==0.8 | newUncoreFreq_1==0.8)) {
+                system("sudo nvidia-smi -pl 233 > /dev/null 2>&1");
             }
-            else if (can_shift==0 & high_gpu_power == 1) {
-                system("sudo nvidia-smi -pl 150");
-                high_gpu_power==0;
+            else if ((newUncoreFreq_0 ==2.4 & newUncoreFreq_1==2.4)) {
+                system("sudo nvidia-smi -pl 150 > /dev/null 2>&1");
+
              }
         }
-        
         
     }
 
