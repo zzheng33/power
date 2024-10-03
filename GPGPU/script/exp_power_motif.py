@@ -38,7 +38,7 @@ dual_cap = 1
 burst_up=0.4
 burst_low=0.2
 power_shift=0
-
+g_cap = 0
 
 
 # Define your benchmarks, for testing replace the list with just ['FT'] for example
@@ -69,10 +69,12 @@ subprocess.run(pm_command, shell=True)
 
 def run_benchmark(benchmark_script_dir,benchmark, suite, test):
     
-    if power_shift==0:
+    if g_cap==0 and power_shift==0:
         tmp="/no_power_shift/"
-    else:
-        tmp="/power_shift/"
+    elif g_cap==1 and power_shift==0:
+        tmp="/cap/noShift/"
+    elif g_cap==1 and power_shift ==1:
+        tmp="/cap/shift/"
     if not test:
         output_cpu = f"../data/{suite}_power_res/{tmp}{benchmark}_power_cpu.csv"
         output_gpu = f"../data/{suite}_power_res/{tmp}{benchmark}_power_gpu.csv"
@@ -87,7 +89,7 @@ def run_benchmark(benchmark_script_dir,benchmark, suite, test):
 
     if pcm:
         # start pcm-memory
-        monitor_command_memory = f"echo 9900 | sudo -S {read_memory} 0.1 --suite {suite} --benchmark {benchmark} --uncore_0 {uncore_0} --uncore_1 {uncore_1} --dynamic_ufs_mem {dynamic_ufs_mem} --inc_ts {inc_ts} --dec_ts {dec_ts} --history {history} --dual_cap {dual_cap} --burst_up {burst_up} --burst_low {burst_low} --power_shift {power_shift}"
+        monitor_command_memory = f"echo 9900 | sudo -S {read_memory} 0.1 --suite {suite} --benchmark {benchmark} --uncore_0 {uncore_0} --uncore_1 {uncore_1} --dynamic_ufs_mem {dynamic_ufs_mem} --inc_ts {inc_ts} --dec_ts {dec_ts} --history {history} --dual_cap {dual_cap} --burst_up {burst_up} --burst_low {burst_low} --power_shift {power_shift} --g_cap {g_cap}"
         monitor_process_memory = subprocess.Popen(monitor_command_memory, shell=True, stdin=subprocess.PIPE, text=True)
 
 
@@ -196,6 +198,7 @@ if __name__ == "__main__":
     parser.add_argument('--burst_up', type=float, default=0.4)
     parser.add_argument('--burst_low', type=float, default=0.2)
     parser.add_argument('--power_shift', type=int, default=0)
+    parser.add_argument('--g_cap', type=int, default=0)
     
 
 
@@ -215,6 +218,7 @@ if __name__ == "__main__":
     history = args.history
     dual_cap = args.dual_cap
     power_shift=args.power_shift
+    g_cap = args.g_cap
 
 ################################## Parsing Args Ends ##############################
 
