@@ -1885,7 +1885,7 @@ void record_mem_throughput(double sysReadDRAM, double sysWriteDRAM)
     }
 
     // Open file in append mode
-    std::ofstream outfile("/home/cc/power/GPGPU/data/" + suite + "_power_res/" + power_shift_dir + "mem_throughput/" + benchmark + ".csv", std::ios::app);
+    std::ofstream outfile("/home/cc/power/GPGPU/data/" + suite + "_power_res" + power_shift_dir + "mem_throughput/" + benchmark + ".csv", std::ios::app);
 
     // Check if file opened successfully
     if (outfile.is_open()) {
