@@ -1839,14 +1839,14 @@ void dynamic_ufs(double sysReadDRAM, double sysWriteDRAM) {
                 burst_status = 1; // yield the UFS control to the burstiness-based logic
             
 
-                // if(high_uncore==0) {
+                if(high_uncore==0) {
                     if (dual_cap==1)
                         int result = system("sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh 2.4 2.4");
                     else 
                         int result = system("sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh 2.4 0.8");
-                    // system("sudo nvidia-smi -pl 150");
+ 
                     high_uncore = 1;
-                // }
+                }
                 
             }
          
@@ -1866,12 +1866,12 @@ void dynamic_ufs(double sysReadDRAM, double sysWriteDRAM) {
             uncoreChangeWindow.push_back(1);
             expect_current_max_uncore = 1;
             
-            if (burst_status==0 ) {
+            if (burst_status==0 & high_uncore==0) {
                 if (dual_cap==1)
                     int result = system("sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh 2.4 2.4");
                 else 
                     int result = system("sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh 2.4 0.8");
-                // system("sudo nvidia-smi -pl 150");
+              
                 high_uncore=1;
             }
 
@@ -1883,9 +1883,9 @@ void dynamic_ufs(double sysReadDRAM, double sysWriteDRAM) {
             uncoreChangeWindow.push_back(1);
             expect_current_max_uncore = 0;
             
-            if (burst_status==0 ) {
+            if (burst_status==0 & high_uncore==1) {
                 int result = system("sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh 0.8 0.8");
-                // system("sudo nvidia-smi -pl 233");
+  
                 high_uncore=0;
                 
             }
@@ -1901,11 +1901,13 @@ void dynamic_ufs(double sysReadDRAM, double sysWriteDRAM) {
 
         // shift power from CPU to GPU
         if (power_shift==1 & g_cap==1) {
-            if ((newUncoreFreq_0 ==0.8 | newUncoreFreq_1==0.8)) {
+            if ((newUncoreFreq_0 ==0.8 | newUncoreFreq_1==0.8) & high_gpu_power==0) {
                 system("sudo nvidia-smi -pl 233 > /dev/null 2>&1");
+                high_gpu_power = 1;
             }
-            else if ((newUncoreFreq_0 ==2.4 & newUncoreFreq_1==2.4)) {
+            else if ((newUncoreFreq_0 ==2.4 & newUncoreFreq_1==2.4) & high_gpu_power==1) {
                 system("sudo nvidia-smi -pl 150 > /dev/null 2>&1");
+                high_gpu_power = 0;
 
              }
         }

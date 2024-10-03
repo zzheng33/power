@@ -33,7 +33,7 @@ fi
 ################################ dynamic_uncore, cap & no-shift ################################ 
 sudo nvidia-smi -pl 150
 
-python3 exp_power_motif.py --suite $suite --test 0 --dynamic_ufs_gpuP 0 --dynamic_ufs_mem 1 --uncore_0 0.8 --uncore_1 0.8 --pcm 1 --inc_ts 200 --dec_ts 500 --history 5 --dual_cap 0 --burst_up 0.4 --burst_low 0.2 --power_shift $power_shift  --g_cap $g_cap --benchmark raytracing
+python3 exp_power_motif.py --suite $suite --test 0 --dynamic_ufs_gpuP 0 --dynamic_ufs_mem 1 --uncore_0 0.8 --uncore_1 0.8 --pcm 1 --inc_ts 200 --dec_ts 500 --history 5 --dual_cap 0 --burst_up 0.4 --burst_low 0.2 --power_shift $power_shift  --g_cap $g_cap --benchmark fdtd2d
 
 sudo nvidia-smi -pl 250
 
