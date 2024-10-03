@@ -1834,10 +1834,10 @@ void dynamic_ufs(double sysReadDRAM, double sysWriteDRAM) {
         if(uncoreChangeWindow.size()>=windowSize) {
             double avgChange = std::accumulate(uncoreChangeWindow.begin(), uncoreChangeWindow.end(), 0.0) / uncoreChangeWindow.size();
             if (avgChange >= burst_up) {
+                
                 newUncoreFreq_0 = 2.4;
                 newUncoreFreq_1 = 2.4;
                 burst_status = 1; // yield the UFS control to the burstiness-based logic
-            
 
                 if(high_uncore==0) {
                     if (dual_cap==1)
@@ -1861,19 +1861,32 @@ void dynamic_ufs(double sysReadDRAM, double sysWriteDRAM) {
         double derivative = (throughputHistory[history-1] - throughputHistory[0]) / timeInterval;
         
         if (derivative/10 > inc_ts & expect_current_max_uncore == 0) {
-            newUncoreFreq_0 = 2.4;
-            newUncoreFreq_1 = 2.4;
-            uncoreChangeWindow.push_back(1);
-            expect_current_max_uncore = 1;
-            
-            if (burst_status==0 & high_uncore==0) {
-                if (dual_cap==1)
-                    int result = system("sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh 2.4 2.4");
-                else 
-                    int result = system("sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh 2.4 0.8");
-              
-                high_uncore=1;
+
+            if (power_shift==1 & (std::accumulate(throughputHistory.begin(), throughputHistory.end(), 0.0) / throughputHistory.size()) < 600) {
+                if (burst_status==0 & high_uncore==1) {
+                    int result = system("sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh 0.8 0.8");
+                    uncoreChangeWindow.push_back(1);
+                    expect_current_max_uncore = 0;  
+                    high_uncore=0;
+                }
             }
+            else {
+                newUncoreFreq_0 = 2.4;
+                newUncoreFreq_1 = 2.4;
+                uncoreChangeWindow.push_back(1);
+                expect_current_max_uncore = 1;
+                
+                if (burst_status==0 & high_uncore==0) {
+                    if (dual_cap==1)
+                        int result = system("sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh 2.4 2.4");
+                    else 
+                        int result = system("sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh 2.4 0.8");
+                  
+                    high_uncore=1;
+                }
+            }
+            
+            
 
             
         } 
@@ -1913,7 +1926,6 @@ void dynamic_ufs(double sysReadDRAM, double sysWriteDRAM) {
         }
         
     }
-
 
 }
 
