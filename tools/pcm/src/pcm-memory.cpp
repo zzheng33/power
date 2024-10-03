@@ -62,6 +62,7 @@ int expect_current_max_uncore = 0;
 int burstiness = 0;
 double burst_up = 0.4;
 double burst_low = 0.2;
+int high_uncore = 0;
 int power_shift=0;
 int g_cap = 0;
 // determine whether can shift the power budget from CPU to GPU
@@ -1841,11 +1842,15 @@ void dynamic_ufs(double sysReadDRAM, double sysWriteDRAM) {
                 newUncoreFreq_1 = 2.4;
                 burst_status = 1; // yield the UFS control to the burstiness-based logic
                 can_shift = 0;
-                // scale 
-                if (dual_cap==1)
-                    int result = system("sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh 2.4 2.4");
-                else 
-                    int result = system("sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh 2.4 0.8");
+
+                if(high_uncore==0) {
+                    if (dual_cap==1)
+                        int result = system("sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh 2.4 2.4");
+                    else 
+                        int result = system("sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh 2.4 0.8");
+                    high_uncore = 1;
+                }
+                
             }
          
             else if (avgChange <= burst_low)
@@ -1865,23 +1870,26 @@ void dynamic_ufs(double sysReadDRAM, double sysWriteDRAM) {
             uncoreChangeWindow.push_back(1);
             expect_current_max_uncore = 1;
             
-            if (burst_status==0) {
+            if (burst_status==0 & high_uncore==0) {
                 if (dual_cap==1)
                     int result = system("sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh 2.4 2.4");
                 else 
                     int result = system("sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh 2.4 0.8");
+                high_uncore=1;
             }
 
             
         } 
         else if (derivative / 10 < -dec_ts & expect_current_max_uncore == 1) {
+            can_shift = 1;
             newUncoreFreq_0 = 0.8;
             newUncoreFreq_1 = 0.8;
             uncoreChangeWindow.push_back(1);
             expect_current_max_uncore = 0;
             
-            if (burst_status==0) {
+            if (burst_status==0 & high_uncore==1) {
                 int result = system("sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh 0.8 0.8");
+                high_uncore=0;
                 
             }
             
@@ -1893,6 +1901,19 @@ void dynamic_ufs(double sysReadDRAM, double sysWriteDRAM) {
         if (uncoreChangeWindow.size() > windowSize) {
             uncoreChangeWindow.erase(uncoreChangeWindow.begin());  
         }
+
+        // shift power from CPU to GPU
+        if (power_shift==1) {
+            if (can_shift == 1 & high_gpu_power==0) {
+                system("sudo nvidia-smi -pl 233");
+                high_gpu_power = 1;
+            }
+            else if (can_shift==0 & high_gpu_power == 1) {
+                system("sudo nvidia-smi -pl 150");
+                high_gpu_power==0;
+             }
+        }
+        
         
     }
 
