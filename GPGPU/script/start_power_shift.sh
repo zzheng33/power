@@ -22,7 +22,7 @@ else
     exit 1
 fi
 
-if [ $shift -eq 0 ]; then
+if [ $power_shift -eq 0 ]; then
     shift_dir="noShift"
 else
     shift_dir="shift"
