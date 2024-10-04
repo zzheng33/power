@@ -1,6 +1,11 @@
 Idea: 
 shift power budge from CPU to GPU, and vice versa, based on their power demands. 
 
+baseline: max_uncore and noshift
+new approach: dynamic_uncore and shift
+
+goal: remain same energy consumption while reducing run time
+
 
 Conditions and Constraints:
 1. Each compute node has a fixed power budget. 

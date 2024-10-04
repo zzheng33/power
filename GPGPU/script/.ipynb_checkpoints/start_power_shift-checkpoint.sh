@@ -5,7 +5,7 @@
 # suite 2: npb
 
 
-suite=1 
+suite=0
 g_cap=1
 power_shift=0
 
