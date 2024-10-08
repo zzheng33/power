@@ -2,18 +2,19 @@
 ## Scaling Up Modeling
 performance modeling for distributed deep learning training
 
-training samples in orignal dataset: M
-traning samples in shrinked dataset: m
-training epoches for orignal dataset: E
-training epoches for shrinked dataset: e
-training time taken for the orignal dataset for E epoch: T
+training samples in original dataset: M
+training samples in shrinked dataset: m
+training epochs for original dataset: E
+training epochs for shrinked dataset: e
+training time taken for the original dataset for E epoch: T
 training time taken for the shrinked dataset for e epoch: t
 
 Suppose we train the m samples for e epoches on 1 Nvidia A100-40GB, the training time is t. 
-Since the DL traning epoch is iterative and predictive, we can use the following analytic model to 
-predict the total training time T, for the orignal dataset for E epoches. 
+Since the DL training epoch is iterative and predictive, we can use the following analytic model to 
+predict the total training time T, for the original dataset for E epoches. 
 
 T = t * (M/m) * (E/e)
+
 
 
 

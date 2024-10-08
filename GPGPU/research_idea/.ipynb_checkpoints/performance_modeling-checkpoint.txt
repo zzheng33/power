@@ -2,18 +2,22 @@
 ## Scaling Up Modeling
 performance modeling for distributed deep learning training
 
-training samples in orignal dataset: M
-traning samples in shrinked dataset: m
-training epoches for orignal dataset: E
-training epoches for shrinked dataset: e
-training time taken for the orignal dataset for E epoch: T
+training samples in original dataset: M
+training samples in shrinked dataset: m
+training epochs for original dataset: E
+training epochs for shrinked dataset: e
+training time taken for the original dataset for E epoch: T
 training time taken for the shrinked dataset for e epoch: t
 
 Suppose we train the m samples for e epoches on 1 Nvidia A100-40GB, the training time is t. 
-Since the DL traning epoch is iterative and predictive, we can use the following analytic model to 
-predict the total training time T, for the orignal dataset for E epoches. 
+Since the DL training epoch is iterative and predictive, we can use the following analytic model to 
+predict the total training time T, for the original dataset for E epoches. 
 
 T = t * (M/m) * (E/e)
+
+
+
+
 
 
 ## Scaling Out Modeling
@@ -30,3 +34,11 @@ speedup = 8 / 3
 efficiency = speedup / G = (8/3) / 4 = 2/3
 
 
+performance loss of scaling due to the allreduce communication
+the challenge is to determine the performance loss in the allreduce communication. 
+run a model across multiple GPUs on multiple nodes. collect the kernel profiling data via nsys. 
+get the percentage of communication time. 
+
+
+get the average CPU and GPU power usage for communication, 
+how to distinguish from communication and I/O
