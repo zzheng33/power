@@ -14,7 +14,7 @@ Since the DL training epoch is iterative and predictive, we can use the followin
 predict the total training time T, for the original dataset for E epoches. 
 
 T = t * (M/m) * (E/e)
-
+verified by 1)experiments and 2) previous works
 
 
 
