@@ -5,7 +5,7 @@
 # Function to start Docker training
 start_docker_training() {
     # Docker image details
-    docker_image="bert"
+    docker_image="tensorflow/tensorflow:2.4.0-gpu"
     
     # Define local and container directories
     local_dir="/home/cc/benchmark/ECP/bert-large"
@@ -15,7 +15,7 @@ start_docker_training() {
     training_command="TF_XLA_FLAGS='--tf_xla_auto_jit=2' python3 /workspace/run_pretraining.py \
         --bert_config_file=/workspace/input_files/bert_config.json \
         --output_dir=/tmp/output/ \
-        --input_file=/workspace/12000_samples \
+        --input_file=/workspace/6000_samples \
         --do_train=True \
         --iterations_per_loop=1000 \
         --learning_rate=0.0001 \
@@ -23,7 +23,7 @@ start_docker_training() {
         --max_predictions_per_seq=76 \
         --max_seq_length=512 \
         --num_gpus=1 \
-        --num_train_steps=1500 \
+        --num_train_steps=750 \
         --num_warmup_steps=0 \
         --optimizer=lamb \
         --save_checkpoints_steps=156200000 \
