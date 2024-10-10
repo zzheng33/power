@@ -219,38 +219,37 @@ setup_docker() {
     
 }
 
-new_image() {
-    sudo docker run -i --name bert-container --gpus all -v $HOME:$HOME tensorflow/tensorflow:2.4.0-gpu bash <<EOF
+## need to revise to update new images
+# new_image() {
+#     # Start the container, keep it running with bash or sleep to allow the commit process
+#     sudo docker run -d --name bert_c --gpus all -v /home/cc/benchmark/ECP/bert-large/:/workspace tensorflow/tensorflow:2.4.0-gpu bash -c "
+#     cd ./workspace/logging
+#     pip install -e .
+#     exec bash"  # Keep container running by opening bash
 
-    
-    cd $HOME/benchmark/ECP/bert-large/logging
-    
-    pip install -e .
-    
+#     # Fork a new process to commit the container
+#     sudo docker commit bert_c bert
 
-    exit
-EOF
-
-    
-    sudo docker commit bert-container bert
-    sudo docker rm bert-container
-}
+#     # After committing, stop and remove the container
+#     sudo docker stop bert_c
+#     sudo docker rm bert_c
+# }
 
 
-install_dependence
-load_benchmark
-setup_altis
-setup_pcm
-generate_altis_data
-setup_CRADL
-setup_Laghos
-setup_XSBench
-setup_RSBench
-# setup_ecp_cpu
-# setup_npb
-setup_cpu_freq
-setup_UNet
-setup_Resnet
-setup_miniGAN_env
-setup_docker
-new_image
+# install_dependence
+# load_benchmark
+# setup_altis
+# setup_pcm
+# generate_altis_data
+# setup_CRADL
+# setup_Laghos
+# setup_XSBench
+# setup_RSBench
+# # setup_ecp_cpu
+# # setup_npb
+# setup_cpu_freq
+# setup_UNet
+# setup_Resnet
+# setup_miniGAN_env
+# setup_docker
+# new_image
