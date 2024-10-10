@@ -1,6 +1,9 @@
 #!/bin/bash
 
 home_dir="/home/cc"
+home_dir=$HOME
+
+
 
 install_dependence() {
     sudo apt-get update
@@ -211,6 +214,26 @@ setup_docker() {
     sudo systemctl restart docker
     
     sudo docker pull tensorflow/tensorflow:2.4.0-gpu
+
+
+    
+}
+
+new_image() {
+    sudo docker run -i --name bert-container --gpus all -v $HOME:$HOME tensorflow/tensorflow:2.4.0-gpu bash <<EOF
+
+    
+    cd $HOME/benchmark/ECP/bert-large/logging
+    
+    pip install -e .
+    
+
+    exit
+EOF
+
+    
+    sudo docker commit bert-container bert
+    sudo docker rm bert-container
 }
 
 
@@ -230,3 +253,4 @@ setup_UNet
 setup_Resnet
 setup_miniGAN_env
 setup_docker
+new_image

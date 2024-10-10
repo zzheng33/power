@@ -5,7 +5,7 @@
 # Function to start Docker training
 start_docker_training() {
     # Docker image details
-    docker_image="tensorflow/tensorflow:2.4.0-gpu"
+    docker_image="bert"
     
     # Define local and container directories
     local_dir="/home/cc/benchmark/ECP/bert-large"
