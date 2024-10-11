@@ -236,20 +236,20 @@ setup_docker() {
 # }
 
 
-# install_dependence
-# load_benchmark
-# setup_altis
-# setup_pcm
-# generate_altis_data
-# setup_CRADL
-# setup_Laghos
-# setup_XSBench
-# setup_RSBench
-# # setup_ecp_cpu
-# # setup_npb
-# setup_cpu_freq
-# setup_UNet
-# setup_Resnet
-# setup_miniGAN_env
-# setup_docker
+install_dependence
+load_benchmark
+setup_altis
+setup_pcm
+generate_altis_data
+setup_CRADL
+setup_Laghos
+setup_XSBench
+setup_RSBench
+# setup_ecp_cpu
+# setup_npb
+setup_cpu_freq
+setup_UNet
+setup_Resnet
+setup_miniGAN_env
+setup_docker
 # new_image
