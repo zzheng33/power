@@ -1,5 +1,5 @@
 #!/bin/bash
-
+# 3923 images, 500mb
 start_docker_training() {
     # Docker image details
  
