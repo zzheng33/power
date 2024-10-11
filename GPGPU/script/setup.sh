@@ -28,6 +28,8 @@ install_dependence() {
     sudo pip install plotly
     sudo pip install kaggle
     sudo pip install tensorflow
+    sudo apt install git-lfs
+
 }
 
 setup_rapl() {
