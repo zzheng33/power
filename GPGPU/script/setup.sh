@@ -225,7 +225,8 @@ setup_docker() {
 ## need to revise to update new images
 # new_image() {
 #     # Start the container, keep it running with bash or sleep to allow the commit process
-#     sudo docker run -d --name bert_c --gpus all -v /home/cc/benchmark/ECP/bert-large/:/workspace tensorflow/tensorflow:2.4.0-gpu bash -c "
+#     sudo docker run --gpus all -it --rm --name mlperf  -v /home/cc/benchmark/ECP/bert-large/:/workspace ten
+sorflow/tensorflow:2.4.0-gpu bash  
 #     cd ./workspace/logging
 #     pip install -e .
 #     exec bash"  # Keep container running by opening bash
