@@ -28,6 +28,8 @@ install_dependence() {
     sudo pip install plotly
     sudo pip install kaggle
     sudo pip install tensorflow
+    sudo apt install git-lfs
+
 }
 
 setup_rapl() {
@@ -112,6 +114,7 @@ setup_UNet() {
     pip install -r requirements.txt
     deactivate
     bash scripts/download_data.sh
+    python3 shrink_dataset.py
 }
 
 setup_Resnet() {
@@ -236,20 +239,20 @@ setup_docker() {
 # }
 
 
-# install_dependence
-# load_benchmark
-# setup_altis
-# setup_pcm
-# generate_altis_data
-# setup_CRADL
-# setup_Laghos
-# setup_XSBench
-# setup_RSBench
-# # setup_ecp_cpu
-# # setup_npb
-# setup_cpu_freq
-# setup_UNet
-# setup_Resnet
-# setup_miniGAN_env
-# setup_docker
+install_dependence
+load_benchmark
+setup_altis
+setup_pcm
+generate_altis_data
+setup_CRADL
+setup_Laghos
+setup_XSBench
+setup_RSBench
+# setup_ecp_cpu
+# setup_npb
+setup_cpu_freq
+setup_UNet
+setup_Resnet
+setup_miniGAN_env
+setup_docker
 # new_image

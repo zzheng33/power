@@ -114,6 +114,7 @@ setup_UNet() {
     pip install -r requirements.txt
     deactivate
     bash scripts/download_data.sh
+    python3 shrink_dataset.py
 }
 
 setup_Resnet() {
