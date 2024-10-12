@@ -1,5 +1,5 @@
 #!/bin/bash
-
+# 3923 images, 500mb
 start_docker_training() {
     # Docker image details
  
@@ -15,13 +15,13 @@ start_docker_training() {
                     --noenable_device_warmup \
                     --enable_eager \
                     --noenable_xla \
-                    --epochs_between_evals=4 \
+                    --epochs_between_evals=1 \
                     --noeval_dataset_cache \
                     --eval_offset_epochs=2 \
                     --eval_prefetch_batchs=192 \
                     --label_smoothing=0.1 \
                     --lars_epsilon=0 \
-                    --log_steps=125 \
+                    --log_steps=1250000 \
                     --lr_schedule=polynomial \
                     --model_dir=./model \
                     --momentum=0.9 \
@@ -43,7 +43,7 @@ start_docker_training() {
                     --nouse_synthetic_data \
                     --warmup_epochs=0 \
                     --weight_decay=0.0002 \
-                    --train_steps=500"
+                    --train_steps=1"
 
     # Docker command to run the training without an interactive or bash session
     sudo docker run --gpus all --rm -v /home/cc/benchmark/ECP/Resnet50:/workspace tensorflow/tensorflow:2.4.0-gpu bash -c "$training_command"
