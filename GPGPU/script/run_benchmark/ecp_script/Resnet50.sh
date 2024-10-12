@@ -1,8 +1,24 @@
 #!/bin/bash
-# 3923 images, 500mb
+
+# Function to stop the Docker container and kill related processes
+cleanup() {
+    echo "Stopping Docker container and killing related processes..."
+    
+    # Stop the container forcefully
+    sudo docker stop "$container_id"
+    
+    # Force remove the container if needed (in case stopping doesn't work)
+    sudo docker rm -f "$container_id"
+    
+    # Kill all remaining Python processes inside the container (if any)
+    sudo pkill -f "python3 /workspace/tensorflow2/resnet_ctl_imagenet_main.py"
+    
+    echo "Cleanup done."
+    exit 0
+}
+
+# Function to start the Docker training
 start_docker_training() {
-    # Docker image details
- 
     # Define the training command with all arguments
     training_command="python3 /workspace/tensorflow2/resnet_ctl_imagenet_main.py \
                     --base_learning_rate=8.5 \
@@ -37,7 +53,7 @@ start_docker_training() {
                     --notf_data_experimental_slack \
                     --tf_gpu_thread_mode=gpu_private \
                     --notrace_warmup \
-                    --train_epochs=1 \
+                    --train_epochs=2 \
                     --notraining_dataset_cache \
                     --training_prefetch_batchs=128 \
                     --nouse_synthetic_data \
@@ -45,8 +61,20 @@ start_docker_training() {
                     --weight_decay=0.0002 \
                     --train_steps=1"
 
-    # Docker command to run the training without an interactive or bash session
-    sudo docker run --gpus all --rm -v /home/cc/benchmark/ECP/Resnet50:/workspace tensorflow/tensorflow:2.4.0-gpu bash -c "$training_command"
+    # Start the Docker container in detached mode and get the container ID
+    container_id=$(sudo docker run --gpus all --rm -v /home/cc/benchmark/ECP/Resnet50:/workspace -d tensorflow/tensorflow:2.4.0-gpu bash -c "$training_command")
+
+    echo "Docker container started with ID: $container_id"
+
+    # Follow the logs of the running container
+    sudo docker logs -f "$container_id" &
+    log_pid=$!
+    
+    # Wait for the container to complete execution
+    sudo docker wait "$container_id"
+    
+    # Wait for log process to finish
+    wait $log_pid
 
     # Check if the Docker run was successful
     if [ $? -eq 0 ]; then
@@ -56,6 +84,9 @@ start_docker_training() {
     fi
 }
 
+# Trap Ctrl+C (SIGINT) and call the cleanup function
+trap cleanup SIGINT
 
+# Start the Docker training
 start_docker_training
 

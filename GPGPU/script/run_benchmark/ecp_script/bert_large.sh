@@ -3,6 +3,23 @@
 # 194,052 samples for 1st tf record
 
 # Function to start Docker training
+cleanup() {
+    echo "Stopping Docker container and killing related processes..."
+    
+    # Stop the container forcefully
+    sudo docker stop "$container_id"
+    
+    # Force remove the container if needed (in case stopping doesn't work)
+    sudo docker rm -f "$container_id"
+    
+    # Kill any remaining Python processes related to the BERT training
+    sudo pkill -f "python3 /workspace/run_pretraining.py"
+    
+    echo "Cleanup done."
+    exit 0
+}
+
+# Function to start the Docker training
 start_docker_training() {
     # Docker image details
     docker_image="bert"
@@ -28,14 +45,23 @@ start_docker_training() {
         --optimizer=lamb \
         --save_checkpoints_steps=156200000 \
         --start_warmup_step=0 \
-        --train_batch_size=8\
+        --train_batch_size=8 \
         --nouse_tpu"
 
-    # Docker command to run the training without an interactive or bash session
-    sudo docker run --gpus all --rm \
-        -v "$local_dir:$container_dir" \
-        $docker_image \
-        bash -c "$training_command"
+    # Start the Docker container in detached mode and get the container ID
+    container_id=$(sudo docker run --gpus all --rm -v "$local_dir:$container_dir" -d "$docker_image" bash -c "$training_command")
+
+    echo "Docker container started with ID: $container_id"
+
+    # Follow the logs of the running container in the background
+    sudo docker logs -f "$container_id" &
+    log_pid=$!
+
+    # Wait for the container to complete execution
+    sudo docker wait "$container_id"
+    
+    # Wait for the log process to finish
+    wait $log_pid
 
     # Check if the Docker run was successful
     if [ $? -eq 0 ]; then
@@ -44,6 +70,9 @@ start_docker_training() {
         echo "Error in training."
     fi
 }
+
+# Trap Ctrl+C (SIGINT) and call the cleanup function
+trap cleanup SIGINT
 
 # Run the training function
 start_docker_training
