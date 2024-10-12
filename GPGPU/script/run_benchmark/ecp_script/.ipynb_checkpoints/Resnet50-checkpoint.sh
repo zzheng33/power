@@ -59,7 +59,7 @@ start_docker_training() {
                     --nouse_synthetic_data \
                     --warmup_epochs=0 \
                     --weight_decay=0.0002 \
-                    --train_steps=1"
+                    --train_steps=30"
 
     # Start the Docker container in detached mode and get the container ID
     container_id=$(sudo docker run --gpus all --rm -v /home/cc/benchmark/ECP/Resnet50:/workspace -d tensorflow/tensorflow:2.4.0-gpu bash -c "$training_command")
