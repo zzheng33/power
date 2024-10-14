@@ -1862,7 +1862,7 @@ void dynamic_ufs(double sysReadDRAM, double sysWriteDRAM) {
         
         if (derivative/10 > inc_ts & expect_current_max_uncore == 0) {
 
-            if (power_shift==1 & (std::accumulate(throughputHistory.begin(), throughputHistory.end(), 0.0) / throughputHistory.size()) < 600) {
+            if (power_shift==1 & (std::accumulate(throughputHistory.begin(), throughputHistory.end(), 0.0) / throughputHistory.size()) < 0) {
                 if (burst_status==0 & high_uncore==1) {
                     int result = system("sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh 0.8 0.8");
                     uncoreChangeWindow.push_back(1);

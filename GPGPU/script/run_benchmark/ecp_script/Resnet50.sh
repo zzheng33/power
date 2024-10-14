@@ -53,13 +53,13 @@ start_docker_training() {
                     --notf_data_experimental_slack \
                     --tf_gpu_thread_mode=gpu_private \
                     --notrace_warmup \
-                    --train_epochs=2 \
+                    --train_epochs=1 \
                     --notraining_dataset_cache \
                     --training_prefetch_batchs=128 \
                     --nouse_synthetic_data \
                     --warmup_epochs=0 \
                     --weight_decay=0.0002 \
-                    --train_steps=30"
+                    --train_steps=500"
 
     # Start the Docker container in detached mode and get the container ID
     container_id=$(sudo docker run --gpus all --rm -v /home/cc/benchmark/ECP/Resnet50:/workspace -d tensorflow/tensorflow:2.4.0-gpu bash -c "$training_command")
