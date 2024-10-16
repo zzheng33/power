@@ -5,7 +5,7 @@ CSV_FILE="cpu_frequencies.csv"
 
 # Write the header to the CSV file
 header="Time"
-for CPU_ID in {0..31}; do
+for CPU_ID in {0..7}; do
     header+=",cpu$CPU_ID"
 done
 
@@ -18,7 +18,7 @@ collect_frequencies() {
     local timestamp=$(date +"%Y-%m-%d %H:%M:%S")
     local row="$timestamp"
 
-    for CPU_ID in {0..31}; do
+    for CPU_ID in {0..7}; do
         # Check if the CPU ID directory exists
         if [ -d "/sys/devices/system/cpu/cpu$CPU_ID/cpufreq" ]; then
             # Read the current frequency for the specified CPU core
