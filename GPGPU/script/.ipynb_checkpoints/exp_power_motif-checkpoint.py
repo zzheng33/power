@@ -13,6 +13,7 @@ python_executable = subprocess.getoutput('which python3')  # Adjust based on you
 # scripts for CPU, GPU power monitoring
 read_cpu_power = "./power_util/read_cpu_power.py"
 read_gpu_power = "./power_util/read_gpu_power.py"
+reda_dram_power = "./power_util/read_dram_power.py"
 read_uncore_frequency = "./power_util/read_uncore_freq.py"
 # read_memory = "./power_util/read_memory_throughput.py"
 
@@ -101,7 +102,7 @@ def run_benchmark(benchmark_script_dir,benchmark, suite, test):
     
     # Execute the benchmark and get its PID
     if suite == "altis":
-        run_benchmark_command = f" taskset -c 0 {python_executable} {run_altis} --benchmark {benchmark} --benchmark_script_dir {os.path.join(home_dir, benchmark_script_dir)}"
+        run_benchmark_command = f" {python_executable} {run_altis} --benchmark {benchmark} --benchmark_script_dir {os.path.join(home_dir, benchmark_script_dir)}"
 
     elif suite == "ecp":
         run_benchmark_command = f" {python_executable} {run_ecp} --benchmark {benchmark} --benchmark_script_dir {os.path.join(home_dir, benchmark_script_dir)}"

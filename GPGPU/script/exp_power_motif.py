@@ -13,6 +13,7 @@ python_executable = subprocess.getoutput('which python3')  # Adjust based on you
 # scripts for CPU, GPU power monitoring
 read_cpu_power = "./power_util/read_cpu_power.py"
 read_gpu_power = "./power_util/read_gpu_power.py"
+reda_dram_power = "./power_util/read_dram_power.py"
 read_uncore_frequency = "./power_util/read_uncore_freq.py"
 # read_memory = "./power_util/read_memory_throughput.py"
 
