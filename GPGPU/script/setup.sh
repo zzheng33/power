@@ -147,7 +147,7 @@ setup_RSBench() {
 }
 
 setup_lammps() {
-    cd "${home_dir}/benchmark/ECP/lammps"
+    cd "${home_dir}/benchmark/ECP/lammps/build"
     bash ./setup.sh
 }
 
