@@ -146,6 +146,11 @@ setup_RSBench() {
      make
 }
 
+setup_lammps() {
+    cd "${home_dir}/benchmark/ECP/lammps"
+    bash ./setup.sh
+}
+
 setup_Laghos() {
     cd "${home_dir}/benchmark/ECP/hypre-2.11.2/src/"
     ./configure --with-cuda --with-gpu-arch="80" --disable-fortran
@@ -225,7 +230,8 @@ setup_docker() {
 ## need to revise to update new images
 # new_image() {
 #     # Start the container, keep it running with bash or sleep to allow the commit process
-#     sudo docker run -d --name bert_c --gpus all -v /home/cc/benchmark/ECP/bert-large/:/workspace tensorflow/tensorflow:2.4.0-gpu bash -c "
+#     sudo docker run --gpus all -it --rm --name mlperf  -v /home/cc/benchmark/ECP/bert-large/:/workspace ten
+# sorflow/tensorflow:2.4.0-gpu bash  
 #     cd ./workspace/logging
 #     pip install -e .
 #     exec bash"  # Keep container running by opening bash
@@ -239,6 +245,8 @@ setup_docker() {
 # }
 
 
+
+
 install_dependence
 load_benchmark
 setup_altis
@@ -248,6 +256,7 @@ setup_CRADL
 setup_Laghos
 setup_XSBench
 setup_RSBench
+setup_lammps
 # setup_ecp_cpu
 # setup_npb
 setup_cpu_freq
