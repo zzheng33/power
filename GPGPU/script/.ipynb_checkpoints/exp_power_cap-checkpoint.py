@@ -22,10 +22,10 @@ run_npb = "./run_benchmark/run_npb.py"
 
 # Define your benchmarks, for testing replace the list with just ['FT'] for example
 # ecp_benchmarks = ['FT', 'CG', 'LULESH', 'Nekbone', 'AMG2013', 'miniFE']
-ecp_benchmarks = ['XSBench','miniGAN','CRADL','sw4lite','Laghos']
+ecp_benchmarks = ['XSBench','miniGAN','CRADL','sw4lite','Laghos','bert','UNet','Resnet50','gromacs','lammps']
 
-npb_benchmarks = ['bt','cg','ep','ft','is','lu','mg','sp','ua','miniFE']
-npb_benchmarks = ['is']
+# npb_benchmarks = ['bt','cg','ep','ft','is','lu','mg','sp','ua','miniFE']
+# npb_benchmarks = ['is']
 
 
 
@@ -38,7 +38,7 @@ altis_benchmarks_2 = ['cfd','cfd_double','fdtd2d','kmeans','lavamd',
 
 
 gpu_caps = [250, 240, 230, 220,210,200,190, 180,170,160,150]
-cpu_caps = [540, 400, 300, 320, 280, 240, 220, 180, 140, 100]
+cpu_caps = [540, 400, 300, 280, 260, 240, 220, 200, 180, 160,140,120]
 
 
 
