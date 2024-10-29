@@ -1,6 +1,6 @@
 #!/bin/bash
 
-cd /home/cc/tmp
+cd /home/cc/benchmark/ECP/gromacs/build/workdir
 
 export PATH=$HOME/benchmark/ECP/gromacs/build/bin:$PATH
 

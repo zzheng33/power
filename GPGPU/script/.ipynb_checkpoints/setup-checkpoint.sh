@@ -151,6 +151,11 @@ setup_lammps() {
     bash ./setup.sh
 }
 
+setup_gromacs() {
+    cd "${home_dir}/benchmark/ECP/gromacs/build/workdir"
+    bash ./setup.sh
+}
+
 setup_Laghos() {
     cd "${home_dir}/benchmark/ECP/hypre-2.11.2/src/"
     ./configure --with-cuda --with-gpu-arch="80" --disable-fortran
@@ -257,6 +262,7 @@ setup_Laghos
 setup_XSBench
 setup_RSBench
 setup_lammps
+setup_gromacs
 # setup_ecp_cpu
 # setup_npb
 setup_cpu_freq
