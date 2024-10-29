@@ -152,7 +152,7 @@ setup_lammps() {
 }
 
 setup_gromacs() {
-    cd "${home_dir}/benchmark/ECP/gromacs/build/workdir"
+    cd "${home_dir}/benchmark/ECP/gromacs"
     bash ./setup.sh
 }
 
