@@ -23,40 +23,24 @@ run_npb = "./run_benchmark/run_npb.py"
 # Define your benchmarks, for testing replace the list with just ['FT'] for example
 # ecp_benchmarks = ['FT', 'CG', 'LULESH', 'Nekbone', 'AMG2013', 'miniFE']
 ecp_benchmarks = ['XSBench','miniGAN','CRADL','sw4lite','Laghos']
-ecp_benchmarks = ['XSBench_omp','RSBench_omp','LULESH']
-# ecp_benchmarks = ['miniGAN','CRADL','sw4lite','Laghos']
 
 npb_benchmarks = ['bt','cg','ep','ft','is','lu','mg','sp','ua','miniFE']
 npb_benchmarks = ['is']
 
-altis_benchmarks_0 = ['busspeeddownload','busspeedreadback','maxflops']
+
+
+
+altis_benchmarks_0 = ['busspeeddownload','maxflops']
 altis_benchmarks_1 = ['bfs','gemm','gups','pathfinder','sort']
 altis_benchmarks_2 = ['cfd','cfd_double','fdtd2d','kmeans','lavamd',
                       'nw','particlefilter_float','particlefilter_naive','raytracing',
                       'srad','where']
 
 
-altis_benchmarks_0 = ['busspeeddownload','busspeedreadback','maxflops']
-altis_benchmarks_1 = ['bfs','gemm','gups','pathfinder','sort']
-altis_benchmarks_2 = ['cfd','cfd_double','fdtd2d','kmeans','lavamd',
-                      'nw','particlefilter_float','particlefilter_naive','raytracing',
-                      'srad','where']
-
-# altis_benchmarks_0 = []
-# altis_benchmarks_1 = []
-# altis_benchmarks_2 = ['raytracing']
+gpu_caps = [250, 240, 230, 220,210,200,190, 180,170,160,150]
+cpu_caps = [540, 400, 300, 320, 280, 240, 220, 180, 140, 100]
 
 
-gpu_caps = [260, 240, 220, 200, 180, 160, 140, 120, 100]
-cpu_caps = [120, 110, 95, 90, 85, 80, 75, 70, 65]
-
-# cpu_caps = [70, 90, 110, 130, 150, 170, 190, 210, 230, 250]
-
-gpu_caps = [100, 120, 140, 160, 180, 200, 220, 240, 260]
-cpu_caps = [65, 70, 75, 80, 85, 90, 95, 110, 120]
-
-
-cpu_caps = [70, 90, 110, 130, 150, 170, 190, 210, 230, 250]
 
 # Setup environment
 modprobe_command = "sudo modprobe msr"
@@ -164,10 +148,10 @@ def run_benchmark(benchmark_script_dir,benchmark, suite, test, size,cap_type):
         cap_exp(cpu_cap, gpu_cap, output_file_cpu)
        
 
-    # # GPU cap only
-    # for gpu_cap in gpu_caps:
-    #     cpu_cap = max(cpu_caps)
-    #     cap_exp(cpu_cap, gpu_cap, output_file_gpu)
+    # GPU cap only
+    for gpu_cap in gpu_caps:
+        cpu_cap = max(cpu_caps)
+        cap_exp(cpu_cap, gpu_cap, output_file_gpu)
         
 
 
@@ -179,8 +163,8 @@ def run_benchmark(benchmark_script_dir,benchmark, suite, test, size,cap_type):
 
 
 
-    subprocess.run([f"./power_util/cpu_cap.sh 250"], shell=True)
-    subprocess.run([f"./power_util/gpu_cap.sh 260"], shell=True)
+    subprocess.run([f"./power_util/cpu_cap.sh 550"], shell=True)
+    subprocess.run([f"./power_util/gpu_cap.sh 250"], shell=True)
 
 
 if __name__ == "__main__":
