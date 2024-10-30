@@ -24,7 +24,6 @@ run_npb = "./run_benchmark/run_npb.py"
 # ecp_benchmarks = ['FT', 'CG', 'LULESH', 'Nekbone', 'AMG2013', 'miniFE']
 ecp_benchmarks = ['XSBench','miniGAN','CRADL','sw4lite','Laghos','bert','UNet','Resnet50','lammps']
 
-ecp_benchmarks = ['XSBench']
 
 # npb_benchmarks = ['bt','cg','ep','ft','is','lu','mg','sp','ua','miniFE']
 # npb_benchmarks = ['is']
@@ -187,7 +186,7 @@ if __name__ == "__main__":
 
 
     if suite == 0 or suite ==3:
-        benchmark_script_dir = f"power/script/run_benchmark/ecp_script"
+        benchmark_script_dir = f"power/GPGPU/script/run_benchmark/ecp_script"
         # single test
         if benchmark:
             run_benchmark(benchmark_script_dir, benchmark,"ecp",test)
