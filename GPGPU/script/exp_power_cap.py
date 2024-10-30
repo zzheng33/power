@@ -24,6 +24,8 @@ run_npb = "./run_benchmark/run_npb.py"
 # ecp_benchmarks = ['FT', 'CG', 'LULESH', 'Nekbone', 'AMG2013', 'miniFE']
 ecp_benchmarks = ['XSBench','miniGAN','CRADL','sw4lite','Laghos','bert','UNet','Resnet50','lammps']
 
+ecp_benchmarks = ['XSBench']
+
 # npb_benchmarks = ['bt','cg','ep','ft','is','lu','mg','sp','ua','miniFE']
 # npb_benchmarks = ['is']
 
@@ -208,7 +210,7 @@ if __name__ == "__main__":
             found = False
             for level, benchmarks in benchmark_paths.items():
                 if benchmark in benchmarks:
-                    benchmark_script_dir = f"power/script/run_benchmark/altis_script/{level}"
+                    benchmark_script_dir = f"power/GPGPU/script/run_benchmark/altis_script/{level}"
                     run_benchmark(benchmark_script_dir, benchmark,"altis",test,benchmark_size,cap_type)
                     found = True
                     break
@@ -216,31 +218,31 @@ if __name__ == "__main__":
     
             for benchmark in altis_benchmarks_0:
                 if benchmark_size==0:
-                    benchmark_script_dir = "power/script/run_benchmark/altis_script/level0"
+                    benchmark_script_dir = "power/GPGPU/script/run_benchmark/altis_script/level0"
                 else:
-                    benchmark_script_dir = "power/script/run_benchmark/altis_script/small/level0"
+                    benchmark_script_dir = "power/GPGPU/script/run_benchmark/altis_script/level0"
                 run_benchmark(benchmark_script_dir, benchmark,"altis",test,benchmark_size,cap_type)
             
             
             for benchmark in altis_benchmarks_1:
                 if benchmark_size==0:
-                    benchmark_script_dir = "power/script/run_benchmark/altis_script/level1"
+                    benchmark_script_dir = "power/GPGPU/script/run_benchmark/altis_script/level1"
                 else:
-                    benchmark_script_dir = "power/script/run_benchmark/altis_script/small/level1"
+                    benchmark_script_dir = "power/GPGPU/script/run_benchmark/altis_script/level1"
                 run_benchmark(benchmark_script_dir, benchmark,"altis",test,benchmark_size,cap_type)
             
             
             for benchmark in altis_benchmarks_2:
                 if benchmark_size==0:
-                    benchmark_script_dir = "power/script/run_benchmark/altis_script/level2"
+                    benchmark_script_dir = "power/GPGPU/script/run_benchmark/altis_script/level2"
                 else:
-                    benchmark_script_dir = "power/script/run_benchmark/altis_script/small/level2"
+                    benchmark_script_dir = "power/GPGPU/script/run_benchmark/altis_script/level2"
                 run_benchmark(benchmark_script_dir, benchmark,"altis",test,benchmark_size,cap_type)
 
     if suite == 2 or suite == 3:
-        benchmark_script_dir = f"power/script/run_benchmark/npb_script/big/"
+        benchmark_script_dir = f"power/GPGPU/script/run_benchmark/npb_script/big/"
         if benchmark_size==1:
-            benchmark_script_dir = f"power/script/run_benchmark/npb_script/small"
+            benchmark_script_dir = f"power/GPGPU/script/run_benchmark/npb_script/small/"
         # single test
         if benchmark:
             run_benchmark(benchmark_script_dir, benchmark,"npb",test,benchmark_size,cap_type)
