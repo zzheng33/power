@@ -11,7 +11,7 @@ fi
 # Function to collect IPC data
 collect_ipc() {
     local timestamp=$(date +"%Y-%m-%d %H:%M:%S")
-    output=$(perf stat -e instructions,cycles -a --no-merge --field-separator=',' -x, sleep 0.1 2>&1)
+    output=$(perf stat -e instructions,cycles -a --no-merge --field-separator=',' -x, sleep 1 2>&1)
     instructions=$(echo "$output" | grep instructions | awk -F',' '{print $1}')
     cycles=$(echo "$output" | grep cycles | awk -F',' '{print $1}')
     if [ "$cycles" -ne 0 ]; then
