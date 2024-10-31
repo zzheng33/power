@@ -12,6 +12,7 @@ install_dependence() {
     sudo apt-get --assume-yes install libjpeg-dev
     sudo apt-get install -y libnccl2 libnccl-dev
     sudo apt-get install -y openmpi-bin openmpi-common libopenmpi-dev
+    sudo apt --assume-yes install linux-tools-common linux-tools-$(uname -r)
     sudo snap install cmake --classic
     sudo apt-get install unzip
 
