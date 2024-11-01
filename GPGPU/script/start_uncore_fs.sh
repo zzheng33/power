@@ -4,19 +4,6 @@
 # suite 1: ALTIS
 # suite 2: npb
 
-
-# test
-# ./power_util/cpu_cap.sh 250
-# ./power_util/gpu_cap.sh 260
-
-
-
-# for altis, mem based ufs, single socket cap for both CPU & GPU non-intensive
-# python3 exp_power_motif.py --suite 1 --test 0  --dynamic_ufs_gpuP 0 --dynamic_ufs_mem 0 --uncore_0 0.8 --uncore_1 0.8 --pcm 1 --inc_ts 200 --dec_ts 500 --history 5 --dual_cap 0 --burst_up 0.4 --burst_low 0.2 --benchmark srad
-
-
-
-
 # CARDL: 200, 500, 3
 # UNet:  200, 500, 5
 # miniGAN 200, 500, 5
@@ -25,7 +12,27 @@
 # XSBench 200, 500, 5
 #lammps 200,500,5
 
-python3 exp_power_motif.py --suite 1 --test 0  --dynamic_ufs_gpuP 0 --dynamic_ufs_mem 0 --uncore_0 2.4 --uncore_1 2.4 --pcm 1 --inc_ts 200 --dec_ts 500 --history 5 --dual_cap 0 --burst_up 0.4 --burst_low 0.2 --benchmark srad
+
+
+
+
+################### ALTIS Starts ###################
+
+
+python3 exp_power_motif.py --suite 1 --test 0  --dynamic_ufs_gpuP 0 --dynamic_ufs_mem 1 --uncore_0 0.8 --uncore_1 0.8 --pcm 1 --inc_ts 200 --dec_ts 500 --history 5 --dual_cap 0 --burst_up 0.4 --burst_low 0.2 --ups 1 --benchmark srad
+
+
+
+
+################### ALTIS Ends ###################
+
+
+
+
+
+
+
+################### ECP Starts ###################
 
 # python3 exp_power_motif.py --suite 0 --test 0  --dynamic_ufs_gpuP 0 --dynamic_ufs_mem 0 --uncore_0 2.4 --uncore_1 2.4 --pcm 1 --inc_ts 200 --dec_ts 500 --history 5 --dual_cap 0 --burst_up 0.4 --burst_low 0.2 --benchmark UNet
 
@@ -52,6 +59,9 @@ python3 exp_power_motif.py --suite 1 --test 0  --dynamic_ufs_gpuP 0 --dynamic_uf
 
 # sudo mv /home/cc/power/GPGPU/data/ecp_power_res/no_power_shift/*.csv /home/cc/power/GPGPU/data/ecp_power_res/no_power_shift/dynamic_uncore 
 # sudo mv /home/cc/power/GPGPU/data/ecp_power_res/no_power_shift/mem_throughput/*.csv /home/cc/power/GPGPU/data/ecp_power_res/no_power_shift/mem_throughput/dynamic_uncore
+
+
+################### ECP Ends ###################
 
 
 

@@ -64,7 +64,9 @@ double burst_up = 0.4;
 double burst_low = 0.2;
 int high_uncore = 0;
 int power_shift=0;
+// g_cap used for capping the gpu power and shift cpu power budget to gpu
 int g_cap = 0;
+int ups = 0;
 // determine whether can shift the power budget from CPU to GPU
 int high_gpu_power=0;
 std::string power_shift_dir="";
@@ -587,7 +589,7 @@ void display_bandwidth(PCM *m, memdata_t *md, const uint32 no_columns, const boo
         // record the memory throughput to csv 
         record_mem_throughput(sysReadDRAM, sysWriteDRAM);
 
-        if(dynamic_ufs_mem == 1) 
+        if(dynamic_ufs_mem == 1 & ups==0) 
             dynamic_ufs(sysReadDRAM, sysWriteDRAM);
     
     
@@ -1517,6 +1519,20 @@ int mainThrows(int argc, char * argv[])
             exit(EXIT_FAILURE);
         }
         }
+        else if (check_argument_equals(*argv, {"--ups"}))
+        {
+        if (argc > 1)
+        {
+            ups = std::stod(argv[1]); 
+            argv++;
+            argc--;
+        }
+        else
+        {
+            std::cerr << "Error: --benchmark option requires a value" << std::endl;
+            exit(EXIT_FAILURE);
+        }
+        }
         else if (check_argument_equals(*argv, {"-silent", "/silent"}))
         {
             // handled in check_and_set_silent
@@ -1939,7 +1955,15 @@ void record_mem_throughput(double sysReadDRAM, double sysWriteDRAM)
     }
 
     // Open file in append mode
-    std::ofstream outfile("/home/cc/power/GPGPU/data/" + suite + "_power_res" + power_shift_dir + "mem_throughput/" + benchmark + ".csv", std::ios::app);
+    std::string filepath = "/home/cc/power/GPGPU/data/" + suite + "_power_res" + power_shift_dir + "mem_throughput/" + benchmark;
+    if (ups == 1) {
+        filepath += "_ups.csv";
+    } else {
+        filepath += ".csv";
+    }
+
+    std::ofstream outfile(filepath, std::ios::app);
+
 
     // Check if file opened successfully
     if (outfile.is_open()) {

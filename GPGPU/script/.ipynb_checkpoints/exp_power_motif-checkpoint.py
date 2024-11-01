@@ -14,6 +14,7 @@ python_executable = subprocess.getoutput('which python3')  # Adjust based on you
 read_cpu_power = "./power_util/read_cpu_power.py"
 read_gpu_power = "./power_util/read_gpu_power.py"
 reda_dram_power = "./power_util/read_dram_power.py"
+ups = "./power_util/ups.py"
 read_uncore_frequency = "./power_util/read_uncore_freq.py"
 # read_memory = "./power_util/read_memory_throughput.py"
 
@@ -40,6 +41,7 @@ burst_up=0.4
 burst_low=0.2
 power_shift=0
 g_cap = 0
+ups = 0
 
 
 # Define your benchmarks, for testing replace the list with just ['FT'] for example
@@ -76,10 +78,14 @@ def run_benchmark(benchmark_script_dir,benchmark, suite, test):
         tmp="/cap/noShift/"
     elif g_cap==1 and power_shift ==1:
         tmp="/cap/shift/"
+    if ups:
+        ups_tag = "_ups"
+    else:
+        ups_tag = ""
     if not test:
-        output_cpu = f"../data/{suite}_power_res/{tmp}{benchmark}_power_cpu.csv"
-        output_gpu = f"../data/{suite}_power_res/{tmp}{benchmark}_power_gpu.csv"
-        output_uncore = f"../data/{suite}_power_res/{tmp}uncore_freq/{benchmark}_uncore_freq.csv"
+        output_cpu = f"../data/{suite}_power_res/{tmp}{benchmark}_power_cpu{ups_tag}.csv"
+        output_gpu = f"../data/{suite}_power_res/{tmp}{benchmark}_power_gpu{ups_tag}.csv"
+        output_uncore = f"../data/{suite}_power_res/{tmp}uncore_freq/{benchmark}_uncore_freq{ups_tag}.csv"
     else:
         output_cpu = f"../data/{suite}_test/{benchmark}_power_cpu.csv"
         output_gpu = f"../data/{suite}_test/{benchmark}_power_gpu.csv"
@@ -90,11 +96,12 @@ def run_benchmark(benchmark_script_dir,benchmark, suite, test):
 
     if pcm:
         # start pcm-memory
-        monitor_command_memory = f"echo 9900 | sudo -S {read_memory} 0.1 --suite {suite} --benchmark {benchmark} --uncore_0 {uncore_0} --uncore_1 {uncore_1} --dynamic_ufs_mem {dynamic_ufs_mem} --inc_ts {inc_ts} --dec_ts {dec_ts} --history {history} --dual_cap {dual_cap} --burst_up {burst_up} --burst_low {burst_low} --power_shift {power_shift} --g_cap {g_cap}"
+        monitor_command_memory = f"echo 9900 | sudo -S {read_memory} 0.1 --suite {suite} --benchmark {benchmark} --uncore_0 {uncore_0} --uncore_1 {uncore_1} --dynamic_ufs_mem {dynamic_ufs_mem} --inc_ts {inc_ts} --dec_ts {dec_ts} --history {history} --dual_cap {dual_cap} --burst_up {burst_up} --burst_low {burst_low} --power_shift {power_shift} --g_cap {g_cap} --ups {ups}"
         monitor_process_memory = subprocess.Popen(monitor_command_memory, shell=True, stdin=subprocess.PIPE, text=True)
 
 
 ################################## PCM Memory Monitoring Ends ##############################
+
 
     
 
@@ -118,6 +125,16 @@ def run_benchmark(benchmark_script_dir,benchmark, suite, test):
 ################################## Benchmarking Ends ##############################
 
 
+################ UPS starts ###############
+
+    if ups==1:
+        output_ups_dram_ipc =  f"../data/{suite}_power_res/{tmp}{benchmark}_dram_ipc{ups_tag}.csv"
+        ups_command = f"echo 9900 | sudo -S  {python_executable} {ups}  --output_csv {output_ups_dram_ipc} --pid {benchmark_pid}"
+        monitor_process = subprocess.Popen(ups_command, shell=True, stdin=subprocess.PIPE, text=True)
+
+################ UPS ends ###############
+
+
 
 ################################## CPU & GPU Power and Frequency Monitoring Starts ##############################
 
@@ -138,6 +155,8 @@ def run_benchmark(benchmark_script_dir,benchmark, suite, test):
 
 
 ################################## CPU & GPU Power and Frequency Monitoring Ends ##############################
+
+
 
 
 
@@ -200,6 +219,7 @@ if __name__ == "__main__":
     parser.add_argument('--burst_low', type=float, default=0.2)
     parser.add_argument('--power_shift', type=int, default=0)
     parser.add_argument('--g_cap', type=int, default=0)
+    parser.add_argument('--ups', type=int, default=0)
     
 
 
@@ -220,6 +240,7 @@ if __name__ == "__main__":
     dual_cap = args.dual_cap
     power_shift=args.power_shift
     g_cap = args.g_cap
+    ups = args.ups
 
 ################################## Parsing Args Ends ##############################
 
