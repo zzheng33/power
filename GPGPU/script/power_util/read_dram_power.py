@@ -1,98 +1,127 @@
 import time
-import os
 import csv
+import subprocess
+import os
 import argparse
 import psutil
 
-# Constants for RAPL energy files specific to your system
+# Constants for RAPL energy files
 RAPL_PATH = "/sys/class/powercap/"
+setpoint_dram_power = 0
+pre_ipc = 0
 
-def discover_rapl_sockets():
-    """Discover CPU and DRAM energy files from RAPL."""
-    energy_files = {}
-    # Check and add energy files for CPU sockets
-    for socket_id in range(2):  # Assuming a maximum of two sockets for this example
-        cpu_energy_file = os.path.join(RAPL_PATH, f'intel-rapl:{socket_id}', 'energy_uj')
-        dram_energy_file = os.path.join(RAPL_PATH, f'intel-rapl:{socket_id}', 'intel-rapl:{socket_id}:0', 'energy_uj')
-        
-        if os.path.exists(cpu_energy_file):
-            energy_files[f'cpu_socket{socket_id}'] = cpu_energy_file
+
+def discover_dram_rapl_files():
+    """Discover DRAM energy files from RAPL."""
+    dram_energy_files = {}
+    for socket_id in range(2):  # Assuming up to two sockets
+        dram_energy_file = os.path.join(RAPL_PATH, f'intel-rapl:{socket_id}', f'intel-rapl:{socket_id}:0', 'energy_uj')
         if os.path.exists(dram_energy_file):
-            energy_files[f'dram_socket{socket_id}'] = dram_energy_file
+            dram_energy_files[f'dram_socket{socket_id}'] = dram_energy_file
+    return dram_energy_files
 
-    return energy_files
+# Initialize DRAM energy files
+DRAM_FILES = discover_dram_rapl_files()
 
-# Initialize ENERGY_FILES with available sockets
-ENERGY_FILES = discover_rapl_sockets()
+def read_dram_energy():
+    """Read the DRAM energy values from RAPL."""
+    total_energy = 0
+    for file_path in DRAM_FILES.values():
+        try:
+            with open(file_path, 'r') as f:
+                total_energy += int(f.read())
+        except FileNotFoundError:
+            print(f"File {file_path} not found.")
+        except PermissionError:
+            print(f"Permission denied for file {file_path}.")
+        except Exception as e:
+            print(f"Error reading {file_path}: {e}")
+    return total_energy / 1_000_000  # Convert to joules
 
-def read_energy(file_path):
-    """Read the energy value from a given RAPL energy file."""
+def collect_ipc():
+    """Collect IPC data using `perf stat`."""
     try:
-        with open(file_path, 'r') as f:
-            return int(f.read())
-    except FileNotFoundError:
-        print(f"File {file_path} not found.")
-        return 0
-    except PermissionError:
-        print(f"Permission denied when reading the file {file_path}.")
-        return 0
-    except Exception as e:
-        print(f"Error reading the file {file_path}: {e}")
-        return 0
+        output = subprocess.check_output(
+            ['perf', 'stat', '-e', 'instructions,cycles', '-a', '--no-merge', '--field-separator=,', '-x,', 'sleep', '0.1'],
+            stderr=subprocess.STDOUT
+        ).decode('utf-8')
+        instructions = int(next(line.split(',')[0] for line in output.splitlines() if 'instructions' in line))
+        cycles = int(next(line.split(',')[0] for line in output.splitlines() if 'cycles' in line))
+        ipc = instructions / cycles if cycles > 0 else None
+        return ipc
+    except subprocess.CalledProcessError as e:
+        print(f"Error collecting IPC: {e}")
+        return None
 
-def monitor_power(benchmark_pid, output_csv, avg, interval=0.1):
-    """Monitor power consumption for CPU sockets and DRAM."""
+
+def ups(dram_power, ipc):
+    delta_dram_power = dram_power - setpoint_dram_power
+    delta_ipc = ipc - pre_ipc
+
+    # DRAM power no change
+    if (abs(delta_dram_power) <= setpoint_dram_power*0.05):
+        pre_ipc = ipc
+        subprocess.run(["sudo", "/home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh", "0.8", "0.8"])
+
+    # DRAM power increase, C- > M
+    elif delta_dram_power > setpoint_dram_power * 0.05:
+        setpoint_dram_power = dram_power
+        subprocess.run(["sudo", "/home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh", "2.4", "0.8"])
+
+    # DRAM power decrease
+    elif delta_dram_power < -setpoint_dram_power * 0.05:
+        # M -> C
+        if delta_ipc >= pre_ipc * 0.05:
+            setpoint_dram_power = dram_power
+            pre_ipc = ipc
+            subprocess.run(["sudo", "/home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh", "2.4", "0.8"])
+
+        # performance degradation
+        elif delta_ipc < -pre_ipc * 0.05:
+            pre_ipc = ipc
+            subprocess.run(["sudo", "/home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh", "2.4", "0.8"])
+        
+
+def monitor_dram_power_and_ipc(benchmark_pid, output_csv, interval=0.2):
+    """Monitor DRAM power and IPC, store data and write to CSV after monitoring ends."""
+    os.makedirs(os.path.dirname(output_csv), exist_ok=True)
+    power_ipc_data = []  # Store data until the loop ends
+
     start_time = time.time()
-    initial_values = {key: read_energy(path) for key, path in ENERGY_FILES.items()}
-    power_data = []
-    total_cpu_energy = 0
-    total_dram_energy = 0
+    initial_energy = read_dram_energy()
 
     while psutil.pid_exists(benchmark_pid):
         time.sleep(interval)
-        current_time = time.time()
-        elapsed_time = current_time - start_time
-        current_values = {key: read_energy(path) for key, path in ENERGY_FILES.items()}
-
-        energy_consumed = {
-            key: (current_values[key] - initial_values[key]) / 1_000_000  # Convert to joules
-            for key in ENERGY_FILES
-        }
-        initial_values = current_values
-
-        # Sum energy for CPU and DRAM sockets
-        cpu_energy = sum(energy_consumed[key] for key in energy_consumed if 'cpu_socket' in key)
-        dram_energy = sum(energy_consumed[key] for key in energy_consumed if 'dram_socket' in key)
-        
-        total_cpu_energy += cpu_energy
-        total_dram_energy += dram_energy
+        current_time = time.time() - start_time
+        final_energy = read_dram_energy()
+        energy_diff = final_energy - initial_energy
 
         # Convert energy to power (Watts)
-        cpu_power = cpu_energy / interval
-        dram_power = dram_energy / interval
+        dram_power = energy_diff / interval
+        initial_energy = final_energy
 
-        power_data.append([elapsed_time, cpu_power, dram_power])
+        ipc = collect_ipc()
 
-    os.makedirs(os.path.dirname(output_csv), exist_ok=True)
+        # Append data to list
+        power_ipc_data.append([round(current_time, 2), dram_power, ipc])
 
-    if avg:
-        file_exists = os.path.isfile(output_csv)
-        with open(output_csv, 'a', newline='') as file:
-            writer = csv.writer(file)
-            if not file_exists:
-                writer.writerow(['CPU_E (J)', 'DRAM_E (J)'])
-            writer.writerow([round(total_cpu_energy, 2), round(total_dram_energy, 2)])
-    else:
-        with open(output_csv, 'w', newline='') as file:
-            writer = csv.writer(file)
-            writer.writerow(['Time (s)', 'CPU Power (W)', 'DRAM Power (W)'])
-            writer.writerows(power_data)
+
+
+        ## UPS implementation
+        ups(dram_power,ipc)
+        
+
+    # Write all data to CSV once monitoring ends
+    with open(output_csv, 'w', newline='') as csvfile:
+        writer = csv.writer(csvfile)
+        writer.writerow(['Time (s)', 'DRAM Power (W)', 'IPC'])
+        writer.writerows(power_ipc_data)
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='Monitor power usage using RAPL for all CPU sockets and DRAM.')
+    parser = argparse.ArgumentParser(description='Monitor DRAM power and IPC.')
     parser.add_argument('--pid', type=int, required=True, help='PID of the benchmark process')
     parser.add_argument('--output_csv', type=str, required=True, help='Output CSV file path')
-    parser.add_argument('--avg', type=int, default=0, help='Collect average energy (1 for True, 0 for False)')
     args = parser.parse_args()
 
-    monitor_power(args.pid, args.output_csv, args.avg)
+    monitor_dram_power_and_ipc(args.pid, args.output_csv)
+
