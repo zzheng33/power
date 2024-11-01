@@ -14,7 +14,7 @@ python_executable = subprocess.getoutput('which python3')  # Adjust based on you
 read_cpu_power = "./power_util/read_cpu_power.py"
 read_gpu_power = "./power_util/read_gpu_power.py"
 reda_dram_power = "./power_util/read_dram_power.py"
-ups = "./power_util/ups.py"
+ups_script = "./power_util/ups.py"
 read_uncore_frequency = "./power_util/read_uncore_freq.py"
 # read_memory = "./power_util/read_memory_throughput.py"
 
@@ -129,7 +129,7 @@ def run_benchmark(benchmark_script_dir,benchmark, suite, test):
 
     if ups==1:
         output_ups_dram_ipc =  f"../data/{suite}_power_res/{tmp}{benchmark}_dram_ipc{ups_tag}.csv"
-        ups_command = f"echo 9900 | sudo -S  {python_executable} {ups}  --output_csv {output_ups_dram_ipc} --pid {benchmark_pid}"
+        ups_command = f"echo 9900 | sudo -S  {python_executable} {ups_script} --output_csv {output_ups_dram_ipc} --pid {benchmark_pid}"
         monitor_process = subprocess.Popen(ups_command, shell=True, stdin=subprocess.PIPE, text=True)
 
 ################ UPS ends ###############

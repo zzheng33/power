@@ -55,6 +55,8 @@ def collect_ipc():
 
 
 def ups(dram_power, ipc):
+    global setpoint_dram_power
+    global pre_ipc
     delta_dram_power = dram_power - setpoint_dram_power
     delta_ipc = ipc - pre_ipc
 
@@ -122,6 +124,6 @@ if __name__ == "__main__":
     parser.add_argument('--pid', type=int, required=True, help='PID of the benchmark process')
     parser.add_argument('--output_csv', type=str, required=True, help='Output CSV file path')
     args = parser.parse_args()
-
     monitor_dram_power_and_ipc(args.pid, args.output_csv)
+    
 
