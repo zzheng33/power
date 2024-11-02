@@ -84,7 +84,7 @@ def ups(dram_power, ipc):
             subprocess.run(["sudo", "/home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh", "2.4", "0.8"])
         
 
-def monitor_dram_power_and_ipc(benchmark_pid, output_csv, interval=0.2):
+def monitor_dram_power_and_ipc(benchmark_pid, output_csv, interval=0.01):
     """Monitor DRAM power and IPC, store data and write to CSV after monitoring ends."""
     os.makedirs(os.path.dirname(output_csv), exist_ok=True)
     power_ipc_data = []  # Store data until the loop ends
@@ -93,7 +93,7 @@ def monitor_dram_power_and_ipc(benchmark_pid, output_csv, interval=0.2):
     initial_energy = read_dram_energy()
 
     while psutil.pid_exists(benchmark_pid):
-        time.sleep(interval)
+        # time.sleep(interval)
         current_time = time.time() - start_time
         final_energy = read_dram_energy()
         energy_diff = final_energy - initial_energy
