@@ -43,7 +43,7 @@ start_docker_training() {
                     --momentum=0.9 \
                     --num_accumulation_steps=1 \
                     --num_classes=1000 \
-                    --num_gpus=1 \
+                    --num_gpus=4 \
                     --optimizer=LARS \
                     --noreport_accuracy_metrics \
                     --single_l2_loss_op \
