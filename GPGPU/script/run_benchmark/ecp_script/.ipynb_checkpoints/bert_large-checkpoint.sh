@@ -22,14 +22,15 @@ cleanup() {
 # Function to start the Docker training
 start_docker_training() {
     # Docker image details
-    docker_image="bert"
+    docker_image="tensorflow/tensorflow:2.4.0-gpu"
     
     # Define local and container directories
     local_dir="/home/cc/benchmark/ECP/bert-large"
     container_dir="/workspace"
     
-    # Define the training command with all arguments
-    training_command="TF_XLA_FLAGS='--tf_xla_auto_jit=2' python3 /workspace/run_pretraining.py \
+    # Define the training command with logging and pip install
+    training_command="cd /workspace/logging && pip install -e . && \
+        TF_XLA_FLAGS='--tf_xla_auto_jit=2' python3 /workspace/run_pretraining.py \
         --bert_config_file=/workspace/input_files/bert_config.json \
         --output_dir=/tmp/output/ \
         --input_file=/workspace/6000_samples \
@@ -76,3 +77,4 @@ trap cleanup SIGINT
 
 # Run the training function
 start_docker_training
+
