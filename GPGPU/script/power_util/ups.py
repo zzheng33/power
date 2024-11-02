@@ -84,7 +84,7 @@ def ups(dram_power, ipc):
             subprocess.run(["sudo", "/home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh", "2.4", "0.8"])
         
 
-def monitor_dram_power_and_ipc(benchmark_pid, output_csv, interval=0.01):
+def monitor_dram_power_and_ipc(benchmark_pid, output_csv, ups,interval=0.01):
     """Monitor DRAM power and IPC, store data and write to CSV after monitoring ends."""
     os.makedirs(os.path.dirname(output_csv), exist_ok=True)
     power_ipc_data = []  # Store data until the loop ends
@@ -110,7 +110,8 @@ def monitor_dram_power_and_ipc(benchmark_pid, output_csv, interval=0.01):
 
 
         ## UPS implementation
-        ups(dram_power,ipc)
+        if ups:
+            ups(dram_power,ipc)
         
 
     # Write all data to CSV once monitoring ends
@@ -123,7 +124,8 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Monitor DRAM power and IPC.')
     parser.add_argument('--pid', type=int, required=True, help='PID of the benchmark process')
     parser.add_argument('--output_csv', type=str, required=True, help='Output CSV file path')
+    parser.add_argument('--ups', type=int, required=True)
     args = parser.parse_args()
-    monitor_dram_power_and_ipc(args.pid, args.output_csv)
+    monitor_dram_power_and_ipc(args.pid, args.output_csv,args.ups)
     
 
