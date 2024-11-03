@@ -30,6 +30,8 @@ install_dependence() {
     sudo pip install kaggle
     sudo pip install tensorflow
     sudo apt install git-lfs
+    sudo git lfs install
+
 
 }
 
