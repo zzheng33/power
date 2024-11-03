@@ -22,4 +22,4 @@ mpirun -np 1 gmx_mpi grompp -f md.mdp -c em.gro -p topol.top -o md.tpr
 # Step 3: Run MD simulation with GPU offloading
 
 echo "Running MD simulation with GPU offloading"
-mpirun -np 4 gmx_mpi mdrun -v -deffnm md -nb gpu -pme gpu -bonded gpu -update gpu -gpu_id 0,1,2,3
+mpirun -np 1 gmx_mpi mdrun -v -deffnm md -nb gpu -pme gpu -bonded gpu -update gpu -gpu_id 0,1,2,3
