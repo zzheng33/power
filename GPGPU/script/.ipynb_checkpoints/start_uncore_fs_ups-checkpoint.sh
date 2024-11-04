@@ -19,12 +19,12 @@
 ################### ALTIS Starts ###################
 
 
-# python3 exp_power_motif.py --suite 1 --test 0  --dynamic_ufs_gpuP 0 --dynamic_ufs_mem 0 --uncore_0 0.8 --uncore_1 0.8 --pcm 1 --inc_ts 200 --dec_ts 500 --history 5 --dual_cap 0 --burst_up 0.4 --burst_low 0.2 --ups 1 --benchmark nw
+python3 exp_power_motif.py --suite 1 --test 0  --dynamic_ufs_gpuP 0 --dynamic_ufs_mem 0 --uncore_0 0.8 --uncore_1 0.8 --pcm 1 --inc_ts 200 --dec_ts 500 --history 5 --dual_cap 0 --burst_up 0.4 --burst_low 0.2 --ups 1 --benchmark gemm
 
-# sleep 5
+sleep 5
 
-# sudo mv /home/cc/power/GPGPU/data/altis_power_res/no_power_shift/*.csv /home/cc/power/GPGPU/data/altis_power_res/no_power_shift/ups_uncore 
-# sudo mv /home/cc/power/GPGPU/data/altis_power_res/no_power_shift/mem_throughput/*.csv /home/cc/power/GPGPU/data/altis_power_res/no_power_shift/mem_throughput/ups_uncore
+sudo mv /home/cc/power/GPGPU/data/altis_power_res/no_power_shift/*.csv /home/cc/power/GPGPU/data/altis_power_res/no_power_shift/ups_uncore 
+sudo mv /home/cc/power/GPGPU/data/altis_power_res/no_power_shift/mem_throughput/*.csv /home/cc/power/GPGPU/data/altis_power_res/no_power_shift/mem_throughput/ups_uncore
 
 
 
@@ -40,12 +40,12 @@
 ################### ECP Starts ###################
 
 
-python3 exp_power_motif.py --suite 0 --test 0  --dynamic_ufs_gpuP 0 --dynamic_ufs_mem 0 --uncore_0 0.8 --uncore_1 0.8 --pcm 1 --inc_ts 200 --dec_ts 500 --history 5 --dual_cap 0 --burst_up 0.4 --burst_low 0.2 --ups 1 --benchmark sw4lite
+# python3 exp_power_motif.py --suite 0 --test 0  --dynamic_ufs_gpuP 0 --dynamic_ufs_mem 0 --uncore_0 0.8 --uncore_1 0.8 --pcm 1 --inc_ts 200 --dec_ts 500 --history 5 --dual_cap 0 --burst_up 0.4 --burst_low 0.2 --ups 1 --benchmark sw4lite
 
-sleep 5
+# sleep 5
 
-sudo mv /home/cc/power/GPGPU/data/ecp_power_res/no_power_shift/*.csv /home/cc/power/GPGPU/data/ecp_power_res/no_power_shift/ups_uncore 
-sudo mv /home/cc/power/GPGPU/data/ecp_power_res/no_power_shift/mem_throughput/*.csv /home/cc/power/GPGPU/data/ecp_power_res/no_power_shift/mem_throughput/ups_uncore
+# sudo mv /home/cc/power/GPGPU/data/ecp_power_res/no_power_shift/*.csv /home/cc/power/GPGPU/data/ecp_power_res/no_power_shift/ups_uncore 
+# sudo mv /home/cc/power/GPGPU/data/ecp_power_res/no_power_shift/mem_throughput/*.csv /home/cc/power/GPGPU/data/ecp_power_res/no_power_shift/mem_throughput/ups_uncore
 
 
 ################### ECP Ends ###################
