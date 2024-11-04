@@ -1,0 +1,299 @@
+// // Function to collect IPC using `perf stat`
+// double collect_ipc() {
+//     FILE *fp = popen("perf stat -e instructions,cycles -a --no-merge --field-separator=, -x, sleep 0.05 2>&1", "r");
+//     if (fp == NULL) {
+//         perror("Error running perf command");
+//         return -1;
+//     }
+
+//     char line[256];
+//     double instructions = 0;
+//     double cycles = 0;
+
+//     while (fgets(line, sizeof(line), fp) != NULL) {
+//         if (strstr(line, "instructions")) {
+//             instructions = atof(strtok(line, ","));
+//         }
+//         if (strstr(line, "cycles")) {
+//             cycles = atof(strtok(line, ","));
+//         }
+//     }
+
+//     pclose(fp);
+//     return (cycles > 0) ? (instructions / cycles) : 0;
+// }
+
+
+
+#define _GNU_SOURCE
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <fcntl.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <time.h>
+#include <stdbool.h>
+#include <sys/stat.h>
+#include <stdint.h>
+#include <linux/perf_event.h>
+#include <sys/ioctl.h>
+#include <sys/syscall.h>
+#include <errno.h>
+
+// Global variables for UPS function
+double setpoint_dram_power = 0;
+double pre_ipc = 0;
+
+#define MAX_RAPL_FILES 10
+
+// Structure to store monitoring data
+typedef struct {
+    double time;
+    double dram_power;
+    double ipc;
+} PowerIpcData;
+
+// Array to store paths to DRAM energy files
+char *dram_energy_files[MAX_RAPL_FILES];
+int num_dram_files = 0;
+
+// Function to discover DRAM energy files from RAPL
+void discover_dram_rapl_files() {
+    const char *rapl_base_path = "/sys/class/powercap";
+    char path[256];
+
+    for (int socket_id = 0; socket_id < 2; socket_id++) {  // Adjust the range based on your system
+        snprintf(path, sizeof(path), "%s/intel-rapl:%d/intel-rapl:%d:0/energy_uj", rapl_base_path, socket_id, socket_id);
+        if (access(path, F_OK) == 0) {  // Check if the file exists
+            dram_energy_files[num_dram_files] = strdup(path);
+            if (dram_energy_files[num_dram_files] == NULL) {
+                perror("Error duplicating path string");
+                exit(EXIT_FAILURE);
+            }
+            num_dram_files++;
+        }
+    }
+
+    if (num_dram_files == 0) {
+        fprintf(stderr, "No DRAM energy files found. Exiting.\n");
+        exit(EXIT_FAILURE);
+    }
+}
+
+// Function to read DRAM energy
+double read_dram_energy() {
+    double total_energy = 0;
+    char buffer[32];
+
+    for (int i = 0; i < num_dram_files; i++) {
+        int fd = open(dram_energy_files[i], O_RDONLY);
+        if (fd < 0) {
+            perror("Error opening energy file");
+            continue;
+        }
+
+        ssize_t bytes_read = read(fd, buffer, sizeof(buffer) - 1);
+        if (bytes_read <= 0) {
+            perror("Error reading energy file");
+            close(fd);
+            continue;
+        }
+        buffer[bytes_read] = '\0';  // Null-terminate the string
+        close(fd);
+
+        total_energy += atof(buffer) / 1000000;  // Convert to joules
+    }
+
+    return total_energy;
+}
+
+// Function to call the perf_event_open syscall
+static int perf_event_open(struct perf_event_attr *hw_event, pid_t pid, int cpu, int group_fd, unsigned long flags) {
+    return syscall(__NR_perf_event_open, hw_event, pid, cpu, group_fd, flags);
+}
+
+// Function to collect IPC using perf_event_open
+double collect_ipc(int cpu) {
+    struct perf_event_attr pe_instr, pe_cycles;
+    memset(&pe_instr, 0, sizeof(struct perf_event_attr));
+    memset(&pe_cycles, 0, sizeof(struct perf_event_attr));
+
+    // Configure for instructions retired
+    pe_instr.type = PERF_TYPE_HARDWARE;
+    pe_instr.size = sizeof(struct perf_event_attr);
+    pe_instr.config = PERF_COUNT_HW_INSTRUCTIONS;
+    pe_instr.disabled = 1;
+    pe_instr.exclude_kernel = 0;
+    pe_instr.exclude_hv = 0;
+
+    // Configure for CPU cycles
+    pe_cycles.type = PERF_TYPE_HARDWARE;
+    pe_cycles.size = sizeof(struct perf_event_attr);
+    pe_cycles.config = PERF_COUNT_HW_CPU_CYCLES;
+    pe_cycles.disabled = 1;
+    pe_cycles.exclude_kernel = 0;
+    pe_cycles.exclude_hv = 0;
+
+    int fd_instr = perf_event_open(&pe_instr, -1, cpu, -1, 0);
+    if (fd_instr == -1) {
+        fprintf(stderr, "Error opening perf event for instructions: %s\n", strerror(errno));
+        return 0;
+    }
+
+    int fd_cycles = perf_event_open(&pe_cycles, -1, cpu, -1, 0);
+    if (fd_cycles == -1) {
+        fprintf(stderr, "Error opening perf event for cycles: %s\n", strerror(errno));
+        close(fd_instr);
+        return 0;
+    }
+
+    // Enable the counters
+    ioctl(fd_instr, PERF_EVENT_IOC_RESET, 0);
+    ioctl(fd_cycles, PERF_EVENT_IOC_RESET, 0);
+    ioctl(fd_instr, PERF_EVENT_IOC_ENABLE, 0);
+    ioctl(fd_cycles, PERF_EVENT_IOC_ENABLE, 0);
+
+    // Wait for a short duration to accumulate data
+    usleep(50000);  // 50 ms
+
+    // Disable the counters
+    ioctl(fd_instr, PERF_EVENT_IOC_DISABLE, 0);
+    ioctl(fd_cycles, PERF_EVENT_IOC_DISABLE, 0);
+
+    uint64_t count_instr = 0;
+    uint64_t count_cycles = 0;
+
+    read(fd_instr, &count_instr, sizeof(uint64_t));
+    read(fd_cycles, &count_cycles, sizeof(uint64_t));
+
+    // Close the file descriptors
+    close(fd_instr);
+    close(fd_cycles);
+
+    // Return IPC value
+    return (count_cycles > 0) ? ((double)count_instr / count_cycles) : 0;
+}
+
+void ups(double dram_power, double ipc) {
+    double delta_dram_power = dram_power - setpoint_dram_power;
+    double delta_ipc = ipc - pre_ipc;
+
+    if (fabs(delta_dram_power) <= setpoint_dram_power * 0.05) {
+        pre_ipc = ipc;
+        (void)system("sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh 0.8 0.8");
+    } else if (delta_dram_power > setpoint_dram_power * 0.05) {
+        setpoint_dram_power = dram_power;
+        (void)system("sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh 2.4 0.8");
+    } else if (delta_dram_power < -setpoint_dram_power * 0.05) {
+        if (delta_ipc >= pre_ipc * 0.05) {
+            setpoint_dram_power = dram_power;
+            pre_ipc = ipc;
+            (void)system("sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh 2.4 0.8");
+        } else if (delta_ipc < -pre_ipc * 0.05) {
+            pre_ipc = ipc;
+            (void)system("sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh 2.4 0.8");
+        }
+    }
+}
+
+// Main monitoring function
+void monitor_dram_power_and_ipc(int pid, const char *output_csv, double interval) {
+    PowerIpcData *data = malloc(1000000 * sizeof(PowerIpcData));  // Allocate space for storing data
+    if (data == NULL) {
+        perror("Error allocating memory");
+        exit(EXIT_FAILURE);
+    }
+
+    int count = 0;
+    struct timespec start_time;
+    clock_gettime(CLOCK_MONOTONIC, &start_time);  // Get the starting time
+
+    double initial_energy = read_dram_energy();
+
+    while (kill(pid, 0) == 0) {
+        struct timespec current_time;
+        clock_gettime(CLOCK_MONOTONIC, &current_time);
+
+        // Calculate elapsed time in milliseconds
+        double elapsed_time_ms = (current_time.tv_sec - start_time.tv_sec) * 1000.0 
+                                 + (current_time.tv_nsec - start_time.tv_nsec) / 1e6;
+
+        double elapsed_time_sec = elapsed_time_ms / 1000.0;  // Convert to seconds for CSV output
+
+        double final_energy = read_dram_energy();
+        double energy_diff = final_energy - initial_energy;
+
+        double dram_power = energy_diff / (interval+0.1);
+        initial_energy = final_energy;
+
+        double ipc = collect_ipc(0);  // Replace `0` with the appropriate CPU number
+
+        if (count < 10000000) {
+            data[count].time = elapsed_time_sec;
+            data[count].dram_power = dram_power;
+            data[count].ipc = ipc;
+            count++;
+        } else {
+            printf("Buffer full, consider increasing the buffer size.\n");
+            break;
+        }
+
+        ups(dram_power, ipc);
+
+        usleep((useconds_t)(interval * 1e6));  // Sleep for 0.1 seconds (100 ms)
+    }
+
+    // Write all collected data to CSV
+    FILE *fp = fopen(output_csv, "w");
+    if (fp == NULL) {
+        perror("Error opening CSV file");
+        free(data);
+        exit(EXIT_FAILURE);
+    }
+
+    fprintf(fp, "Time (s),DRAM Power (W),IPC\n");
+    for (int i = 0; i < count; i++) {
+        fprintf(fp, "%.4f,%.2f,%.2f\n", data[i].time, data[i].dram_power, data[i].ipc);
+    }
+
+    fclose(fp);
+    free(data);
+}
+
+int main(int argc, char *argv[]) {
+    int pid = -1;
+    const char *output_csv = NULL;
+    double interval = 0.1;
+
+    // Discover DRAM energy files before running the main logic
+    discover_dram_rapl_files();
+
+    // Check if the arguments are in the form --param=value
+    for (int i = 1; i < argc; i++) {
+        if (strncmp(argv[i], "--pid=", 6) == 0) {
+            pid = atoi(argv[i] + 6);
+        } else if (strncmp(argv[i], "--output_csv=", 13) == 0) {
+            output_csv = argv[i] + 13;
+        } else {
+            fprintf(stderr, "Unknown argument: %s\n", argv[i]);
+            exit(EXIT_FAILURE);
+        }
+    }
+
+    // Check if the required arguments were provided
+    if (pid == -1 || output_csv == NULL) {
+        fprintf(stderr, "Usage: %s --pid=<PID> --output_csv=<output_csv>\n", argv[0]);
+        exit(EXIT_FAILURE);
+    }
+
+    monitor_dram_power_and_ipc(pid, output_csv, interval);
+
+    // Free allocated memory for file paths
+    for (int i = 0; i < num_dram_files; i++) {
+        free(dram_energy_files[i]);
+    }
+
+    return 0;
+}

@@ -99,7 +99,7 @@ def monitor_dram_power_and_ipc(benchmark_pid, output_csv,interval=0.01):
         energy_diff = final_energy - initial_energy
 
         # Convert energy to power (Watts)
-        dram_power = energy_diff / interval
+        dram_power = energy_diff / 0.4
         initial_energy = final_energy
 
         ipc = collect_ipc()
@@ -109,9 +109,8 @@ def monitor_dram_power_and_ipc(benchmark_pid, output_csv,interval=0.01):
 
 
 
-        ## UPS implementation
-        if ups:
-            ups(dram_power,ipc)
+      
+        ups(dram_power,ipc)
         
 
     # Write all data to CSV once monitoring ends
