@@ -18,6 +18,7 @@
 // Global variables for UPS function
 double setpoint_dram_power = 0;
 double pre_ipc = 0;
+int dual_cap = 0;
 
 #define MAX_RAPL_FILES 10
 
@@ -198,15 +199,28 @@ void ups(double dram_power, double ipc) {
         (void)system("sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh 0.8 0.8");
     } else if (delta_dram_power > setpoint_dram_power * 0.05) {
         setpoint_dram_power = dram_power;
-        (void)system("sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh 2.4 0.8");
+        if (dual_cap==1){
+            (void)system("sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh 2.4 2.4");
+        }else{
+            (void)system("sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh 2.4 0.8");
+        }
+           
     } else if (delta_dram_power < -setpoint_dram_power * 0.05) {
         if (delta_ipc >= pre_ipc * 0.05) {
             setpoint_dram_power = dram_power;
             pre_ipc = ipc;
-            (void)system("sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh 2.4 0.8");
+            if (dual_cap==1){
+            (void)system("sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh 2.4 2.4");
+            }else{
+                (void)system("sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh 2.4 0.8");
+            }
         } else if (delta_ipc < -pre_ipc * 0.05) {
             pre_ipc = ipc;
-            (void)system("sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh 2.4 0.8");
+            if (dual_cap==1){
+            (void)system("sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh 2.4 2.4");
+            }else{
+                (void)system("sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh 2.4 0.8");
+            }
         }
     }
 }
@@ -289,6 +303,8 @@ int main(int argc, char *argv[]) {
             pid = atoi(argv[i] + 6);
         } else if (strncmp(argv[i], "--output_csv=", 13) == 0) {
             output_csv = argv[i] + 13;
+        } else if (strncmp(argv[i], "--dual_cap=", 11) == 0) {
+            dual_cap = atoi(argv[i] + 11);
         } else {
             fprintf(stderr, "Unknown argument: %s\n", argv[i]);
             exit(EXIT_FAILURE);

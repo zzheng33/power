@@ -36,7 +36,7 @@ dynamic_ufs_gpuP = 1
 inc_ts = 0
 dec_ts = 0
 history=2
-dual_cap = 1
+dual_cap = 0
 burst_up=0.4
 burst_low=0.2
 power_shift=0
@@ -135,7 +135,7 @@ def run_benchmark(benchmark_script_dir,benchmark, suite, test):
     if ups == 1:
         output_ups_dram_ipc = f"../data/{suite}_power_res/{tmp}{benchmark}_dram_ipc{ups_tag}.csv"
         # Replace the Python script call with the C executable call
-        ups_command = f"echo 9900 | sudo -S ./power_util/ups --output_csv={output_ups_dram_ipc} --pid={benchmark_pid}"
+        ups_command = f"echo 9900 | sudo -S ./power_util/ups --output_csv={output_ups_dram_ipc} --pid={benchmark_pid} --dual_cap {dual_cap}"
         monitor_process = subprocess.Popen(ups_command, shell=True, stdin=subprocess.PIPE, text=True)
 
 
