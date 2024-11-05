@@ -1,30 +1,3 @@
-// // Function to collect IPC using `perf stat`
-// double collect_ipc() {
-//     FILE *fp = popen("perf stat -e instructions,cycles -a --no-merge --field-separator=, -x, sleep 0.05 2>&1", "r");
-//     if (fp == NULL) {
-//         perror("Error running perf command");
-//         return -1;
-//     }
-
-//     char line[256];
-//     double instructions = 0;
-//     double cycles = 0;
-
-//     while (fgets(line, sizeof(line), fp) != NULL) {
-//         if (strstr(line, "instructions")) {
-//             instructions = atof(strtok(line, ","));
-//         }
-//         if (strstr(line, "cycles")) {
-//             cycles = atof(strtok(line, ","));
-//         }
-//     }
-
-//     pclose(fp);
-//     return (cycles > 0) ? (instructions / cycles) : 0;
-// }
-
-
-
 #define _GNU_SOURCE
 #include <stdio.h>
 #include <stdlib.h>
@@ -110,70 +83,110 @@ double read_dram_energy() {
 }
 
 // Function to call the perf_event_open syscall
-static int perf_event_open(struct perf_event_attr *hw_event, pid_t pid, int cpu, int group_fd, unsigned long flags) {
-    return syscall(__NR_perf_event_open, hw_event, pid, cpu, group_fd, flags);
-}
+// static int perf_event_open(struct perf_event_attr *hw_event, pid_t pid, int cpu, int group_fd, unsigned long flags) {
+//     return syscall(__NR_perf_event_open, hw_event, pid, cpu, group_fd, flags);
+// }
 
-// Function to collect IPC using perf_event_open
-double collect_ipc(int cpu) {
-    struct perf_event_attr pe_instr, pe_cycles;
-    memset(&pe_instr, 0, sizeof(struct perf_event_attr));
-    memset(&pe_cycles, 0, sizeof(struct perf_event_attr));
+// // Function to collect IPC using perf_event_open
+// double collect_ipc() {
+//     uint64_t total_instr = 0;
+//     uint64_t total_cycles = 0;
+//     int core_count = 0;
 
-    // Configure for instructions retired
-    pe_instr.type = PERF_TYPE_HARDWARE;
-    pe_instr.size = sizeof(struct perf_event_attr);
-    pe_instr.config = PERF_COUNT_HW_INSTRUCTIONS;
-    pe_instr.disabled = 1;
-    pe_instr.exclude_kernel = 0;
-    pe_instr.exclude_hv = 0;
+//     // Iterate over even-numbered cores (0, 2, 4, ..., 158)
+//     for (int cpu = 0; cpu < 160; cpu += 2) {
+//         struct perf_event_attr pe_instr, pe_cycles;
+//         memset(&pe_instr, 0, sizeof(struct perf_event_attr));
+//         memset(&pe_cycles, 0, sizeof(struct perf_event_attr));
 
-    // Configure for CPU cycles
-    pe_cycles.type = PERF_TYPE_HARDWARE;
-    pe_cycles.size = sizeof(struct perf_event_attr);
-    pe_cycles.config = PERF_COUNT_HW_CPU_CYCLES;
-    pe_cycles.disabled = 1;
-    pe_cycles.exclude_kernel = 0;
-    pe_cycles.exclude_hv = 0;
+//         // Configure for instructions retired
+//         pe_instr.type = PERF_TYPE_HARDWARE;
+//         pe_instr.size = sizeof(struct perf_event_attr);
+//         pe_instr.config = PERF_COUNT_HW_INSTRUCTIONS;
+//         pe_instr.disabled = 1;
+//         pe_instr.exclude_kernel = 0;
+//         pe_instr.exclude_hv = 0;
 
-    int fd_instr = perf_event_open(&pe_instr, -1, cpu, -1, 0);
-    if (fd_instr == -1) {
-        fprintf(stderr, "Error opening perf event for instructions: %s\n", strerror(errno));
-        return 0;
+//         // Configure for CPU cycles
+//         pe_cycles.type = PERF_TYPE_HARDWARE;
+//         pe_cycles.size = sizeof(struct perf_event_attr);
+//         pe_cycles.config = PERF_COUNT_HW_CPU_CYCLES;
+//         pe_cycles.disabled = 1;
+//         pe_cycles.exclude_kernel = 0;
+//         pe_cycles.exclude_hv = 0;
+
+//         int fd_instr = perf_event_open(&pe_instr, -1, cpu, -1, 0);
+//         if (fd_instr == -1) {
+//             fprintf(stderr, "Error opening perf event for instructions on CPU %d: %s\n", cpu, strerror(errno));
+//             continue;
+//         }
+
+//         int fd_cycles = perf_event_open(&pe_cycles, -1, cpu, -1, 0);
+//         if (fd_cycles == -1) {
+//             fprintf(stderr, "Error opening perf event for cycles on CPU %d: %s\n", cpu, strerror(errno));
+//             close(fd_instr);
+//             continue;
+//         }
+
+//         // Enable the counters
+//         ioctl(fd_instr, PERF_EVENT_IOC_RESET, 0);
+//         ioctl(fd_cycles, PERF_EVENT_IOC_RESET, 0);
+//         ioctl(fd_instr, PERF_EVENT_IOC_ENABLE, 0);
+//         ioctl(fd_cycles, PERF_EVENT_IOC_ENABLE, 0);
+
+//         // Wait for a short duration to accumulate data
+//         usleep(50000);  // 50 ms
+
+//         // Disable the counters
+//         ioctl(fd_instr, PERF_EVENT_IOC_DISABLE, 0);
+//         ioctl(fd_cycles, PERF_EVENT_IOC_DISABLE, 0);
+
+//         uint64_t count_instr = 0;
+//         uint64_t count_cycles = 0;
+
+//         read(fd_instr, &count_instr, sizeof(uint64_t));
+//         read(fd_cycles, &count_cycles, sizeof(uint64_t));
+
+//         // Close the file descriptors
+//         close(fd_instr);
+//         close(fd_cycles);
+
+//         // Aggregate the counts if valid
+//         if (count_cycles > 0) {
+//             total_instr += count_instr;
+//             total_cycles += count_cycles;
+//             core_count++;
+//         }
+//     }
+
+//     // Return the average IPC value
+//     return (total_cycles > 0 && core_count > 0) ? ((double)total_instr / total_cycles) : 0;
+// }
+
+
+// Function to collect IPC using `perf stat`
+double collect_ipc() {
+    FILE *fp = popen("perf stat -e instructions,cycles -a --no-merge --field-separator=, -x, sleep 0.05 2>&1", "r");
+    if (fp == NULL) {
+        perror("Error running perf command");
+        return -1;
     }
 
-    int fd_cycles = perf_event_open(&pe_cycles, -1, cpu, -1, 0);
-    if (fd_cycles == -1) {
-        fprintf(stderr, "Error opening perf event for cycles: %s\n", strerror(errno));
-        close(fd_instr);
-        return 0;
+    char line[256];
+    double instructions = 0;
+    double cycles = 0;
+
+    while (fgets(line, sizeof(line), fp) != NULL) {
+        if (strstr(line, "instructions")) {
+            instructions = atof(strtok(line, ","));
+        }
+        if (strstr(line, "cycles")) {
+            cycles = atof(strtok(line, ","));
+        }
     }
 
-    // Enable the counters
-    ioctl(fd_instr, PERF_EVENT_IOC_RESET, 0);
-    ioctl(fd_cycles, PERF_EVENT_IOC_RESET, 0);
-    ioctl(fd_instr, PERF_EVENT_IOC_ENABLE, 0);
-    ioctl(fd_cycles, PERF_EVENT_IOC_ENABLE, 0);
-
-    // Wait for a short duration to accumulate data
-    usleep(50000);  // 50 ms
-
-    // Disable the counters
-    ioctl(fd_instr, PERF_EVENT_IOC_DISABLE, 0);
-    ioctl(fd_cycles, PERF_EVENT_IOC_DISABLE, 0);
-
-    uint64_t count_instr = 0;
-    uint64_t count_cycles = 0;
-
-    read(fd_instr, &count_instr, sizeof(uint64_t));
-    read(fd_cycles, &count_cycles, sizeof(uint64_t));
-
-    // Close the file descriptors
-    close(fd_instr);
-    close(fd_cycles);
-
-    // Return IPC value
-    return (count_cycles > 0) ? ((double)count_instr / count_cycles) : 0;
+    pclose(fp);
+    return (cycles > 0) ? (instructions / cycles) : 0;
 }
 
 void ups(double dram_power, double ipc) {
@@ -225,10 +238,10 @@ void monitor_dram_power_and_ipc(int pid, const char *output_csv, double interval
         double final_energy = read_dram_energy();
         double energy_diff = final_energy - initial_energy;
 
-        double dram_power = energy_diff / (interval+0.1);
+        double dram_power = energy_diff / (0.35);
         initial_energy = final_energy;
 
-        double ipc = collect_ipc(0);  // Replace `0` with the appropriate CPU number
+        double ipc = collect_ipc();  // Replace `0` with the appropriate CPU number
 
         if (count < 10000000) {
             data[count].time = elapsed_time_sec;
@@ -242,7 +255,7 @@ void monitor_dram_power_and_ipc(int pid, const char *output_csv, double interval
 
         ups(dram_power, ipc);
 
-        usleep((useconds_t)(interval * 1e6));  // Sleep for 0.1 seconds (100 ms)
+        // usleep((useconds_t)(interval * 1e6));  // Sleep for 0.1 seconds (100 ms)
     }
 
     // Write all collected data to CSV

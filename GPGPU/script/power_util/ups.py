@@ -109,10 +109,10 @@ def monitor_dram_power_and_ipc(benchmark_pid, output_csv,interval=0.01):
 
 
 
-      
-        ups(dram_power,ipc)
+        if ups:
+            ups(dram_power,ipc)
         
-
+    
     # Write all data to CSV once monitoring ends
     with open(output_csv, 'w', newline='') as csvfile:
         writer = csv.writer(csvfile)
@@ -123,7 +123,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Monitor DRAM power and IPC.')
     parser.add_argument('--pid', type=int, required=True, help='PID of the benchmark process')
     parser.add_argument('--output_csv', type=str, required=True, help='Output CSV file path')
-    # parser.add_argument('--ups', type=int, required=True)
+    parser.add_argument('--ups', type=int, required=True)
     args = parser.parse_args()
     monitor_dram_power_and_ipc(args.pid, args.output_csv)
     
