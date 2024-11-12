@@ -1859,7 +1859,7 @@ void dynamic_ufs(double sysReadDRAM, double sysWriteDRAM) {
                     if (dual_cap==1)
                         int result = system("sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh 2.4 2.4");
                     else 
-                        int result = system("sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh 2.4 0.8");
+                        int result = system("sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh 2.4 1.2");
  
                     high_uncore = 1;
                 }
