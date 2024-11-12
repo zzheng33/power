@@ -4,13 +4,14 @@
 # suite 1: ALTIS
 # suite 2: npb
 
-# CARDL: 200, 500, 3, dual cap
+# CARDL: 200, 500, 3, 
 # UNet:  200, 500, 5
 # miniGAN 200, 500, 5
 # sw4lite 200, 500, 5
 # Laghos 200, 500, 5
 # XSBench 200, 500, 5
 #lammps 200,500,5
+# resnet50, single
 
 
 
@@ -55,7 +56,7 @@
 
 ################### ECP Starts ###################
 
-# python3 exp_power_motif.py --suite 0 --test 0  --dynamic_ufs_gpuP 0 --dynamic_ufs_mem 0 --uncore_0 2.4 --uncore_1 2.4 --pcm 1 --inc_ts 200 --dec_ts 500 --history 5 --dual_cap 0 --burst_up 0.4 --burst_low 0.2 --ups 0 --benchmark UNet
+# python3 exp_power_motif.py --suite 0 --test 0  --dynamic_ufs_gpuP 0 --dynamic_ufs_mem 0 --uncore_0 2.4 --uncore_1 2.4 --pcm 1 --inc_ts 200 --dec_ts 500 --history 5 --dual_cap 0 --burst_up 0.4 --burst_low 0.2 --ups 0 --benchmark Resnet50
 
 # sleep 5
 
@@ -74,7 +75,7 @@
 
 
 
-python3 exp_power_motif.py --suite 0 --test 0  --dynamic_ufs_gpuP 0 --dynamic_ufs_mem 1 --uncore_0 0.8 --uncore_1 0.8 --pcm 1 --inc_ts 200 --dec_ts 500 --history 5 --dual_cap 1 --burst_up 0.4 --burst_low 0.2 --ups 0 --benchmark UNet
+python3 exp_power_motif.py --suite 0 --test 0  --dynamic_ufs_gpuP 0 --dynamic_ufs_mem 1 --uncore_0 0.8 --uncore_1 0.8 --pcm 1 --inc_ts 200 --dec_ts 500 --history 5 --dual_cap 0 --burst_up 0.4 --burst_low 0.2 --ups 0 --benchmark Resnet50
 
 sleep 5
 
