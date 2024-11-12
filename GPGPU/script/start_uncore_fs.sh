@@ -17,7 +17,7 @@
 ################### ALTIS Starts ###################
 
 
-# python3 exp_power_motif.py --suite 1 --test 0  --dynamic_ufs_gpuP 0 --dynamic_ufs_mem 0 --uncore_0 2.4 --uncore_1 2.4 --pcm 1 --inc_ts 200 --dec_ts 500 --history 5 --dual_cap 0 --burst_up 0.4 --burst_low 0.2 --ups 0 --benchmark raytracing
+# python3 exp_power_motif.py --suite 1 --test 0  --dynamic_ufs_gpuP 0 --dynamic_ufs_mem 0 --uncore_0 2.4 --uncore_1 2.4 --pcm 1 --inc_ts 200 --dec_ts 500 --history 5 --dual_cap 0 --burst_up 0.4 --burst_low 0.2 --ups 0 --benchmark gups
 
 # sleep 5
 
@@ -35,13 +35,12 @@
 # sudo mv /home/cc/power/GPGPU/data/altis_power_res/no_power_shift/mem_throughput/*.csv /home/cc/power/GPGPU/data/altis_power_res/no_power_shift/mem_throughput/min_uncore
 
 
-# python3 exp_power_motif.py --suite 1 --test 0  --dynamic_ufs_gpuP 0 --dynamic_ufs_mem 1 --uncore_0 0.8 --uncore_1 0.8 --pcm 1 --inc_ts 200 --dec_ts 500 --history 5 --dual_cap 0 --burst_up 0.4 --burst_low 0.2 --ups 0 --benchmark raytracing
+python3 exp_power_motif.py --suite 1 --test 0  --dynamic_ufs_gpuP 0 --dynamic_ufs_mem 1 --uncore_0 0.8 --uncore_1 0.8 --pcm 1 --inc_ts 200 --dec_ts 500 --history 5 --dual_cap 1 --burst_up 0.4 --burst_low 0.2 --ups 0 --benchmark bfs
+sleep 5
 
-# sleep 5
 
-
-# sudo mv /home/cc/power/GPGPU/data/altis_power_res/no_power_shift/*.csv /home/cc/power/GPGPU/data/altis_power_res/no_power_shift/dynamic_uncore 
-# sudo mv /home/cc/power/GPGPU/data/altis_power_res/no_power_shift/mem_throughput/*.csv /home/cc/power/GPGPU/data/altis_power_res/no_power_shift/mem_throughput/dynamic_uncore
+sudo mv /home/cc/power/GPGPU/data/altis_power_res/no_power_shift/*.csv /home/cc/power/GPGPU/data/altis_power_res/no_power_shift/dynamic_uncore 
+sudo mv /home/cc/power/GPGPU/data/altis_power_res/no_power_shift/mem_throughput/*.csv /home/cc/power/GPGPU/data/altis_power_res/no_power_shift/mem_throughput/dynamic_uncore
 
 
 
