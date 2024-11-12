@@ -19,6 +19,7 @@
 double setpoint_dram_power = 0;
 double pre_ipc = 0;
 int dual_cap = 0;
+int init = 1;
 
 #define MAX_RAPL_FILES 10
 
@@ -191,38 +192,48 @@ double collect_ipc() {
 }
 
 void ups(double dram_power, double ipc) {
-    double delta_dram_power = dram_power - setpoint_dram_power;
-    double delta_ipc = ipc - pre_ipc;
-
-    if (fabs(delta_dram_power) <= setpoint_dram_power * 0.05) {
-        pre_ipc = ipc;
-        (void)system("sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh 0.8 0.8");
-    } else if (delta_dram_power > setpoint_dram_power * 0.05) {
+    if (init==1) {
         setpoint_dram_power = dram_power;
-        if (dual_cap==1){
-            (void)system("sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh 2.4 2.4");
-        }else{
-            (void)system("sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh 2.4 0.8");
-        }
-           
-    } else if (delta_dram_power < -setpoint_dram_power * 0.05) {
-        if (delta_ipc >= pre_ipc * 0.05) {
+        pre_ipc = ipc;
+        init=0;
+        
+    }
+
+    else {
+        double delta_dram_power = dram_power - setpoint_dram_power;
+        double delta_ipc = ipc - pre_ipc;
+    
+        if (fabs(delta_dram_power) <= setpoint_dram_power * 0.05) {
+            pre_ipc = ipc;
+            (void)system("sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh 1.2 1.2");
+        } else if (delta_dram_power > setpoint_dram_power * 0.05) {
             setpoint_dram_power = dram_power;
-            pre_ipc = ipc;
             if (dual_cap==1){
-            (void)system("sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh 2.4 2.4");
+                (void)system("sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh 2.2 2.2");
             }else{
-                (void)system("sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh 2.4 0.8");
+                (void)system("sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh 2.2 1.2");
             }
-        } else if (delta_ipc < -pre_ipc * 0.05) {
-            pre_ipc = ipc;
-            if (dual_cap==1){
-            (void)system("sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh 2.4 2.4");
-            }else{
-                (void)system("sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh 2.4 0.8");
+               
+        } else if (delta_dram_power < -setpoint_dram_power * 0.05) {
+            if (delta_ipc >= pre_ipc * 0.05) {
+                setpoint_dram_power = dram_power;
+                pre_ipc = ipc;
+                if (dual_cap==1){
+                (void)system("sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh 2.2 2.2");
+                }else{
+                    (void)system("sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh 2.2 1.2");
+                }
+            } else if (delta_ipc < -pre_ipc * 0.05) {
+                pre_ipc = ipc;
+                if (dual_cap==1){
+                (void)system("sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh 2.2 2.4");
+                }else{
+                    (void)system("sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh 2.4 1.2");
+                }
             }
         }
     }
+    
 }
 
 // Main monitoring function
@@ -252,7 +263,7 @@ void monitor_dram_power_and_ipc(int pid, const char *output_csv, double interval
         double final_energy = read_dram_energy();
         double energy_diff = final_energy - initial_energy;
 
-        double dram_power = energy_diff / (0.35);
+        double dram_power = energy_diff / (0.2);
         initial_energy = final_energy;
 
         double ipc = collect_ipc();  // Replace `0` with the appropriate CPU number
@@ -266,7 +277,7 @@ void monitor_dram_power_and_ipc(int pid, const char *output_csv, double interval
             printf("Buffer full, consider increasing the buffer size.\n");
             break;
         }
-
+      
         ups(dram_power, ipc);
 
         // usleep((useconds_t)(interval * 1e6));  // Sleep for 0.1 seconds (100 ms)

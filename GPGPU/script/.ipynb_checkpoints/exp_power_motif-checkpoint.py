@@ -134,8 +134,8 @@ def run_benchmark(benchmark_script_dir,benchmark, suite, test):
 
     if ups == 1:
         output_ups_dram_ipc = f"../data/{suite}_power_res/{tmp}{benchmark}_dram_ipc{ups_tag}.csv"
-        # Replace the Python script call with the C executable call
-        ups_command = f"echo 9900 | sudo -S ./power_util/ups --output_csv={output_ups_dram_ipc} --pid={benchmark_pid} --dual_cap {dual_cap}"
+
+        ups_command = f"echo 9900 | sudo -S ./power_util/ups --output_csv={output_ups_dram_ipc} --pid={benchmark_pid} --dual_cap={dual_cap}"
         monitor_process = subprocess.Popen(ups_command, shell=True, stdin=subprocess.PIPE, text=True)
 
 
