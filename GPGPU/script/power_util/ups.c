@@ -219,6 +219,7 @@ void ups(double dram_power, double ipc) {
         else if (delta_dram_power > setpoint_dram_power * 0.05) {
             pre_ipc = ipc;
             setpoint_dram_power = dram_power;
+            current_uf = 2.2;
             if (dual_cap==1){
                 (void)system("sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh 2.2 2.2");
             }
@@ -231,6 +232,7 @@ void ups(double dram_power, double ipc) {
             if (delta_ipc >= pre_ipc * 0.05) {
                 setpoint_dram_power = dram_power;
                 pre_ipc = ipc;
+                current_uf = 2.2;
                 if (dual_cap==1){
                     (void)system("sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh 2.2 2.2");
                 }
@@ -238,7 +240,7 @@ void ups(double dram_power, double ipc) {
                     (void)system("sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh 2.2 1.2");
                 }
             } 
-            // state 2
+            // state 2: increment
             else if (delta_ipc < -pre_ipc * 0.05) {
                 pre_ipc = ipc;
                 char command[128];
