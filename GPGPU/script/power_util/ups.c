@@ -20,6 +20,9 @@ double setpoint_dram_power = 0;
 double pre_ipc = 0;
 int dual_cap = 0;
 int init = 1;
+double current_uf = 2.2;
+double current_uf_2 = 2.2;
+double step = 0.1;
 
 #define MAX_RAPL_FILES 10
 
@@ -202,33 +205,53 @@ void ups(double dram_power, double ipc) {
     else {
         double delta_dram_power = dram_power - setpoint_dram_power;
         double delta_ipc = ipc - pre_ipc;
-    
+        
+        // state 1: decrement uf
         if (fabs(delta_dram_power) <= setpoint_dram_power * 0.05) {
+            if (current_uf > 1.2) {
+                current_uf -= step;
+                char command[128];
+                snprintf(command, sizeof(command), "sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh %.2f %.2f", current_uf, current_uf);
+                (void)system(command);
+            }
+        } 
+        // state 3
+        else if (delta_dram_power > setpoint_dram_power * 0.05) {
             pre_ipc = ipc;
-            (void)system("sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh 1.2 1.2");
-        } else if (delta_dram_power > setpoint_dram_power * 0.05) {
             setpoint_dram_power = dram_power;
             if (dual_cap==1){
                 (void)system("sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh 2.2 2.2");
-            }else{
+            }
+            else{
                 (void)system("sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh 2.2 1.2");
             }
                
         } else if (delta_dram_power < -setpoint_dram_power * 0.05) {
+            // state 3
             if (delta_ipc >= pre_ipc * 0.05) {
                 setpoint_dram_power = dram_power;
                 pre_ipc = ipc;
                 if (dual_cap==1){
-                (void)system("sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh 2.2 2.2");
-                }else{
+                    (void)system("sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh 2.2 2.2");
+                }
+                else{
                     (void)system("sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh 2.2 1.2");
                 }
-            } else if (delta_ipc < -pre_ipc * 0.05) {
+            } 
+            // state 2
+            else if (delta_ipc < -pre_ipc * 0.05) {
                 pre_ipc = ipc;
+                char command[128];
+                if (current_uf < 2.2) {
+                    current_uf += step;
+            }
                 if (dual_cap==1){
-                (void)system("sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh 2.2 2.4");
-                }else{
-                    (void)system("sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh 2.4 1.2");
+                    snprintf(command, sizeof(command), "sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh %.2f %.2f", current_uf, current_uf);
+                    (void)system(command);
+                }
+                else{
+                    snprintf(command, sizeof(command), "sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh %.2f %.2f", current_uf, 1.2);
+                    (void)system(command);
                 }
             }
         }
