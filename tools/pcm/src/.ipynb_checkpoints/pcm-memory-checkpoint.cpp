@@ -1853,10 +1853,12 @@ void dynamic_ufs(double sysReadDRAM, double sysWriteDRAM) {
     // Calculate the total current memory throughput
     double currentThroughput = sysReadDRAM + sysWriteDRAM;
     max_mem_throughput = std::max(currentThroughput, max_mem_throughput);
+    
     if (max_mem_throughput > memory_throughput_ts) {
         uncore_lower_bound = 1.5;
     }
 
+    
     // Static variables to store the last 5 throughput values and the time interval (0.5s)
     static std::vector<double> throughputHistory;
     const double timeInterval = 0.1 * (history-1); 
@@ -1876,6 +1878,8 @@ void dynamic_ufs(double sysReadDRAM, double sysWriteDRAM) {
     // Only calculate the derivative after we have 5 data points
     if (throughputHistory.size() == history) {
 
+
+        // check burstness
         if(uncoreChangeWindow.size()>=windowSize) {
             double avgChange = std::accumulate(uncoreChangeWindow.begin(), uncoreChangeWindow.end(), 0.0) / uncoreChangeWindow.size();
             if (avgChange >= burst_up) {
@@ -1908,7 +1912,8 @@ void dynamic_ufs(double sysReadDRAM, double sysWriteDRAM) {
         
         // Calculate the derivative as (d4 - d0) / dt, where dt = 0.5 seconds
         double derivative = (throughputHistory[history-1] - throughputHistory[0]) / timeInterval;
-        
+
+        // mem increase
         if (derivative/10 > inc_ts & expect_current_max_uncore == 0) {
 
             if (power_shift==1 & (std::accumulate(throughputHistory.begin(), throughputHistory.end(), 0.0) / throughputHistory.size()) < 600) {
@@ -1945,6 +1950,7 @@ void dynamic_ufs(double sysReadDRAM, double sysWriteDRAM) {
 
             
         } 
+        // mem decrease
         else if (derivative / 10 < -dec_ts & expect_current_max_uncore == 1) {
             uncoreChangeWindow.push_back(1);
             expect_current_max_uncore = 0;
@@ -1963,11 +1969,12 @@ void dynamic_ufs(double sysReadDRAM, double sysWriteDRAM) {
         {
             uncoreChangeWindow.push_back(0);
         }
+        
         if (uncoreChangeWindow.size() > windowSize) {
             uncoreChangeWindow.erase(uncoreChangeWindow.begin());  
         }
 
-
+    // ############################### Power Shift Below ############################################ //
         
         // shift power from CPU to GPU // to be completed
         if (power_shift==1 & g_cap==1) {
