@@ -44,7 +44,7 @@
 
 
 
-python3 exp_power_motif.py --suite 0 --test 0  --dynamic_ufs_gpuP 0 --dynamic_ufs_mem 1 --uncore_0 2.2 --uncore_1 2.2 --pcm 1 --inc_ts 200 --dec_ts 500 --history 5 --dual_cap 1 --burst_up 0.4 --burst_low 0.2 --ups 0 --benchmark lammps
+python3 exp_power_motif.py --suite 0 --test 0  --dynamic_ufs_gpuP 0 --dynamic_ufs_mem 1 --uncore_0 2.2 --uncore_1 2.2 --pcm 1 --inc_ts 200 --dec_ts 500 --history 5 --dual_cap 1 --burst_up 0.4 --burst_low 0.2 --ups 0 --memory_throughput_ts 40000 --benchmark bert_large
 
 sleep 5
 
