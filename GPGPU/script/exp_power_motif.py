@@ -42,6 +42,7 @@ burst_low=0.2
 power_shift=0
 g_cap = 0
 ups = 0
+memory_throughput_ts = 50000;
 
 
 # Define your benchmarks, for testing replace the list with just ['FT'] for example
@@ -97,7 +98,7 @@ def run_benchmark(benchmark_script_dir,benchmark, suite, test):
 
     if pcm:
         # start pcm-memory
-        monitor_command_memory = f"echo 9900 | sudo -S {read_memory} 0.1 --suite {suite} --benchmark {benchmark} --uncore_0 {uncore_0} --uncore_1 {uncore_1} --dynamic_ufs_mem {dynamic_ufs_mem} --inc_ts {inc_ts} --dec_ts {dec_ts} --history {history} --dual_cap {dual_cap} --burst_up {burst_up} --burst_low {burst_low} --power_shift {power_shift} --g_cap {g_cap} --ups {ups}"
+        monitor_command_memory = f"echo 9900 | sudo -S {read_memory} 0.1 --suite {suite} --benchmark {benchmark} --uncore_0 {uncore_0} --uncore_1 {uncore_1} --dynamic_ufs_mem {dynamic_ufs_mem} --inc_ts {inc_ts} --dec_ts {dec_ts} --history {history} --dual_cap {dual_cap} --burst_up {burst_up} --burst_low {burst_low} --power_shift {power_shift} --g_cap {g_cap} --ups {ups} --memory_throughput_ts {memory_throughput_ts}"
         monitor_process_memory = subprocess.Popen(monitor_command_memory, shell=True, stdin=subprocess.PIPE, text=True)
 
 
@@ -228,6 +229,7 @@ if __name__ == "__main__":
     parser.add_argument('--power_shift', type=int, default=0)
     parser.add_argument('--g_cap', type=int, default=0)
     parser.add_argument('--ups', type=int, default=0)
+    parser.add_argument('--memory_throughput_ts', type=int, default=60000)
     
 
 
@@ -249,6 +251,7 @@ if __name__ == "__main__":
     power_shift=args.power_shift
     g_cap = args.g_cap
     ups = args.ups
+    memory_throughput_ts = args.memory_throughput_ts
 
 ################################## Parsing Args Ends ##############################
 

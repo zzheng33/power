@@ -31,6 +31,7 @@
 #include <chrono> // For time measurements
 #include <vector>
 #include <numeric>  // For accumulate
+#include <algorithm>  // For std::max
 
 // Global variable to store the start time
 std::chrono::time_point<std::chrono::high_resolution_clock> start_time;
@@ -40,6 +41,8 @@ std::chrono::time_point<std::chrono::high_resolution_clock> start_time;
 #define PCM_DELAY_MIN 0.015 // 15 milliseconds is practical on most modern CPUs
 
 #define DEFAULT_DISPLAY_COLUMNS 2
+
+
 
 void record_mem_throughput(double sysReadDRAM, double sysWriteDRAM);
 void dynamic_ufs(double sysReadDRAM, double sysWriteDRAM);
@@ -73,6 +76,14 @@ std::string power_shift_dir="";
 // The uncore frequency to be adjusted
 double newUncoreFreq_0 = 0.8; 
 double newUncoreFreq_1 = 0.8;
+
+// max mem throughput monitored, to determine the lower-bound uncore frequency
+double max_mem_throughput = 0;
+double memory_throughput_ts = 50000;
+double uncore_lower_bound = 0.8;
+double uncore_upper_bound = 2.2;
+
+
 
 using namespace std;
 using namespace pcm;
@@ -1474,6 +1485,20 @@ int mainThrows(int argc, char * argv[])
             exit(EXIT_FAILURE);
         }
         }
+        else if (check_argument_equals(*argv, {"--memory_throughput_ts"}))
+        {
+        if (argc > 1)
+        {
+            memory_throughput_ts = std::stod(argv[1]); // Capture the next argument as the benchmark value
+            argv++;
+            argc--;
+        }
+        else
+        {
+            std::cerr << "Error: --benchmark option requires a value" << std::endl;
+            exit(EXIT_FAILURE);
+        }
+        }
 
         
         
@@ -1827,6 +1852,10 @@ int mainThrows(int argc, char * argv[])
 void dynamic_ufs(double sysReadDRAM, double sysWriteDRAM) {
     // Calculate the total current memory throughput
     double currentThroughput = sysReadDRAM + sysWriteDRAM;
+    max_mem_throughput = std::max(currentThroughput, max_mem_throughput);
+    if (max_mem_throughput > memory_throughput_ts) {
+        uncore_lower_bound = 1.5;
+    }
 
     // Static variables to store the last 5 throughput values and the time interval (0.5s)
     static std::vector<double> throughputHistory;
@@ -1850,16 +1879,20 @@ void dynamic_ufs(double sysReadDRAM, double sysWriteDRAM) {
         if(uncoreChangeWindow.size()>=windowSize) {
             double avgChange = std::accumulate(uncoreChangeWindow.begin(), uncoreChangeWindow.end(), 0.0) / uncoreChangeWindow.size();
             if (avgChange >= burst_up) {
-                
-                newUncoreFreq_0 = 2.4;
-                newUncoreFreq_1 = 2.4;
                 burst_status = 1; // yield the UFS control to the burstiness-based logic
 
                 if(high_uncore==0) {
-                    if (dual_cap==1)
-                        int result = system("sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh 2.4 2.4");
-                    else 
-                        int result = system("sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh 2.4 0.8");
+                    if (dual_cap==1){
+                        std::string command = "sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh " 
+                      + std::to_string(uncore_upper_bound) + " " + std::to_string(uncore_upper_bound);
+                        system(command.c_str());
+                    }
+                        
+                    else{
+                        std::string command = "sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh " 
+                      + std::to_string(uncore_upper_bound) + " " + std::to_string(uncore_lower_bound);
+                        system(command.c_str());
+                }
  
                     high_uncore = 1;
                 }
@@ -1880,23 +1913,29 @@ void dynamic_ufs(double sysReadDRAM, double sysWriteDRAM) {
 
             if (power_shift==1 & (std::accumulate(throughputHistory.begin(), throughputHistory.end(), 0.0) / throughputHistory.size()) < 600) {
                 if (burst_status==0 & high_uncore==1) {
-                    int result = system("sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh 0.8 0.8");
+                    std::string command = "sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh " 
+                      + std::to_string(uncore_lower_bound) + " " + std::to_string(uncore_lower_bound);
+                    system(command.c_str());
                     uncoreChangeWindow.push_back(1);
                     expect_current_max_uncore = 0;  
                     high_uncore=0;
                 }
             }
             else {
-                newUncoreFreq_0 = 2.4;
-                newUncoreFreq_1 = 2.4;
                 uncoreChangeWindow.push_back(1);
                 expect_current_max_uncore = 1;
                 
                 if (burst_status==0 & high_uncore==0) {
-                    if (dual_cap==1)
-                        int result = system("sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh 2.4 2.4");
-                    else 
-                        int result = system("sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh 2.4 0.8");
+                    if (dual_cap==1) {
+                        std::string command = "sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh " 
+                      + std::to_string(uncore_upper_bound) + " " + std::to_string(uncore_upper_bound);
+                        system(command.c_str());
+                    }
+                    else{
+                        std::string command = "sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh " 
+                      + std::to_string(uncore_upper_bound) + " " + std::to_string(uncore_lower_bound);
+                        system(command.c_str());
+                    }
                   
                     high_uncore=1;
                 }
@@ -1907,13 +1946,13 @@ void dynamic_ufs(double sysReadDRAM, double sysWriteDRAM) {
             
         } 
         else if (derivative / 10 < -dec_ts & expect_current_max_uncore == 1) {
-            newUncoreFreq_0 = 0.8;
-            newUncoreFreq_1 = 0.8;
             uncoreChangeWindow.push_back(1);
             expect_current_max_uncore = 0;
             
             if (burst_status==0 & high_uncore==1) {
-                int result = system("sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh 0.8 0.8");
+                std::string command = "sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh " 
+                      + std::to_string(uncore_lower_bound) + " " + std::to_string(uncore_lower_bound);
+                system(command.c_str());
   
                 high_uncore=0;
                 
@@ -1928,13 +1967,15 @@ void dynamic_ufs(double sysReadDRAM, double sysWriteDRAM) {
             uncoreChangeWindow.erase(uncoreChangeWindow.begin());  
         }
 
-        // shift power from CPU to GPU
+
+        
+        // shift power from CPU to GPU // to be completed
         if (power_shift==1 & g_cap==1) {
             if ((newUncoreFreq_0 ==0.8 | newUncoreFreq_1==0.8) & high_gpu_power==0) {
                 system("sudo nvidia-smi -pl 233 > /dev/null 2>&1");
                 high_gpu_power = 1;
             }
-            else if ((newUncoreFreq_0 ==2.4 & newUncoreFreq_1==2.4) & high_gpu_power==1) {
+            else if ((newUncoreFreq_0 ==2.2 & newUncoreFreq_1==2.2) & high_gpu_power==1) {
                 system("sudo nvidia-smi -pl 150 > /dev/null 2>&1");
                 high_gpu_power = 0;
 
