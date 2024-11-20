@@ -11,4 +11,6 @@ cd ${benchmark_dir}
 
 # mpirun -np 1 lmp -sf gpu -pk gpu 1 -in ../bench/POTENTIALS/in.meam
 
-mpirun -np 1 lmp -sf gpu -pk gpu 1 -in ../input/in.lj 
+# mpirun -np 1 lmp -sf gpu -pk gpu 1 -in ../input/in.lj 
+
+mpirun -np 4 lmp -sf gpu -pk gpu 4 -in ../input/in.lj 

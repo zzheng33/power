@@ -1,6 +1,7 @@
 #!/bin/bash
 
 # 194,052 samples for 1st tf record
+num_gpus=4
 
 # Function to start Docker training
 cleanup() {
@@ -40,7 +41,7 @@ start_docker_training() {
         --max_eval_steps=1250 \
         --max_predictions_per_seq=76 \
         --max_seq_length=512 \
-        --num_gpus=1 \
+        --num_gpus=$num_gpus \
         --num_train_steps=750 \
         --num_warmup_steps=0 \
         --optimizer=lamb \

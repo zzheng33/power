@@ -1,5 +1,7 @@
 #!/bin/bash
 
+num_gpus=4
+
 # Function to stop the Docker container and kill related processes
 cleanup() {
     echo "Stopping Docker container and killing related processes..."
@@ -43,7 +45,7 @@ start_docker_training() {
                     --momentum=0.9 \
                     --num_accumulation_steps=1 \
                     --num_classes=1000 \
-                    --num_gpus=4 \
+                    --num_gpus=$num_gpus \
                     --optimizer=LARS \
                     --noreport_accuracy_metrics \
                     --single_l2_loss_op \
