@@ -22,7 +22,7 @@ int dual_cap = 0;
 int init = 1;
 double current_uf = 2.2;
 double current_uf_2 = 2.2;
-double step = 0.1;
+double step = 1;
 
 #define MAX_RAPL_FILES 10
 
