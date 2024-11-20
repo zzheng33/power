@@ -57,7 +57,7 @@ altis_benchmarks_2 = ['cfd','cfd_double','fdtd2d','kmeans','lavamd',
 
 ecp_benchmarks = ['miniGAN','CRADL','sw4lite','Laghos', 'lammps', 'UNet', 'Resnet50','bert_large','gromacs']
 
-ecp_benchmarks = [ 'Resnet50_multiGPU','bert_large_multiGPU','lammps_multiGPU','gromacs_multiGPU']
+# ecp_benchmarks = [ 'Resnet50_multiGPU','bert_large_multiGPU','lammps_multiGPU','gromacs_multiGPU']
 
 # Setup environment
 modprobe_command = "sudo modprobe msr"
