@@ -1859,7 +1859,7 @@ void dynamic_ufs(double sysReadDRAM, double sysWriteDRAM) {
                     if (dual_cap==1)
                         int result = system("sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh 2.4 2.4");
                     else 
-                        int result = system("sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh 2.4 1.2");
+                        int result = system("sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh 2.4 0.8");
  
                     high_uncore = 1;
                 }
@@ -1880,7 +1880,7 @@ void dynamic_ufs(double sysReadDRAM, double sysWriteDRAM) {
 
             if (power_shift==1 & (std::accumulate(throughputHistory.begin(), throughputHistory.end(), 0.0) / throughputHistory.size()) < 600) {
                 if (burst_status==0 & high_uncore==1) {
-                    int result = system("sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh 1.2 1.2");
+                    int result = system("sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh 0.8 0.8");
                     uncoreChangeWindow.push_back(1);
                     expect_current_max_uncore = 0;  
                     high_uncore=0;
@@ -1896,7 +1896,7 @@ void dynamic_ufs(double sysReadDRAM, double sysWriteDRAM) {
                     if (dual_cap==1)
                         int result = system("sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh 2.4 2.4");
                     else 
-                        int result = system("sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh 2.4 1.2");
+                        int result = system("sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh 2.4 0.8");
                   
                     high_uncore=1;
                 }
@@ -1913,7 +1913,7 @@ void dynamic_ufs(double sysReadDRAM, double sysWriteDRAM) {
             expect_current_max_uncore = 0;
             
             if (burst_status==0 & high_uncore==1) {
-                int result = system("sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh 1.2 1.2");
+                int result = system("sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh 0.8 0.8");
   
                 high_uncore=0;
                 
