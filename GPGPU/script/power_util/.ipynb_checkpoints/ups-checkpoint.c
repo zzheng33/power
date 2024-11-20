@@ -211,6 +211,7 @@ void ups(double dram_power, double ipc) {
             if (current_uf > 1.2) {
                 current_uf -= step;
                 char command[128];
+                current_uf = 1.2;
                 snprintf(command, sizeof(command), "sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh %.2f %.2f", current_uf, current_uf);
                 (void)system(command);
             }
@@ -248,10 +249,12 @@ void ups(double dram_power, double ipc) {
                     current_uf += step;
             }
                 if (dual_cap==1){
+                    current_uf = 2.2;
                     snprintf(command, sizeof(command), "sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh %.2f %.2f", current_uf, current_uf);
                     (void)system(command);
                 }
                 else{
+                    current_uf = 2.2;
                     snprintf(command, sizeof(command), "sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh %.2f %.2f", current_uf, 1.2);
                     (void)system(command);
                 }
