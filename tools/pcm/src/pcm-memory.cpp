@@ -82,6 +82,7 @@ double max_mem_throughput = 0;
 double memory_throughput_ts = 50000;
 double uncore_lower_bound = 0.8;
 double uncore_upper_bound = 2.2;
+int low_mem = 0;
 
 
 
@@ -1882,108 +1883,100 @@ void dynamic_ufs(double sysReadDRAM, double sysWriteDRAM) {
 
         // check whether the application is in low memory throughput status
         double avgMem = std::accumulate(throughputHistory.begin(), throughputHistory.end(), 0.0) / throughputHistory.size();
-        if (avgMem < 600) {
+        if (avgMem < 200) {
             burst_status = 0;
             high_uncore = 0;
+            low_mem = 1;
             uncoreChangeWindow.push_back(0);
             std::string command = "sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh " 
                       + std::to_string(uncore_lower_bound) + " " + std::to_string(uncore_lower_bound);
             system(command.c_str());
         }
-        
-        // check burstness
-        else if(uncoreChangeWindow.size()>=windowSize) {
-            double avgChange = std::accumulate(uncoreChangeWindow.begin(), uncoreChangeWindow.end(), 0.0) / uncoreChangeWindow.size();
-            if (avgChange >= burst_up) {
-                burst_status = 1; // yield the UFS control to the burstiness-based logic
-
-                if(high_uncore==0) {
-                    if (dual_cap==1){
+        else {
+            // check burstness
+            if (uncoreChangeWindow.size()>=windowSize) {
+                double avgChange = std::accumulate(uncoreChangeWindow.begin(), uncoreChangeWindow.end(), 0.0) / uncoreChangeWindow.size();
+                if (avgChange >= burst_up) {
+                    burst_status = 1; // yield the UFS control to the burstiness-based logic
+    
+                    if(high_uncore==0) {
+                        
+                        if (dual_cap==1){
+                            std::string command = "sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh " 
+                          + std::to_string(uncore_upper_bound) + " " + std::to_string(uncore_upper_bound);
+                            system(command.c_str());
+                        }
+                            
+                        else{
+                            std::string command = "sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh " 
+                          + std::to_string(uncore_upper_bound) + " " + std::to_string(uncore_lower_bound);
+                            system(command.c_str());
+                    }
+     
+                        high_uncore = 1;
+                    }
+                    
+                }
+             
+                else if (avgChange <= burst_low)
+                    burst_status = 0; // return the UFS control to memory_throughput-based logic
+               
+            }
+            
+    
+            
+            // Calculate the derivative as (d4 - d0) / dt, where dt = 0.5 seconds
+            double derivative = (throughputHistory[history-1] - throughputHistory[0]) / timeInterval;
+    
+            // mem increase
+            if (derivative/10 > inc_ts & expect_current_max_uncore == 0) {
+                
+                uncoreChangeWindow.push_back(1);
+                expect_current_max_uncore = 1;
+                
+                if (burst_status==0 & high_uncore==0) {
+                    if (dual_cap==1) {
                         std::string command = "sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh " 
                       + std::to_string(uncore_upper_bound) + " " + std::to_string(uncore_upper_bound);
                         system(command.c_str());
                     }
-                        
                     else{
                         std::string command = "sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh " 
                       + std::to_string(uncore_upper_bound) + " " + std::to_string(uncore_lower_bound);
                         system(command.c_str());
+                    }
+                  
+                    high_uncore=1;
                 }
- 
-                    high_uncore = 1;
+                
+                
+            } 
+            // mem decrease
+            else if (derivative / 10 < -dec_ts & expect_current_max_uncore == 1) {
+                uncoreChangeWindow.push_back(1);
+                expect_current_max_uncore = 0;
+                
+                if (burst_status==0 & high_uncore==1) {
+                    std::string command = "sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh " 
+                          + std::to_string(uncore_lower_bound) + " " + std::to_string(uncore_lower_bound);
+                    system(command.c_str());
+      
+                    high_uncore=0;
+                    
                 }
                 
             }
-         
-            else if (avgChange <= burst_low)
-                burst_status = 0; // return the UFS control to memory_throughput-based logic
-           
-        }
-        
-
-        
-        // Calculate the derivative as (d4 - d0) / dt, where dt = 0.5 seconds
-        double derivative = (throughputHistory[history-1] - throughputHistory[0]) / timeInterval;
-
-        // mem increase
-        if (derivative/10 > inc_ts & expect_current_max_uncore == 0) {
-
-            // if ((std::accumulate(throughputHistory.begin(), throughputHistory.end(), 0.0) / throughputHistory.size()) < 600) {
-            //     if (burst_status==0 & high_uncore==1) {
-            //         std::string command = "sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh " 
-            //           + std::to_string(uncore_lower_bound) + " " + std::to_string(uncore_lower_bound);
-            //         system(command.c_str());
-            //         uncoreChangeWindow.push_back(1);
-            //         expect_current_max_uncore = 0;  
-            //         high_uncore=0;
-            //     }
-            // }
-            
-            uncoreChangeWindow.push_back(1);
-            expect_current_max_uncore = 1;
-            
-            if (burst_status==0 & high_uncore==0) {
-                if (dual_cap==1) {
-                    std::string command = "sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh " 
-                  + std::to_string(uncore_upper_bound) + " " + std::to_string(uncore_upper_bound);
-                    system(command.c_str());
-                }
-                else{
-                    std::string command = "sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh " 
-                  + std::to_string(uncore_upper_bound) + " " + std::to_string(uncore_lower_bound);
-                    system(command.c_str());
-                }
-              
-                high_uncore=1;
+            else
+            {
+                uncoreChangeWindow.push_back(0);
             }
             
-            
-        } 
-        // mem decrease
-        else if (derivative / 10 < -dec_ts & expect_current_max_uncore == 1) {
-            uncoreChangeWindow.push_back(1);
-            expect_current_max_uncore = 0;
-            
-            if (burst_status==0 & high_uncore==1) {
-                std::string command = "sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh " 
-                      + std::to_string(uncore_lower_bound) + " " + std::to_string(uncore_lower_bound);
-                system(command.c_str());
-  
-                high_uncore=0;
-                
+            if (uncoreChangeWindow.size() > windowSize) {
+                uncoreChangeWindow.erase(uncoreChangeWindow.begin());  
             }
-            
-        }
-        else
-        {
-            uncoreChangeWindow.push_back(0);
-        }
         
-        if (uncoreChangeWindow.size() > windowSize) {
-            uncoreChangeWindow.erase(uncoreChangeWindow.begin());  
-        }
+    }
         
-
     // ############################### Power Shift Below ############################################ //
         
         // shift power from CPU to GPU // to be completed
@@ -1997,9 +1990,10 @@ void dynamic_ufs(double sysReadDRAM, double sysWriteDRAM) {
                 high_gpu_power = 0;
 
              }
-        }
-        
     }
+ }
+        
+
 
 }
 
