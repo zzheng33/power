@@ -1,6 +1,6 @@
 #!/bin/bash
 
-num_gpus=4
+num_gpus=1
 
 # Function to stop the Docker container and kill related processes
 cleanup() {

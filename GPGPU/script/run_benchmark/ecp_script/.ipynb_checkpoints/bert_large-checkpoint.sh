@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # 194,052 samples for 1st tf record
-num_gpus=4
+num_gpus=1
 
 # Function to start Docker training
 cleanup() {
