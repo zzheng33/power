@@ -280,7 +280,7 @@ setup_RSBench
 setup_lammps
 setup_gromacs
 # setup_ecp_cpu
-# setup_npb
+setup_npb
 setup_cpu_freq
 setup_UNet
 setup_Resnet
