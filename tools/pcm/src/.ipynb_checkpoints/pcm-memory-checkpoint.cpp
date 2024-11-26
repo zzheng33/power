@@ -1883,7 +1883,7 @@ void dynamic_ufs(double sysReadDRAM, double sysWriteDRAM) {
 
         // check whether the application is in low memory throughput status
         double avgMem = std::accumulate(throughputHistory.begin(), throughputHistory.end(), 0.0) / throughputHistory.size();
-        if (avgMem < 200) {
+        if (avgMem < 0) {
             burst_status = 0;
             high_uncore = 0;
             low_mem = 1;

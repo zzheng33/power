@@ -42,13 +42,13 @@ burst_low=0.2
 power_shift=0
 g_cap = 0
 ups = 0
-memory_throughput_ts = 50000;
+memory_throughput_ts = 40000;
 
 
 # Define your benchmarks, for testing replace the list with just ['FT'] for example
 # ecp_benchmarks = ['FT', 'CG', 'LULESH', 'Nekbone', 'AMG2013', 'miniFE']
 
-npb_benchmarks = ['bt','cg','ep','ft','is','lu','mg','sp','ua','miniFE']
+npb_benchmarks = ['bt','cg','ep','ft','is','lu','mg','sp','ua']
 
 altis_benchmarks_0 = ['busspeeddownload','busspeedreadback','maxflops']
 altis_benchmarks_1 = ['bfs','gemm','gups','pathfinder','sort']
