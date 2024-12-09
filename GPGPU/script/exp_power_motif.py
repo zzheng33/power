@@ -42,6 +42,7 @@ burst_low=0.2
 power_shift=0
 g_cap = 0
 ups = 0
+SoC = 0
 memory_throughput_ts = 40000;
 
 
@@ -84,10 +85,14 @@ def run_benchmark(benchmark_script_dir,benchmark, suite, test):
         ups_tag = "_ups"
     else:
         ups_tag = ""
+    if SoC:
+        SoC_tag = "_SoC"
+    else:
+        SoC_tag = ""
     if not test:
-        output_cpu = f"../data/{suite}_power_res/{tmp}{benchmark}_power_cpu{ups_tag}.csv"
-        output_gpu = f"../data/{suite}_power_res/{tmp}{benchmark}_power_gpu{ups_tag}.csv"
-        output_uncore = f"../data/{suite}_power_res/{tmp}uncore_freq/{benchmark}_uncore_freq{ups_tag}.csv"
+        output_cpu = f"../data/{suite}_power_res/{tmp}{benchmark}_power_cpu{ups_tag}{SoC_tag}.csv"
+        output_gpu = f"../data/{suite}_power_res/{tmp}{benchmark}_power_gpu{ups_tag}{SoC_tag}.csv"
+        output_uncore = f"../data/{suite}_power_res/{tmp}uncore_freq/{benchmark}_uncore_freq{ups_tag}{SoC_tag}.csv"
     else:
         output_cpu = f"../data/{suite}_test/{benchmark}_power_cpu.csv"
         output_gpu = f"../data/{suite}_test/{benchmark}_power_gpu.csv"
@@ -142,6 +147,18 @@ def run_benchmark(benchmark_script_dir,benchmark, suite, test):
 
 
 ################ UPS ends ###############
+
+
+################ SoC starts ###############
+
+    if ups == 1:
+        output_SoC_cpu_util = f"../data/{suite}_power_res/{tmp}{benchmark}_cpu_util{SoC_tag}.csv"
+
+        SoC_command = f"echo 9900 | sudo -S ./power_util/SoC --output_csv={output_SoC_cpu_util} --pid={benchmark_pid} --dual_cap={dual_cap}"
+        monitor_process = subprocess.Popen(SoC_command, shell=True, stdin=subprocess.PIPE, text=True)
+
+
+################ SoC ends ###############
 
 
 
@@ -229,6 +246,7 @@ if __name__ == "__main__":
     parser.add_argument('--power_shift', type=int, default=0)
     parser.add_argument('--g_cap', type=int, default=0)
     parser.add_argument('--ups', type=int, default=0)
+    parser.add_argument('--SoC', type=int, default=0)
     parser.add_argument('--memory_throughput_ts', type=int, default=60000)
     
 
@@ -252,6 +270,7 @@ if __name__ == "__main__":
     g_cap = args.g_cap
     ups = args.ups
     memory_throughput_ts = args.memory_throughput_ts
+    SoC = args.SoC
 
 ################################## Parsing Args Ends ##############################
 
