@@ -15,6 +15,7 @@ install_dependence() {
     sudo apt --assume-yes install linux-tools-common linux-tools-$(uname -r)
     sudo snap install cmake --classic
     sudo apt-get install unzip
+    sudo apt install sysstat 
 
     # sudo apt install linux-intel-iotg-tools-common
     # sudo apt install --assume-yes linux-tools-5.15.0-92-generic
