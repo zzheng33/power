@@ -151,10 +151,10 @@ def run_benchmark(benchmark_script_dir,benchmark, suite, test):
 
 ################ SoC starts ###############
 
-    if ups == 1:
+    if SoC == 1:
         output_SoC_cpu_util = f"../data/{suite}_power_res/{tmp}{benchmark}_cpu_util{SoC_tag}.csv"
 
-        SoC_command = f"echo 9900 | sudo -S ./power_util/SoC --output_csv={output_SoC_cpu_util} --pid={benchmark_pid} --dual_cap={dual_cap}"
+        SoC_command = f"echo 9900 | sudo -S ./power_util/SoC/SoC --output_csv={output_SoC_cpu_util} --pid={benchmark_pid} --dual_cap={dual_cap}"
         monitor_process = subprocess.Popen(SoC_command, shell=True, stdin=subprocess.PIPE, text=True)
 
 
