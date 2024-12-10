@@ -17,6 +17,12 @@
 
 
 int dual_cap = 0;
+double step = 0.1;
+double current_uf1 = 2.2;
+double current_uf2 = 2.2;
+int init = 2.2;
+int max_uf = 2.2;
+int min_uf = 0.8;
 
 typedef struct {
     double time_sec;
@@ -24,9 +30,41 @@ typedef struct {
 } cpu_sample;
 
 
-// void SoC(util) {
-   
-// }
+void SoC(util) {
+   // if util < 10%, set the uf to 0.8
+    if (util <= 10) {
+        if (dual_cap==1){
+            current_uf1 = 0.8;
+            current_uf2 = 0.8;
+            char command[128];
+            snprintf(command, sizeof(command), "sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh %.2f %.2f", min_uf, min_uf);
+            (void)system(command);
+        }
+        else{
+            current_uf1 = 0.8;
+            current_uf2 = 2.2;
+            char command[128];
+            snprintf(command, sizeof(command), "sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh %.2f %.2f", min_uf, max_uf);
+            (void)system(command);
+        }
+    }
+    // if util >= 90%, increment the current uf by 0.1 GHz
+    else if (util >= 90) {
+        if (dual_cap==1){
+            if (current_uf1<max_uf) current_uf1 +=step;
+            if (current_uf2<max_uf) current_uf2 +=step;
+            char command[128];
+            snprintf(command, sizeof(command), "sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh %.2f %.2f", current_uf1, current_uf2);
+            (void)system(command);
+        }
+        else{
+            if (current_uf1<max_uf) current_uf1 +=step;
+            char command[128];
+            snprintf(command, sizeof(command), "sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh %.2f %.2f", current_uf1, current_uf2);
+            (void)system(command);
+        }
+    }
+}
 
 
 void monitor_cpu_util(int pid, const char *output_csv, double interval) {
@@ -101,6 +139,8 @@ void monitor_cpu_util(int pid, const char *output_csv, double interval) {
         data[count].utilization = cpu_usage;
         count++;
 
+
+        SoC(cpu_usage);
         // Sleep for the desired interval
         usleep((useconds_t)(interval * 1e6));
     }
