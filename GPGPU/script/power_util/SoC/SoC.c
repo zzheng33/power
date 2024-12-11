@@ -23,6 +23,8 @@ double current_uf2 = 2.2;
 int init = 2.2;
 int max_uf = 2.2;
 int min_uf = 0.8;
+int low_ts = 10;
+int high_ts = 90
 
 typedef struct {
     double time_sec;
@@ -32,7 +34,7 @@ typedef struct {
 
 void SoC(util) {
    // if util < 10%, set the uf to 0.8
-    if (util <= 10) {
+    if (util <= low_ts) {
         if (dual_cap==1){
             current_uf1 = 0.8;
             current_uf2 = 0.8;
@@ -49,7 +51,7 @@ void SoC(util) {
         }
     }
     // if util >= 90%, increment the current uf by 0.1 GHz
-    else if (util >= 90) {
+    else if (util >= high_ts) {
         if (dual_cap==1){
             if (current_uf1<max_uf) current_uf1 +=step;
             if (current_uf2<max_uf) current_uf2 +=step;
