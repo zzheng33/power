@@ -22,7 +22,7 @@ int dual_cap = 0;
 int init = 1;
 double current_uf = 2.2;
 double current_uf_2 = 2.2;
-double step = 1;
+double step = 0.1;
 
 #define MAX_RAPL_FILES 10
 
@@ -211,7 +211,7 @@ void ups(double dram_power, double ipc) {
             if (current_uf > 1.2) {
                 current_uf -= step;
                 char command[128];
-                current_uf = 1.2;
+                // current_uf = 1.2;
                 snprintf(command, sizeof(command), "sudo /home/cc/power/GPGPU/script/power_util/set_uncore_freq.sh %.2f %.2f", current_uf, current_uf);
                 (void)system(command);
             }
