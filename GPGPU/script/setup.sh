@@ -1,7 +1,6 @@
 #!/bin/bash
 
 home_dir="/home/cc"
-home_dir=$HOME
 
 
 
