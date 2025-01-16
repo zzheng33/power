@@ -33,9 +33,15 @@ typedef struct {
     double ipc;
 } PowerIpcData;
 
+typedef struct {
+    double result;
+} ThreadData;
+
+
 // Array to store paths to DRAM energy files
 char *dram_energy_files[MAX_RAPL_FILES];
 int num_dram_files = 0;
+
 
 // Function to discover DRAM energy files from RAPL
 void discover_dram_rapl_files() {
@@ -171,7 +177,8 @@ double read_dram_energy() {
 
 // Function to collect IPC using `perf stat`
 double collect_ipc() {
-    FILE *fp = popen("perf stat -e instructions,cycles -a --no-merge --field-separator=, -x, sleep 0.05 2>&1", "r");
+    // Use a shorter sampling duration and simplify perf output
+    FILE *fp = popen("perf stat -e instructions,cycles -a --no-merge --field-separator=, -x, sleep 0.01 2>&1", "r");
     if (fp == NULL) {
         perror("Error running perf command");
         return -1;
@@ -181,18 +188,21 @@ double collect_ipc() {
     double instructions = 0;
     double cycles = 0;
 
+    // Directly parse specific fields for instructions and cycles
     while (fgets(line, sizeof(line), fp) != NULL) {
         if (strstr(line, "instructions")) {
-            instructions = atof(strtok(line, ","));
-        }
-        if (strstr(line, "cycles")) {
-            cycles = atof(strtok(line, ","));
+            sscanf(line, "%lf,", &instructions); // Extract the first value
+        } else if (strstr(line, "cycles")) {
+            sscanf(line, "%lf,", &cycles); // Extract the first value
         }
     }
 
     pclose(fp);
+
+    // Return IPC if cycles > 0, else return 0
     return (cycles > 0) ? (instructions / cycles) : 0;
 }
+
 
 void ups(double dram_power, double ipc) {
     if (init==1) {
@@ -264,6 +274,20 @@ void ups(double dram_power, double ipc) {
     
 }
 
+
+void *read_energy_thread(void *arg) {
+    ThreadData *data = (ThreadData *)arg;
+    data->result = read_dram_energy();
+    pthread_exit(NULL);
+}
+
+void *collect_ipc_thread(void *arg) {
+    ThreadData *data = (ThreadData *)arg;
+    data->result = collect_ipc();
+    pthread_exit(NULL);
+}
+
+
 // Main monitoring function
 void monitor_dram_power_and_ipc(int pid, const char *output_csv, double interval) {
     PowerIpcData *data = malloc(1000000 * sizeof(PowerIpcData));  // Allocate space for storing data
@@ -282,19 +306,35 @@ void monitor_dram_power_and_ipc(int pid, const char *output_csv, double interval
         struct timespec current_time;
         clock_gettime(CLOCK_MONOTONIC, &current_time);
 
-        // Calculate elapsed time in milliseconds
-        double elapsed_time_ms = (current_time.tv_sec - start_time.tv_sec) * 1000.0 
+        double elapsed_time_ms = (current_time.tv_sec - start_time.tv_sec) * 1000.0
                                  + (current_time.tv_nsec - start_time.tv_nsec) / 1e6;
+        double elapsed_time_sec = elapsed_time_ms / 1000.0;
 
-        double elapsed_time_sec = elapsed_time_ms / 1000.0;  // Convert to seconds for CSV output
+        pthread_t energy_thread, ipc_thread;
+        ThreadData energy_data, ipc_data;
 
-        double final_energy = read_dram_energy();
+        if (pthread_create(&energy_thread, NULL, read_energy_thread, &energy_data) != 0) {
+            perror("Error creating energy thread");
+            free(data);
+            exit(EXIT_FAILURE);
+        }
+
+        if (pthread_create(&ipc_thread, NULL, collect_ipc_thread, &ipc_data) != 0) {
+            perror("Error creating IPC thread");
+            pthread_cancel(energy_thread);
+            free(data);
+            exit(EXIT_FAILURE);
+        }
+
+        pthread_join(energy_thread, NULL);
+        pthread_join(ipc_thread, NULL);
+
+        double final_energy = energy_data.result;
+        double ipc = ipc_data.result;
+
         double energy_diff = final_energy - initial_energy;
-
-        double dram_power = energy_diff / (0.2);
+        double dram_power = energy_diff / interval;
         initial_energy = final_energy;
-
-        double ipc = collect_ipc();  // Replace `0` with the appropriate CPU number
 
         if (count < 10000000) {
             data[count].time = elapsed_time_sec;
@@ -305,11 +345,13 @@ void monitor_dram_power_and_ipc(int pid, const char *output_csv, double interval
             printf("Buffer full, consider increasing the buffer size.\n");
             break;
         }
-      
+        
         ups(dram_power, ipc);
-
-        // usleep((useconds_t)(interval * 1e6));  // Sleep for 0.1 seconds (100 ms)
+        // usleep((useconds_t)(interval * 1e6));
     }
+
+
+    
 
     // Write all collected data to CSV
     FILE *fp = fopen(output_csv, "w");
