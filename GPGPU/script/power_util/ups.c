@@ -640,7 +640,7 @@ void monitor_dram_power_and_ipc(int pid, const char *output_csv, double interval
             break;
         }
       
-        //ups(dram_power, ipc);
+        ups(dram_power, ipc);
 
         // usleep((useconds_t)(interval * 1e6));  // Sleep for 0.1 seconds (100 ms)
     }
