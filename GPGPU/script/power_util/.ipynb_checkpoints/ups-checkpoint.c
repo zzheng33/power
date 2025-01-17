@@ -598,6 +598,7 @@ void ups(double dram_power, double ipc) {
     
 }
 
+
 // Main monitoring function
 void monitor_dram_power_and_ipc(int pid, const char *output_csv, double interval) {
     PowerIpcData *data = malloc(1000000 * sizeof(PowerIpcData));  // Allocate space for storing data
@@ -640,9 +641,19 @@ void monitor_dram_power_and_ipc(int pid, const char *output_csv, double interval
             break;
         }
       
-        ups(dram_power, ipc);
+        // struct timespec t1, t2;
+        // clock_gettime(CLOCK_MONOTONIC, &t1);  // Start time
+        
+        //ups(dram_power, ipc);
+        
+        // clock_gettime(CLOCK_MONOTONIC, &t2);  // End time
+    
+        // double elapsed_time = (t2.tv_sec - t1.tv_sec) + 
+        //                       (t2.tv_nsec - t1.tv_nsec) / 1000000000.0;
+        // printf("Average time per call using clock_gettime(): %f seconds\n", elapsed_time);
 
-        // usleep((useconds_t)(interval * 1e6));  // Sleep for 0.1 seconds (100 ms)
+
+         usleep((useconds_t)(0.14 * 1e6));  
     }
 
     // Write all collected data to CSV
