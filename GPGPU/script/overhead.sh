@@ -26,20 +26,33 @@
 
 # sleep 3
 
-# sudo mv /home/cc/power/GPGPU/data/altis_power_res/no_power_shift/*.csv /home/cc/power/GPGPU/data/altis_power_res/no_power_shift/base 
-
-
-# python3 exp_power_motif.py --suite 1 --test 0  --dynamic_ufs_gpuP 0 --dynamic_ufs_mem 0 --uncore_0 2.2 --uncore_1 2.2 --pcm 0 --inc_ts 200 --dec_ts 500 --history 5 --dual_cap 1 --burst_up 0.4 --burst_low 0.2 --ups 1 --benchmark fdtd2d
-
-# sleep 3
-
-# sudo mv /home/cc/power/GPGPU/data/altis_power_res/no_power_shift/*.csv /home/cc/power/GPGPU/data/altis_power_res/no_power_shift/ups_overhead
+# sudo mv /home/cc/power/GPGPU/data/altis_power_res/no_power_shift/*.csv /home/cc/power/GPGPU/data/altis_power_res/no_power_shift/base_magus
 
 # python3 exp_power_motif.py --suite 1 --test 0  --dynamic_ufs_gpuP 0 --dynamic_ufs_mem 0 --uncore_0 2.2 --uncore_1 2.2 --pcm 1 --inc_ts 200 --dec_ts 500 --history 5 --dual_cap 1 --burst_up 0.4 --burst_low 0.2 --ups 0 --benchmark gups
 
 # sleep 3
 
 # sudo mv /home/cc/power/GPGPU/data/altis_power_res/no_power_shift/*.csv /home/cc/power/GPGPU/data/altis_power_res/no_power_shift/magus_overhead
+
+
+###### UPS below ######
+
+
+# python3 exp_power_motif.py --suite 1 --test 0  --dynamic_ufs_gpuP 0 --dynamic_ufs_mem 0 --uncore_0 2.2 --uncore_1 2.2 --pcm 1 --inc_ts 200 --dec_ts 500 --history 5 --dual_cap 1 --burst_up 0.4 --burst_low 0.2 --ups 0 --benchmark fdtd2d
+
+# sleep 3
+
+# sudo mv /home/cc/power/GPGPU/data/altis_power_res/no_power_shift/*.csv /home/cc/power/GPGPU/data/altis_power_res/no_power_shift/base_ups
+
+
+
+# python3 exp_power_motif.py --suite 1 --test 0  --dynamic_ufs_gpuP 0 --dynamic_ufs_mem 0 --uncore_0 2.2 --uncore_1 2.2 --pcm 1 --inc_ts 200 --dec_ts 500 --history 5 --dual_cap 1 --burst_up 0.4 --burst_low 0.2 --ups 1 --benchmark fdtd2d
+
+# sleep 3
+
+# sudo mv /home/cc/power/GPGPU/data/altis_power_res/no_power_shift/*.csv /home/cc/power/GPGPU/data/altis_power_res/no_power_shift/ups_overhead
+
+
 
 
 
@@ -55,11 +68,28 @@
 ################### ECP overhead Starts ###################
 
 
-python3 exp_power_motif.py --suite 0 --test 0  --dynamic_ufs_gpuP 0 --dynamic_ufs_mem 0 --uncore_0 2.2 --uncore_1 2.2 --pcm 1 --inc_ts 200 --dec_ts 500 --history 5 --dual_cap 1 --burst_up 0.4 --burst_low 0.2 --ups 0 --benchmark Resnet50
+# python3 exp_power_motif.py --suite 0 --test 0  --dynamic_ufs_gpuP 0 --dynamic_ufs_mem 0 --uncore_0 2.2 --uncore_1 2.2 --pcm 0 --inc_ts 200 --dec_ts 500 --history 5 --dual_cap 1 --burst_up 0.4 --burst_low 0.2 --ups 0 --benchmark Resnet50
 
 # sleep 5
 
-# sudo mv /home/cc/power/GPGPU/data/ecp_power_res/no_power_shift/*.csv /home/cc/power/GPGPU/data/ecp_power_res/no_power_shift/base
+# sudo mv /home/cc/power/GPGPU/data/ecp_power_res/no_power_shift/*.csv /home/cc/power/GPGPU/data/ecp_power_res/no_power_shift/base_magus
+
+
+# python3 exp_power_motif.py --suite 0 --test 0  --dynamic_ufs_gpuP 0 --dynamic_ufs_mem 0 --uncore_0 2.2 --uncore_1 2.2 --pcm 1 --inc_ts 200 --dec_ts 500 --history 5 --dual_cap 1 --burst_up 0.4 --burst_low 0.2 --ups 0 --benchmark Resnet50
+
+# sleep 5
+
+# sudo mv /home/cc/power/GPGPU/data/ecp_power_res/no_power_shift/*.csv /home/cc/power/GPGPU/data/ecp_power_res/no_power_shift/magus_overhead 
+
+
+#### UPS below ####
+
+# python3 exp_power_motif.py --suite 0 --test 0  --dynamic_ufs_gpuP 0 --dynamic_ufs_mem 0 --uncore_0 2.2 --uncore_1 2.2 --pcm 1 --inc_ts 200 --dec_ts 500 --history 5 --dual_cap 1 --burst_up 0.4 --burst_low 0.2 --ups 0 --benchmark Resnet50
+
+# sleep 5
+
+# sudo mv /home/cc/power/GPGPU/data/ecp_power_res/no_power_shift/*.csv /home/cc/power/GPGPU/data/ecp_power_res/no_power_shift/base_ups
+
 
 # python3 exp_power_motif.py --suite 0 --test 0  --dynamic_ufs_gpuP 0 --dynamic_ufs_mem 0 --uncore_0 2.2 --uncore_1 2.2 --pcm 1 --inc_ts 200 --dec_ts 500 --history 5 --dual_cap 1 --burst_up 0.4 --burst_low 0.2 --ups 1 --benchmark Resnet50
 
@@ -68,11 +98,6 @@ python3 exp_power_motif.py --suite 0 --test 0  --dynamic_ufs_gpuP 0 --dynamic_uf
 # sudo mv /home/cc/power/GPGPU/data/ecp_power_res/no_power_shift/*.csv /home/cc/power/GPGPU/data/ecp_power_res/no_power_shift/ups_overhead 
 
 
-# python3 exp_power_motif.py --suite 0 --test 0  --dynamic_ufs_gpuP 0 --dynamic_ufs_mem 0 --uncore_0 2.2 --uncore_1 2.2 --pcm 1 --inc_ts 200 --dec_ts 500 --history 5 --dual_cap 1 --burst_up 0.4 --burst_low 0.2 --ups 0 --benchmark Resnet50
-
-# sleep 5
-
-# sudo mv /home/cc/power/GPGPU/data/ecp_power_res/no_power_shift/*.csv /home/cc/power/GPGPU/data/ecp_power_res/no_power_shift/magus_overhead 
 
 
 
