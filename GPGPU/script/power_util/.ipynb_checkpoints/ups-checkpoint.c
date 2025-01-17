@@ -644,7 +644,7 @@ void monitor_dram_power_and_ipc(int pid, const char *output_csv, double interval
         // struct timespec t1, t2;
         // clock_gettime(CLOCK_MONOTONIC, &t1);  // Start time
         
-        //ups(dram_power, ipc);
+        ups(dram_power, ipc);
         
         // clock_gettime(CLOCK_MONOTONIC, &t2);  // End time
     
@@ -653,7 +653,7 @@ void monitor_dram_power_and_ipc(int pid, const char *output_csv, double interval
         // printf("Average time per call using clock_gettime(): %f seconds\n", elapsed_time);
 
 
-          usleep((useconds_t)(0.14 * 1e6));  
+          //usleep((useconds_t)(0.14 * 1e6));  
     }
 
     // Write all collected data to CSV
