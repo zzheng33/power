@@ -6,13 +6,19 @@ dec_ts_vals=(100 300 500 700 900 1100 1300 1500 1700 1900)
 burst_up_vals=(0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1.0)
 memory_throughput_ts_vals=(20000 40000 60000 80000 100000 120000 140000 160000 180000 200000)
 
+# inc_ts_vals=(200 400 600 800 1000 1200 1400 1600 1800 2000)
+# dec_ts_vals=(200 400 600 800 1000 1200 1400 1600 1800 2000)
+# burst_up_vals=(0.05 0.15 0.25 0.35 0.45 0.55 0.65 0.75 0.85 0.95)
+# memory_throughput_ts_vals=(10000 30000 50000 70000 90000 110000 130000 150000 170000 190000)
+
+
 # Default values
 default_inc_ts=300
 default_dec_ts=500
 default_burst_up=0.4
 default_memory_throughput_ts=40000
 
-benchmark="srad"
+benchmark="lavamd"
 target_dir="/home/cc/power/GPGPU/data/sensitivity"
 
 
