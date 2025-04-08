@@ -104,8 +104,8 @@ python3 exp_power_motif.py --suite 0 --test 0  --dynamic_ufs_gpuP 0 --dynamic_uf
 
 sleep 5
 
-sudo mv /home/cc/power/GPGPU/data/ecp_power_res/no_power_shift/*.csv /home/cc/power/GPGPU/data/ecp_power_res/no_power_shift/dynamic_uncore 
-sudo mv /home/cc/power/GPGPU/data/ecp_power_res/no_power_shift/mem_throughput/*.csv /home/cc/power/GPGPU/data/ecp_power_res/no_power_shift/mem_throughput/dynamic_uncore
+# sudo mv /home/cc/power/GPGPU/data/ecp_power_res/no_power_shift/*.csv /home/cc/power/GPGPU/data/ecp_power_res/no_power_shift/dynamic_uncore 
+# sudo mv /home/cc/power/GPGPU/data/ecp_power_res/no_power_shift/mem_throughput/*.csv /home/cc/power/GPGPU/data/ecp_power_res/no_power_shift/mem_throughput/dynamic_uncore
 
 
 

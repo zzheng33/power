@@ -13,8 +13,8 @@ default_burst_up=0.4
 default_memory_throughput_ts=40000
 
 benchmark="srad"
-target_dir="/home/cc/sc/power/GPGPU/data/sensitivity"
-sudo mkdir -p "$target_dir"
+target_dir="/home/cc/power/GPGPU/data/sensitivity"
+
 
 run_experiment () {
     local inc_ts=$1
@@ -33,13 +33,17 @@ run_experiment () {
 
     sleep 2
 
+    # Build key for suffix
+    key="${inc_ts}_${dec_ts}_${burst_up}_${memory_throughput_ts}"
+
     for file in /home/cc/power/GPGPU/data/altis_power_res/no_power_shift/*.csv; do
         if [[ -f "$file" ]]; then
-            filename="${benchmark}_${inc_ts}_${dec_ts}_${burst_up}_${memory_throughput_ts}.csv"
-            sudo mv "$file" "$target_dir/$filename"
+            filename=$(basename "$file" .csv)
+            sudo mv "$file" "$target_dir/${filename}_${key}.csv"
         fi
     done
 }
+
 
 # === Sensitivity 1: Vary inc_ts ===
 for val in "${inc_ts_vals[@]}"; do
